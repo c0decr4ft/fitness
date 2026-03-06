@@ -995,16 +995,16 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
       <div class="coach-chat" id="coach-chat">
         <div class="coach-msg bot">
           <div class="coach-avatar">🤖</div>
-          <div class="coach-bubble">Hey! I'm your AI fitness coach. Ask me anything — what exercises to do, how to improve your strength, what muscles you've been neglecting, or for a full workout plan. I'll use your profile and history to give you personalised advice.</div>
+          <div class="coach-bubble">Hey! I'm your AI fitness coach. Ask me anything — how to do specific exercises, what you should work on, workout plans, nutrition tips, or just say hello! I'll use your profile and workout history to give you personalised advice.</div>
         </div>
       </div>
       <div class="coach-quick-btns" id="coach-quick-btns">
-        <button onclick="coachAsk('What should I train today?')">What should I train today?</button>
-        <button onclick="coachAsk('How can I improve my strength?')">Improve my strength</button>
-        <button onclick="coachAsk('What muscles am I neglecting?')">Neglected muscles?</button>
+        <button onclick="coachAsk('Hey! What should I train today?')">What should I train today?</button>
+        <button onclick="coachAsk('How do I do a squat?')">How do I do a squat?</button>
         <button onclick="coachAsk('Give me a full workout plan')">Full workout plan</button>
-        <button onclick="coachAsk('What should I do for cardio?')">Cardio recommendations</button>
-        <button onclick="coachAsk('How do I improve my core?')">Core exercises</button>
+        <button onclick="coachAsk('What muscles am I neglecting?')">Neglected muscles?</button>
+        <button onclick="coachAsk('How can I improve my strength?')">Improve my strength</button>
+        <button onclick="coachAsk('What should I eat?')">Nutrition tips</button>
       </div>
       <div class="coach-input-row">
         <input type="text" class="coach-input" id="coach-input" placeholder="Ask your AI coach…" onkeydown="if(event.key==='Enter')coachSend()">
@@ -1044,8 +1044,9 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
   <div class="sets-modal-box">
     <div class="sets-title" id="sets-title"></div>
     <div class="sets-sub" id="sets-sub"></div>
+    <div id="sets-bw-note" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--muted);line-height:1.5;"></div>
     <table class="sets-table">
-      <thead><tr><th>Set</th><th>kg</th><th>Reps</th><th>Done</th></tr></thead>
+      <thead><tr><th>Set</th><th id="sets-col-wt">kg</th><th id="sets-col-rp">Reps</th><th>Done</th></tr></thead>
       <tbody id="sets-rows"></tbody>
     </table>
     <button class="add-set-btn" onclick="addSetRow()">+ Add Set</button>
@@ -1501,16 +1502,49 @@ function renderAvatars(){
 //  BMI + HEALTH
 // ═══════════════════════════════════════════════════
 function calcBMI(wt,ht){if(!wt||!ht||ht<50)return null;return+(wt/((ht/100)**2)).toFixed(1);}
-function bmiCategory(bmi){
+
+// CDC-based BMI-for-age percentile thresholds (ages 2-19, combined-sex median values)
+const BMI_AGE_P5  ={2:14.4,3:14.0,4:13.8,5:13.7,6:13.7,7:13.8,8:14.0,9:14.2,10:14.6,11:15.0,12:15.4,13:15.9,14:16.4,15:16.8,16:17.2,17:17.5,18:17.8,19:18.2};
+const BMI_AGE_P85 ={2:18.0,3:17.5,4:17.2,5:17.2,6:17.5,7:17.9,8:18.5,9:19.2,10:20.0,11:20.8,12:21.7,13:22.5,14:23.3,15:24.0,16:24.6,17:25.2,18:25.7,19:26.2};
+const BMI_AGE_P95 ={2:19.5,3:19.0,4:18.6,5:18.7,6:19.2,7:19.8,8:20.6,9:21.6,10:22.6,11:23.7,12:24.8,13:25.7,14:26.6,15:27.4,16:28.0,17:28.6,18:29.0,19:29.7};
+
+function bmiCategory(bmi,age){
+  if(age&&age>=2&&age<=19){
+    const a=Math.round(age);
+    const p5=BMI_AGE_P5[a]||14.6;
+    const p85=BMI_AGE_P85[a]||20.0;
+    const p95=BMI_AGE_P95[a]||22.6;
+    if(bmi<p5)return{cat:'Underweight (for age)',color:'#38bdf8',tip:`For a ${a}-year-old, a BMI below ${p5} is underweight. Focus on nutritious, calorie-rich foods and stay active.`};
+    if(bmi<p85)return{cat:'Healthy Weight (for age)',color:'#00e676',tip:`For a ${a}-year-old, a BMI of ${p5}–${p85} is healthy. Keep eating well and staying active!`};
+    if(bmi<p95)return{cat:'Overweight (for age)',color:'#facc15',tip:`For a ${a}-year-old, a BMI above ${p85} is overweight. More activity and balanced meals can help.`};
+    return{cat:'Obese (for age)',color:'#ff4500',tip:`For a ${a}-year-old, a BMI above ${p95} is in the obese range. Talk to a doctor for personalised advice.`};
+  }
   if(bmi<18.5)return{cat:'Underweight',color:'#38bdf8',tip:'Focus on calorie-dense whole foods and strength training.'};
   if(bmi<25)return{cat:'Healthy Weight',color:'#00e676',tip:'Great range! Maintain with balanced nutrition and exercise.'};
   if(bmi<30)return{cat:'Overweight',color:'#facc15',tip:'Combine cardio with strength training and a calorie deficit.'};
   return{cat:'Obese',color:'#ff4500',tip:'Start with low-impact cardio and consult a healthcare provider.'};
 }
-function idealWeightRange(ht){if(!ht)return'—';const h=ht/100;return`${Math.round(18.5*h*h)}–${Math.round(24.9*h*h)} kg`;}
+function idealWeightRange(ht,age){
+  if(!ht)return'—';
+  const h=ht/100;
+  if(age&&age>=2&&age<=19){
+    const a=Math.round(age);
+    const lo=BMI_AGE_P5[a]||14.6;
+    const hi=BMI_AGE_P85[a]||20.0;
+    return`${Math.round(lo*h*h)}–${Math.round(hi*h*h)} kg (age ${a})`;
+  }
+  return`${Math.round(18.5*h*h)}–${Math.round(24.9*h*h)} kg`;
+}
 function suggestedCalories(wt,ht,goal,age){
   if(!wt||!ht)return'—';
-  const bmr=Math.round(10*wt+6.25*ht-5*(age||30)+5);
+  const a=age||30;
+  if(a<6)return'—';
+  if(a>=6&&a<=19){
+    const base={6:1400,7:1500,8:1600,9:1700,10:1800,11:1900,12:2000,13:2100,14:2200,15:2300,16:2400,17:2500,18:2500,19:2500};
+    const cal=base[Math.round(a)]||2000;
+    return`~${cal} kcal (growing teen)`;
+  }
+  const bmr=Math.round(10*wt+6.25*ht-5*a+5);
   const tdee=Math.round(bmr*1.55);
   if(goal==='Build Muscle')return`~${tdee+300} kcal`;
   if(goal==='Lose Fat')return`~${tdee-400} kcal`;
@@ -1519,10 +1553,11 @@ function suggestedCalories(wt,ht,goal,age){
 function updateBMIHint(){
   const wt=parseFloat(document.getElementById('setup-weight').value);
   const ht=parseFloat(document.getElementById('setup-height').value);
+  const ag=parseFloat(document.getElementById('setup-age').value)||null;
   const hint=document.getElementById('bmi-hint');
   const bmi=calcBMI(wt,ht);
   if(!bmi){hint.style.display='none';return;}
-  const{cat,tip}=bmiCategory(bmi);
+  const{cat,tip}=bmiCategory(bmi,ag);
   hint.style.display='block';
   hint.innerHTML=`<strong>Your BMI: ${bmi} — ${cat}</strong>${tip}`;
 }
@@ -1531,7 +1566,7 @@ function renderBMIDash(){
   const card=document.getElementById('bmi-dash-card');
   if(!bmi){card.style.display='none';return;}
   card.style.display='flex';
-  const{cat,color,tip}=bmiCategory(bmi);
+  const{cat,color,tip}=bmiCategory(bmi,p.age);
   document.getElementById('bmi-score-dash').textContent=bmi;
   document.getElementById('bmi-score-dash').style.color=color;
   document.getElementById('bmi-cat-dash').textContent=cat;
@@ -1541,8 +1576,8 @@ function renderBMIProfile(){
   const p=S.profile;if(!p)return;
   const bmi=calcBMI(p.weight,p.height);
   document.getElementById('bmi-profile-val').textContent=bmi||'—';
-  if(bmi){document.getElementById('bmi-profile-cat').textContent=bmiCategory(bmi).cat;}
-  document.getElementById('ideal-weight-range').textContent=idealWeightRange(p.height);
+  if(bmi){document.getElementById('bmi-profile-cat').textContent=bmiCategory(bmi,p.age).cat;}
+  document.getElementById('ideal-weight-range').textContent=idealWeightRange(p.height,p.age);
   document.getElementById('suggested-cal').textContent=suggestedCalories(p.weight,p.height,p.goal,p.age);
 }
 
@@ -1786,23 +1821,77 @@ function openSetsFromDemo(){closeDemo();openSets(currentKey);}
 //  SETS MODAL
 // ═══════════════════════════════════════════════════
 let setRowCount=0;
+let setsIsTimed=false;
+let setsIsBW=false;
+
+const BW_PERCENT={pushups:0.64,dips:1.0,pullup:1.0,chinup:1.0,legraise:1.0,mountain:0.7,burpees:1.0,twist:0.5,dead_bug:0.3,side_plank:0.5,plank:0.5,run:1.0,hip_stretch:1.0,hamstring_stretch:1.0};
+
+function isTimedExercise(e){return/\d+s\b/.test(e.sets)||/\d+min\b/.test(e.sets)||e.sets==='5K';}
+
 function openSets(key){
   currentKey=key;const e=EX[key];
   document.getElementById('sets-title').textContent=e.name;
+  setsIsBW=(e.equip==='Bodyweight'||e.equip==='None');
+  setsIsTimed=isTimedExercise(e);
+  const userWt=S.profile?.weight||0;
+  const bwMult=BW_PERCENT[key]||1.0;
+  const effectiveWt=setsIsBW?Math.round(userWt*bwMult):0;
+
+  const bwNote=document.getElementById('sets-bw-note');
+  if(setsIsBW&&userWt){
+    const pct=Math.round(bwMult*100);
+    if(setsIsTimed){
+      bwNote.innerHTML=`⚡ <strong>Bodyweight exercise</strong> — using your weight (${userWt}kg × ${pct}% ≈ <strong>${effectiveWt}kg</strong>). Log time in seconds.`;
+    }else{
+      bwNote.innerHTML=`⚡ <strong>Bodyweight exercise</strong> — auto-calculated from your weight (${userWt}kg × ${pct}% ≈ <strong>${effectiveWt}kg</strong>). Volume = weight × reps.`;
+    }
+    bwNote.style.display='block';
+  }else if(setsIsTimed&&!setsIsBW){
+    bwNote.innerHTML=`⏱ <strong>Timed exercise</strong> — log your duration in seconds.`;
+    bwNote.style.display='block';
+  }else{bwNote.style.display='none';}
+
+  document.getElementById('sets-col-wt').textContent=setsIsBW?'kg (body)':'kg';
+  document.getElementById('sets-col-rp').textContent=setsIsTimed?'Seconds':'Reps';
   document.getElementById('sets-sub').textContent=e.muscle+' · '+e.sets;
   document.getElementById('sets-note-input').value=document.getElementById('demo-note-input')?.value||'';
-  const m=e.sets.match(/(\d+)/);const numSets=m?parseInt(m[1]):3;
+
+  let numSets=3;
+  const minMatch=e.sets.match(/^(\d+)min$/);
+  const setsMatch=e.sets.match(/^(\d+)x/);
+  if(minMatch){numSets=1;}
+  else if(e.sets==='5K'){numSets=1;}
+  else if(setsMatch){numSets=parseInt(setsMatch[1]);}
+
   const tbody=document.getElementById('sets-rows');tbody.innerHTML='';setRowCount=0;
   const lastLog=(S.log||[]).find(l=>l.key===key);
-  const defWt=lastLog&&lastLog.details?lastLog.details[0]?.wt||60:60;
-  const defRp=lastLog&&lastLog.details?lastLog.details[0]?.rp||10:10;
+  let defWt,defRp;
+  if(lastLog&&lastLog.details){
+    defWt=lastLog.details[0]?.wt||60;
+    defRp=lastLog.details[0]?.rp||10;
+  }else if(setsIsTimed){
+    defWt=setsIsBW&&userWt?effectiveWt:0;
+    const secMatch=e.sets.match(/(\d+)s\b/);
+    if(secMatch){defRp=parseInt(secMatch[1]);}
+    else if(minMatch){defRp=parseInt(minMatch[1])*60;}
+    else if(e.sets==='5K'){defRp=1800;}
+    else{defRp=60;}
+  }else if(setsIsBW&&userWt){
+    defWt=effectiveWt;
+    defRp=parseInt(e.sets.match(/\d+x(\d+)/)?.[1])||10;
+  }else{
+    defWt=60;defRp=10;
+  }
   for(let i=0;i<numSets;i++)addSetRow(defWt,defRp);
   document.getElementById('sets-overlay').classList.add('open');
 }
 function addSetRow(wt,rp){
   setRowCount++;const tbody=document.getElementById('sets-rows');
   const tr=document.createElement('tr');
-  tr.innerHTML=`<td style="color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;">${setRowCount}</td><td><input class="sets-input" type="number" value="${wt||60}" min="0"></td><td><input class="sets-input" type="number" value="${rp||10}" min="0"></td><td><button class="check-btn" onclick="this.classList.toggle('done')">✓</button></td>`;
+  const wtVal=wt||(setsIsBW&&S.profile?.weight?Math.round(S.profile.weight*(BW_PERCENT[currentKey]||1)):60);
+  const rpVal=rp||(setsIsTimed?30:10);
+  const wtReadonly=setsIsBW&&S.profile?.weight?'readonly style="background:var(--bg);opacity:0.7;"':'';
+  tr.innerHTML=`<td style="color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;">${setRowCount}</td><td><input class="sets-input" type="number" value="${wtVal}" min="0" ${wtReadonly}></td><td><input class="sets-input" type="number" value="${rpVal}" min="0"></td><td><button class="check-btn" onclick="this.classList.toggle('done')">✓</button></td>`;
   tbody.appendChild(tr);
 }
 function closeSets(){document.getElementById('sets-overlay').classList.remove('open');}
@@ -1810,19 +1899,23 @@ function saveLog(){
   const e=EX[currentKey];const rows=document.querySelectorAll('#sets-rows tr');
   let vol=0,done=0,maxWt=0,details=[];
   let isPR=false;
+  const timed=isTimedExercise(e);
   rows.forEach(r=>{
     const wt=parseFloat(r.querySelectorAll('.sets-input')[0].value)||0;
     const rp=parseFloat(r.querySelectorAll('.sets-input')[1].value)||0;
     if(r.querySelector('.check-btn').classList.contains('done')){
-      vol+=wt*rp;done++;
+      if(timed){vol+=rp;}else{vol+=wt*rp;}
+      done++;
       if(wt>maxWt)maxWt=wt;
-      if(checkPR(currentKey,wt,rp))isPR=true;
+      if(!timed&&checkPR(currentKey,wt,rp))isPR=true;
     }
     details.push({wt,rp,done:r.querySelector('.check-btn').classList.contains('done')});
   });
   const note=document.getElementById('sets-note-input').value.trim();
   if(!S.log)S.log=[];
-  S.log.unshift({key:currentKey,name:e.name,cat:e.cat,muscle:e.muscle,sets:done,volume:vol,maxWeight:maxWt,ts:Date.now(),note:note||undefined,isPR,details});
+  const isTimed=isTimedExercise(e);
+  const isBW=(e.equip==='Bodyweight'||e.equip==='None');
+  S.log.unshift({key:currentKey,name:e.name,cat:e.cat,muscle:e.muscle,sets:done,volume:vol,maxWeight:maxWt,ts:Date.now(),note:note||undefined,isPR,details,isTimed:isTimed||undefined,isBW:isBW||undefined});
   save(S);closeSets();updateDashStats();buildWeekGrid();buildLog();renderPRs();
 }
 
@@ -1833,7 +1926,7 @@ function updateDashStats(){
   const log=S.log||[];
   const now=new Date();const ws=new Date(now);ws.setDate(now.getDate()-now.getDay());ws.setHours(0,0,0,0);
   const week=log.filter(e=>new Date(e.ts)>=ws);
-  const totalVol=log.reduce((a,e)=>a+(e.volume||0),0);
+  const totalVol=log.reduce((a,e)=>a+(e.isTimed?0:(e.volume||0)),0);
   const totalSets=log.reduce((a,e)=>a+(e.sets||0),0);
   const prCount=Object.keys(S.prs||{}).length;
   document.getElementById('stat-sessions').textContent=week.length;
@@ -1854,7 +1947,9 @@ function buildLog(){
   if(!log.length){list.innerHTML='<div style="color:var(--muted);text-align:center;padding:60px 0;font-size:14px;">No workouts logged yet.<br>Hit an exercise to get started.</div>';return;}
   list.innerHTML=log.slice(0,50).map(e=>{
     const d=new Date(e.ts);
-    return`<div class="log-entry"><div class="log-date"><div class="log-day">${String(d.getDate()).padStart(2,'0')}</div><div class="log-mo">${d.toLocaleString('default',{month:'short'}).toUpperCase()}</div></div><div class="log-div"></div><div class="log-info"><div class="log-wname">${e.name}</div><div class="log-wmeta">${e.muscle}</div><div class="log-stats-row"><div class="log-s">Sets <span>${e.sets}</span></div><div class="log-s">Vol <span>${e.volume?Math.round(e.volume)+'kg':'—'}</span></div>${e.maxWeight?`<div class="log-s">Max <span>${e.maxWeight}kg</span></div>`:''}<span class="plan-tag ${TAGS[e.cat]||''}">${e.cat}</span>${e.isPR?'<span class="log-pr-badge">NEW PR</span>':''}</div>${e.note?`<div class="log-note">"${e.note}"</div>`:''}</div></div>`;
+    const volLabel=e.isTimed?`${Math.round(e.volume)}s total`:e.volume?Math.round(e.volume)+'kg':'—';
+    const bwTag=e.isBW?'<span style="font-size:9px;background:rgba(200,255,0,0.15);color:var(--accent);padding:2px 6px;border-radius:4px;margin-left:4px;">BW</span>':'';
+    return`<div class="log-entry"><div class="log-date"><div class="log-day">${String(d.getDate()).padStart(2,'0')}</div><div class="log-mo">${d.toLocaleString('default',{month:'short'}).toUpperCase()}</div></div><div class="log-div"></div><div class="log-info"><div class="log-wname">${e.name}${bwTag}</div><div class="log-wmeta">${e.muscle}</div><div class="log-stats-row"><div class="log-s">Sets <span>${e.sets}</span></div><div class="log-s">${e.isTimed?'Time':'Vol'} <span>${volLabel}</span></div>${e.maxWeight&&!e.isTimed?`<div class="log-s">Max <span>${e.maxWeight}kg</span></div>`:''}<span class="plan-tag ${TAGS[e.cat]||''}">${e.cat}</span>${e.isPR?'<span class="log-pr-badge">NEW PR</span>':''}</div>${e.note?`<div class="log-note">"${e.note}"</div>`:''}</div></div>`;
   }).join('');
 }
 
@@ -1865,7 +1960,7 @@ let chartVol=null,chartFreq=null,chartCats=null;
 function renderProgress(){
   const log=S.log||[];
   document.getElementById('p-total-workouts').textContent=log.length;
-  const tv=log.reduce((a,e)=>a+(e.volume||0),0);
+  const tv=log.reduce((a,e)=>a+(e.isTimed?0:(e.volume||0)),0);
   document.getElementById('p-total-volume').textContent=tv>=1000?(tv/1000).toFixed(1)+'k':Math.round(tv);
   document.getElementById('p-total-prs').textContent=Object.keys(S.prs||{}).length;
 
@@ -1874,7 +1969,7 @@ function renderProgress(){
   for(let i=7;i>=0;i--){
     const wStart=new Date(now);wStart.setDate(now.getDate()-now.getDay()-i*7);wStart.setHours(0,0,0,0);
     const wEnd=new Date(wStart);wEnd.setDate(wStart.getDate()+7);
-    const vol=log.filter(e=>{const t=new Date(e.ts);return t>=wStart&&t<wEnd;}).reduce((a,e)=>a+(e.volume||0),0);
+    const vol=log.filter(e=>{const t=new Date(e.ts);return t>=wStart&&t<wEnd;}).reduce((a,e)=>a+(e.isTimed?0:(e.volume||0)),0);
     weeks.push({label:`W${8-i}`,vol:Math.round(vol)});
   }
   if(chartVol)chartVol.destroy();
@@ -1915,7 +2010,7 @@ function renderProgress(){
 function getUnlocked(){
   const log=S.log||[];const prs=S.prs||{};
   const count=log.length;
-  const totalVol=log.reduce((a,e)=>a+(e.volume||0),0);
+  const totalVol=log.reduce((a,e)=>a+(e.isTimed?0:(e.volume||0)),0);
   const cats=new Set(log.map(e=>e.cat));
   let streak=0;const checked=new Set(log.map(e=>new Date(e.ts).toDateString()));
   const d=new Date();while(checked.has(d.toDateString())){streak++;d.setDate(d.getDate()-1);}
@@ -2011,7 +2106,7 @@ function calcXP(){
   let xp=0;
   xp+=log.length*25;
   xp+=Object.keys(S.prs||{}).length*50;
-  const totalVol=log.reduce((a,e)=>a+(e.volume||0),0);
+  const totalVol=log.reduce((a,e)=>a+(e.isTimed?0:(e.volume||0)),0);
   xp+=Math.floor(totalVol/100);
   return xp;
 }
@@ -2374,10 +2469,27 @@ function generateCoachReply(query){
   const sameAsLast=(topic===lastCoachTopic && topic!=='unknown');
   lastCoachTopic=topic;
 
+  function findExerciseInQuery(q){
+    let bestKey=null,bestLen=0;
+    for(const[key,ex] of Object.entries(EX)){
+      const n=ex.name.toLowerCase();
+      if(q.includes(n)&&n.length>bestLen){bestKey=key;bestLen=n.length;}
+      const aliases={bench:'bench press',squat:'squat',deadlift:'deadlift',ohp:'overhead press',pushups:'push-up',pushup:'push-up',pullup:'pull-up',pullups:'pull-up',chinup:'chin-up',dips:'dip',plank:'plank',burpees:'burpee',lunges:'lunge',lunge:'lunge',row:'row',curl:'curl',rdl:'romanian',calf:'calf raise'};
+      if(aliases[key]&&q.includes(aliases[key])&&aliases[key].length>bestLen){bestKey=key;bestLen=aliases[key].length;}
+      const simpleKey=key.replace(/_/g,' ');
+      if(q.includes(simpleKey)&&simpleKey.length>bestLen){bestKey=key;bestLen=simpleKey.length;}
+    }
+    return bestKey;
+  }
+
   function detectTopic(q){
     if(/\b(thank|thanks|thx|cheers|appreciate)\b/.test(q))return'thanks';
-    if(/\b(hi|hey|hello|sup|yo|what'?s up|howdy|greetings)\b/.test(q)||q==='hi')return'greeting';
-    if(/\b(bye|goodbye|see you|later|cya|gotta go)\b/.test(q))return'bye';
+    if(/\b(hi|hey|hello|sup|yo|what'?s up|howdy|greetings|morning|afternoon|evening)\b/.test(q)&&q.length<40)return'greeting';
+    if(/\b(bye|goodbye|see you|later|cya|gotta go|goodnight|good night|night)\b/.test(q))return'bye';
+    if(/\b(how are you|how'?s it going|what'?s new|how do you do)\b/.test(q))return'howareyou';
+    if(/\b(who are you|what are you|your name|about you|what can you do)\b/.test(q))return'help';
+    if(/\b(how do (i|you) do|how to do|how to perform|show me how|teach me|steps for|technique for|explain how to|way to do|proper way)\b/.test(q)&&findExerciseInQuery(q))return'howto_exercise';
+    if(/\b(what is|what'?s) (a |an )?\w/.test(q)&&findExerciseInQuery(q))return'whatis_exercise';
     if(/\b(today|what should|what do i|what can i|recommend|suggest|next workout)\b/.test(q))return'today';
     if(/\b(strength|stronger|power|heavy|max|1rm|one rep)\b/.test(q))return'strength';
     if(/\b(neglect|weak|missing|imbalance|skip|forget)\b/.test(q))return'neglect';
@@ -2401,8 +2513,12 @@ function generateCoachReply(query){
     if(/\b(how many|how much|how often|how long|sets|reps|volume|frequency|duration)\b/.test(q))return'volume';
     if(/\b(more|else|another|different|other|again|alternative)\b/.test(q))return'more';
     if(/\b(what can you|what do you|help|who are you|can you)\b/.test(q))return'help';
-    if(/\b(good|great|awesome|nice|cool|love|perfect|amazing)\b/.test(q))return'positive';
+    if(/\b(good|great|awesome|nice|cool|love|perfect|amazing|sick|fire|wow)\b/.test(q))return'positive';
+    if(/\b(haha|lol|lmao|funny|joke)\b/.test(q))return'laugh';
+    if(/\b(no|nah|nope|not really)\b/.test(q)&&q.length<30)return'no';
+    if(/\b(yes|yeah|yep|sure|ok|okay|yea|ya)\b/.test(q)&&q.length<30)return'yes';
     if(/\b(why|explain|reason|how come|what does|what is|mean)\b/.test(q))return'explain';
+    if(findExerciseInQuery(q))return'howto_exercise';
     return'unknown';
   }
 
@@ -2414,14 +2530,55 @@ function generateCoachReply(query){
       `Anytime! Let me know when you need your next workout plan or have questions. 🤜🤛`,
     ],
     greeting:[
-      `Hey ${name}! 💪 Ready to train? Ask me anything — workouts, muscle groups, nutrition tips, or what to focus on today!<br><br>${weekSummary()}`,
-      `What's up, ${name}! I'm your AI coach. I can help with workout plans, exercise recommendations, and fitness tips.<br><br>What would you like to know?`,
-      `Hi ${name}! Great to see you. ${recentLog.length?weekSummary():'Let\'s get you started — what are your fitness goals?'}<br><br>Ask me anything!`,
+      `Hey ${name}! 👋 How's it going? Ready to talk training? Ask me anything — how to do an exercise, what to work on, nutrition, or just chat!<br><br>${recentLog.length?weekSummary():'What would you like to know?'}`,
+      `What's up, ${name}! Good to hear from you. I'm here if you need workout advice, want to learn an exercise, or just want to chat about fitness.<br><br>What's on your mind?`,
+      `Hi ${name}! 😊 ${recentLog.length?'I see you\'ve been putting in work! '+weekSummary():'Welcome! Let\'s get you moving.'}<br><br>Ask me anything — "how do I do a deadlift?", "what should I train today?", or whatever you want!`,
+      `Hey hey! 💪 Good to see you, ${name}. What can I help with? Exercise form, workout plans, what to eat — I'm all ears!`,
     ],
     bye:[
       `See you next time, ${name}! Remember — the hardest part is showing up. You've got this! 🔥`,
       `Later, ${name}! Don't forget to stretch and stay hydrated. Come back anytime for workout advice!`,
       `Take care! Rest well and come back stronger. I'll be here whenever you need me. 💪`,
+    ],
+    howareyou:[
+      `I'm doing great, ${name}! Always ready to talk training. 💪 What can I help you with today?`,
+      `I'm good, thanks for asking! More importantly — how's your training going? ${recentLog.length?weekSummary():'Have you worked out recently?'}`,
+      `All good here! I'm just a fitness AI, but I'm always fired up to help you train. What's on your mind?`,
+    ],
+    howto_exercise:function(){
+      const key=findExerciseInQuery(q);
+      if(!key||!EX[key])return null;
+      const e=EX[key];
+      const steps=e.steps||[];
+      const stepsHtml=steps.map((s,i)=>`<strong>${i+1}.</strong> ${s}`).join('<br>');
+      const pr=prs[key]?`<br><br>Your PR: <strong>${prs[key].weight}kg × ${prs[key].reps}</strong>`:'';
+      return pick([
+        `Here's how to do <strong>${e.name}</strong>:<br><br>${stepsHtml}<br><br><strong>Targets:</strong> ${e.muscle}<br><strong>Suggested:</strong> ${e.sets}${pr}<br><br>Tap ${exLink(key)} to see the full guide and log your sets!`,
+        `<strong>${e.name}</strong> — step by step:<br><br>${stepsHtml}<br><br>This works your <strong>${e.muscle}</strong>. ${e.diff>=4?'This is an advanced movement — focus on form before adding weight!':e.diff<=2?'Great exercise for all levels!':'A solid intermediate exercise.'}${pr}<br><br>Want to log it? Tap ${exLink(key)}!`,
+        `Let me break down <strong>${e.name}</strong> for you, ${name}:<br><br>${stepsHtml}<br><br><strong>Muscles worked:</strong> ${e.muscle}<br><strong>Equipment:</strong> ${e.equip}<br><strong>Rep scheme:</strong> ${e.sets}${pr}<br><br>The most important thing is <strong>controlled movement</strong> throughout. Tap ${exLink(key)} for the full details!`,
+      ]);
+    },
+    whatis_exercise:function(){
+      const key=findExerciseInQuery(q);
+      if(!key||!EX[key])return null;
+      const e=EX[key];
+      return pick([
+        `<strong>${e.name}</strong> is a <strong>${e.cat}</strong> exercise that targets your <strong>${e.muscle}</strong>.<br><br>It's typically done with ${e.equip.toLowerCase()} and a good rep scheme is ${e.sets}. ${e.diff>=4?'It\'s on the harder side — great for experienced lifters.':e.diff<=2?'It\'s beginner-friendly and great for everyone.':'It\'s a solid exercise for intermediate trainees.'}<br><br>Want me to explain how to do it? Or tap ${exLink(key)} for the step-by-step guide!`,
+        `<strong>${e.name}</strong> — a ${e.cat.toLowerCase()} movement targeting <strong>${e.muscle}</strong>.<br><br><strong>Equipment:</strong> ${e.equip}<br><strong>Difficulty:</strong> ${'⭐'.repeat(e.diff)}${'☆'.repeat(5-e.diff)}<br><strong>Suggested sets/reps:</strong> ${e.sets}<br><br>Ask me "how do I do ${e.name.toLowerCase()}?" for the full steps, or tap ${exLink(key)}!`,
+      ]);
+    },
+    laugh:[
+      `Haha glad I could entertain you, ${name}! 😄 But seriously, want to talk training? I've got workout plans, exercise tips, nutrition advice — you name it!`,
+      `😂 I try! But my real talent is fitness advice. What can I help you with? Workout plan? Exercise tips?`,
+    ],
+    yes:[
+      `Great! So what would you like to know? I can help with workouts, exercises, nutrition, recovery — ask me anything about training!`,
+      `Awesome! Fire away, ${name} — what do you want to work on? 💪`,
+      `Let's do it! What's on your mind? A workout plan, exercise form, what to train today...?`,
+    ],
+    no:[
+      `No worries, ${name}! I'm here whenever you need me. Just ask if you want workout advice, exercise tips, or anything fitness-related!`,
+      `That's cool! Take your time. When you're ready to talk training, I'm here. 💪`,
     ],
     today:function(){
       const variants=[];
@@ -2637,8 +2794,8 @@ function generateCoachReply(query){
 
   const handler=R[topic];
   if(handler){
-    if(typeof handler==='function')return handler();
-    return pick(handler);
+    if(typeof handler==='function'){const result=handler();if(result)return result;}
+    else return pick(handler);
   }
 
   const fallbacks=[
