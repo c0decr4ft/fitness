@@ -2492,15 +2492,32 @@ function generateCoachReply(query){
     if(/\b(bye|goodbye|see you|later|cya|gotta go|goodnight|good night|night)\b/.test(q))return'bye';
     if(/\b(how are you|how'?s it going|what'?s new|how do you do)\b/.test(q))return'howareyou';
     if(/\b(who are you|what are you|your name|about you|what can you do)\b/.test(q))return'help';
+    if(/\b(back (hurt|pain|ache|sore|stiff|tight|kill)|hurt.{0,15}back|my back|lower back|upper back.{0,10}(hurt|pain|ache|sore))\b/.test(q))return'pain_back';
+    if(/\b(knee (hurt|pain|ache|sore|crack|pop)|hurt.{0,15}knee|my knee|knee.{0,10}(hurt|pain|sore))\b/.test(q))return'pain_knee';
+    if(/\b(shoulder (hurt|pain|ache|sore|impinge)|hurt.{0,15}shoulder|my shoulder|shoulder.{0,10}(hurt|pain|sore))\b/.test(q))return'pain_shoulder';
+    if(/\b(wrist (hurt|pain|ache|sore)|hurt.{0,15}wrist|my wrist|wrist.{0,10}(hurt|pain|sore))\b/.test(q))return'pain_wrist';
+    if(/\b(neck (hurt|pain|ache|sore|stiff)|hurt.{0,15}neck|my neck|neck.{0,10}(hurt|pain|sore|stiff))\b/.test(q))return'pain_neck';
+    if(/\b(hip (hurt|pain|ache|sore|tight)|hurt.{0,15}hip|my hip|hip.{0,10}(hurt|pain|sore))\b/.test(q))return'pain_hip';
+    if(/\b(elbow (hurt|pain|ache|sore)|hurt.{0,15}elbow|my elbow|tennis elbow|golfer.?s elbow)\b/.test(q))return'pain_elbow';
+    if(/\b(ankle (hurt|pain|ache|sore|sprain)|hurt.{0,15}ankle|my ankle)\b/.test(q))return'pain_ankle';
+    if(/\b(hurt|pain|ache|sore|stiff|tight|cramp|pull|strain|injur|torn|broke|swollen|tender|twinge|pinch)\b/.test(q))return'pain_general';
     if(/\b(how do (i|you) do|how to do|how to perform|show me how|teach me|steps for|technique for|explain how to|way to do|proper way)\b/.test(q)&&findExerciseInQuery(q))return'howto_exercise';
     if(/\b(what is|what'?s) (a |an )?\w/.test(q)&&findExerciseInQuery(q))return'whatis_exercise';
+    if(/\b(warm.?up|warming up|before work|pre.?workout|before (train|gym|exercise|lift))\b/.test(q))return'warmup';
+    if(/\b(cool.?down|after work|post.?workout|after (train|gym|exercise|lift))\b/.test(q))return'cooldown';
+    if(/\b(water|hydrat|drink|thirst|dehydrat)\b/.test(q))return'hydration';
+    if(/\b(sleep|insomnia|can.?t sleep|tired|exhausted|fatigue|nap)\b/.test(q))return'sleep';
+    if(/\b(breath|breathing|out of breath|winded|panting|oxygen)\b/.test(q))return'breathing';
+    if(/\b(creatine|supplement|whey|pre.?workout|bcaa|vitamin|omega|fish oil|caffeine)\b/.test(q))return'supplements';
+    if(/\b(how old|age|too old|too young|kid|child|teen|senior|elderly|older)\b/.test(q))return'age';
+    if(/\b(home|no gym|no equipment|at home|apartment|body.?weight.{0,10}(work|train|exercise)|without (weight|equipment|gym))\b/.test(q))return'home_workout';
     if(/\b(today|what should|what do i|what can i|recommend|suggest|next workout)\b/.test(q))return'today';
     if(/\b(strength|stronger|power|heavy|max|1rm|one rep)\b/.test(q))return'strength';
     if(/\b(neglect|weak|missing|imbalance|skip|forget)\b/.test(q))return'neglect';
     if(/\b(plan|routine|program|split|schedule|week)\b/.test(q))return'plan';
     if(/\b(cardio|endurance|stamina|run|running|cycling|swim)\b/.test(q))return'cardio';
     if(/\b(core|abs|six.?pack|stomach|belly|midsection|oblique)\b/.test(q))return'core';
-    if(/\b(stretch|flex|flexibility|recovery|rest day|foam|mobility|yoga|cool.?down|warm.?up)\b/.test(q))return'stretch';
+    if(/\b(stretch|flex|flexibility|recovery|rest day|foam|mobility|yoga)\b/.test(q))return'stretch';
     if(/\b(chest|pec|bench|push.?up|pushup|dip)\b/.test(q))return'chest';
     if(/\b(back|lat|row|pull.?up|pullup|chin.?up)\b/.test(q))return'back';
     if(/\b(leg|squat|glute|quad|hamstring|thigh|calf|calves|lunge)\b/.test(q))return'legs';
@@ -2511,7 +2528,7 @@ function generateCoachReply(query){
     if(/\b(protein|eat|diet|nutrition|food|meal|calorie|macro|bulk|cut|weight loss|fat loss|lean)\b/.test(q))return'nutrition';
     if(/\b(form|technique|posture|how to do|how do i do|correct|proper|tip)\b/.test(q))return'form';
     if(/\b(motivat|lazy|tired|don'?t feel|bored|stuck|plateau|quit|give up|hard)\b/.test(q))return'motivation';
-    if(/\b(sleep|rest|recover|sore|pain|hurt|injury|ache|overtraining)\b/.test(q))return'recovery';
+    if(/\b(rest|recover|sore|overtraining)\b/.test(q))return'recovery';
     if(/\b(lose|weight loss|fat|slim|lean|tone|shred|cut|burn)\b/.test(q))return'fatloss';
     if(/\b(gain|bulk|mass|size|big|grow|muscle)\b/.test(q))return'muscle';
     if(/\b(how many|how much|how often|how long|sets|reps|volume|frequency|duration)\b/.test(q))return'volume';
@@ -2773,14 +2790,109 @@ function generateCoachReply(query){
       ])}`;
     },
     help:[
-      `I'm your <strong>AI fitness coach</strong>, ${name}! I can help with:<br><br>• 🏋️ <strong>Workout recommendations</strong> — "What should I train today?"<br>• 📋 <strong>Training plans</strong> — "Give me a workout plan"<br>• 💪 <strong>Muscle groups</strong> — "Best chest exercises?" or "Help with legs"<br>• 🔥 <strong>Fat loss / muscle gain</strong> — "How do I lose fat?"<br>• 🥗 <strong>Nutrition basics</strong> — "What should I eat?"<br>• 📊 <strong>Progress check</strong> — "Show my PRs"<br>• 🧘 <strong>Recovery</strong> — "How should I recover?"<br><br>I use your workout log and profile to personalize advice. Just ask anything!`,
-      `Hey ${name}! I'm your personal AI coach. Try asking me things like:<br><br>• "What should I train today?"<br>• "I want to get stronger"<br>• "What muscles am I neglecting?"<br>• "Give me a leg workout"<br>• "How much protein do I need?"<br>• "I'm not feeling motivated"<br><br>I'll use your workout history and goals to give personalized advice!`
+      `I'm your <strong>AI fitness coach</strong>, ${name}! I can help with:<br><br>• 🏋️ <strong>Workouts</strong> — "What should I train today?"<br>• 📋 <strong>Training plans</strong> — "Give me a workout plan"<br>• 💪 <strong>Muscle groups</strong> — "Best chest exercises?"<br>• 🔥 <strong>Fat loss / muscle gain</strong> — "How do I lose fat?"<br>• 🥗 <strong>Nutrition & supplements</strong> — "What should I eat?"<br>• 📊 <strong>Progress</strong> — "Show my PRs"<br>• 🧘 <strong>Recovery & mobility</strong> — "How should I recover?"<br>• 🩹 <strong>Pain & injury advice</strong> — "My back hurts" or "My knee is sore"<br>• 🏠 <strong>Home workouts</strong> — "I don't have a gym"<br>• 💤 <strong>Sleep & hydration</strong> — "How much should I sleep?"<br>• 🔥 <strong>Warm-ups & cool-downs</strong> — "How should I warm up?"<br>• 💬 <strong>General chat</strong> — "Hello!", "Thank you", just talk to me!<br><br>I use your workout log and profile to personalize everything. Just ask!`,
+      `Hey ${name}! I'm your personal AI coach. Try asking me things like:<br><br>• "What should I train today?"<br>• "My back hurts — what should I do?"<br>• "I want to get stronger"<br>• "How do I do a push-up properly?"<br>• "I don't have a gym — home workout?"<br>• "What muscles am I neglecting?"<br>• "How much protein do I need?"<br>• "How should I warm up?"<br>• "I'm not feeling motivated"<br>• "Should I take creatine?"<br><br>I'll use your workout history and goals to give personalized advice!`
     ],
     positive:[
       `Thanks, ${name}! 😊 I'm here to help you crush your goals. Anything else you want to know about training, nutrition, or recovery?`,
       `Glad you're finding this helpful! Keep up the amazing work, ${name}. Is there anything specific about your training you'd like to improve?`,
       `Thanks! Remember, consistency beats perfection. You're already doing great by being here. What's next? 💪`,
     ],
+    pain_back:function(){
+      return pick([
+        `I'm sorry your back hurts, ${name}. Here's what might help:<br><br><strong>Immediate relief:</strong><br>• Avoid heavy lifting until the pain subsides<br>• Gentle movement is better than total rest<br>• Ice for 15-20 min if it's a new pain, heat if it's ongoing stiffness<br><br><strong>Exercises that help back pain:</strong><br>• ${exLink('dead_bug')} — strengthens core without stressing the spine<br>• ${exLink('hip_stretch')} — tight hip flexors pull on your lower back<br>• ${exLink('plank')} — builds core stability to protect the spine<br>• ${exLink('foam_roll')} — release tension in the back muscles<br><br><strong>Avoid for now:</strong> Heavy deadlifts, barbell rows, back squats<br><br>⚠️ <strong>Important:</strong> If the pain is sharp, shooting down your legs, or lasted more than 2 weeks, please see a doctor or physiotherapist.`,
+        `Back pain is really common, ${name} — let me help!<br><br><strong>Common causes in training:</strong><br>• Weak core — your abs aren't supporting your spine<br>• Tight hip flexors — from sitting too much<br>• Bad form on lifts — especially deadlifts and rows<br>• Too much too fast — doing more weight than you're ready for<br><br><strong>What to do now:</strong><br>1. ${exLink('dead_bug')} — safe core work (3×10)<br>2. ${exLink('hip_stretch')} — 2×30s each side<br>3. ${exLink('foam_roll')} — upper and lower back<br>4. ${exLink('hamstring_stretch')} — tight hamstrings pull on the lower back<br><br>Take it easy for a few days. Pain should improve within a week. If not, see a professional! ❤️`,
+        `Oh no, ${name}! Back pain is the worst. Here's my advice:<br><br><strong>Do's:</strong><br>✅ Keep moving gently — walks are great<br>✅ Strengthen your core: ${exLink('plank')} ${exLink('dead_bug')}<br>✅ Stretch your hip flexors: ${exLink('hip_stretch')}<br>✅ Foam roll: ${exLink('foam_roll')}<br>✅ Ice or heat (whatever feels better)<br><br><strong>Don'ts:</strong><br>❌ Heavy lifting<br>❌ Sit for long periods without moving<br>❌ Push through sharp pain<br>❌ Round your back during any exercise<br><br>Most back pain improves within 1-2 weeks with gentle movement and core work. But <strong>if it's severe or doesn't improve, see a doctor</strong>. Take care of yourself!`
+      ]);
+    },
+    pain_knee:function(){
+      return pick([
+        `Knee pain can be tricky, ${name}. Let me help:<br><br><strong>Common causes:</strong><br>• Weak quads/glutes — knees compensate for weak muscles<br>• Bad squat form — knees caving inward<br>• Tight IT band or hip flexors<br>• Jumping too much without building up<br><br><strong>What helps:</strong><br>• ${exLink('hip_thrust')} — strengthens glutes to support knees<br>• ${exLink('leg_ext')} — light weight, strengthens quads around the knee<br>• ${exLink('hip_stretch')} — releases tension that pulls on the knee<br>• ${exLink('foam_roll')} — roll your quads and IT band<br><br><strong>Avoid for now:</strong> Deep squats, heavy lunges, jumping exercises<br><br>⚠️ If there's swelling, locking, or the pain is on the inside/outside of the knee, see a physio.`,
+        `Sorry about the knee pain, ${name}! Here's what I'd suggest:<br><br><strong>Step 1 — Reduce irritation:</strong><br>• Lower the weight on leg exercises or take a few days off legs<br>• Avoid deep flexion (deep squats, lunges) temporarily<br>• Ice after activity if it's swollen<br><br><strong>Step 2 — Strengthen around the knee:</strong><br>• ${exLink('leg_ext')} — very light, high reps (3×20)<br>• ${exLink('hip_thrust')} — builds glute strength<br>• ${exLink('calf')} — calf strength supports the knee joint<br><br><strong>Step 3 — Mobility:</strong><br>• ${exLink('hip_stretch')} + ${exLink('hamstring_stretch')} + ${exLink('foam_roll')}<br><br>Knee pain that comes with clicking, swelling, or gives way needs a professional assessment. Take care! ❤️`
+      ]);
+    },
+    pain_shoulder:function(){
+      return pick([
+        `Shoulder pain is really common in training, ${name}. Here's what to do:<br><br><strong>Common causes:</strong><br>• Too much pressing, not enough pulling<br>• Poor bench press form (shoulders not retracted)<br>• Weak rotator cuff muscles<br>• Sleeping on the affected side<br><br><strong>Exercises that help:</strong><br>• ${exLink('face_pull')} — #1 exercise for shoulder health (light weight, 3×20)<br>• ${exLink('foam_roll')} — upper back and chest<br>• External rotation exercises with a light band<br><br><strong>Avoid for now:</strong> Heavy overhead pressing, upright rows, behind-the-neck anything<br><br><strong>Rule of thumb:</strong> For every pushing exercise, do at least one pulling exercise. This prevents shoulder imbalances!<br><br>⚠️ If the pain is sharp during specific movements or wakes you at night, see a doctor.`,
+        `Ouch, ${name}! Shoulder issues are super common with training. Here's my advice:<br><br><strong>Quick fixes:</strong><br>1. ${exLink('face_pull')} — light weight, high reps — strengthens the rotator cuff<br>2. ${exLink('foam_roll')} — roll your upper back and chest<br>3. Avoid overhead pressing temporarily<br><br><strong>Long-term prevention:</strong><br>• Always retract your shoulder blades during pressing<br>• Balance pushing with equal or more pulling<br>• Warm up shoulders before pressing<br>• Don't go too wide on bench press<br><br><strong>Good alternatives while healing:</strong><br>• Floor press instead of bench (less shoulder stretch)<br>• Neutral grip pressing (palms facing each other)<br>• ${exLink('cable_row')} and ${exLink('lat_pulldown')} are usually fine<br><br>If the pain is sharp or lingering, see a physiotherapist! ❤️`
+      ]);
+    },
+    pain_wrist:function(){
+      return pick([
+        `Wrist pain is annoying, ${name}! Here's what might help:<br><br><strong>Common causes:</strong><br>• Poor wrist position during pressing (wrist bent back too far)<br>• Gripping too tight<br>• Front squat rack position<br>• Too much volume too fast<br><br><strong>What to do:</strong><br>• Keep wrists straight/neutral during pressing — don't let them bend back<br>• Use wrist wraps for heavy lifts<br>• Stretch: extend your arm, pull fingers back gently, hold 30s<br>• Reduce grip-heavy exercises temporarily<br><br><strong>Avoid for now:</strong> Heavy front squats, push-ups on flat hand (try fists or handles instead)<br><br>⚠️ If there's sharp pain, numbness, or tingling in your fingers, see a doctor — could be a nerve issue.`,
+      ]);
+    },
+    pain_neck:function(){
+      return pick([
+        `Neck pain is no fun, ${name}. Let me help:<br><br><strong>Common causes in training:</strong><br>• Straining neck during crunches or sit-ups<br>• Bad posture during overhead pressing<br>• Looking up/forward too much during deadlifts<br>• Sleeping in a bad position + training<br><br><strong>What helps:</strong><br>• ${exLink('foam_roll')} — gently roll upper back/traps<br>• Chin tucks — 3×15 (pull chin straight back, hold 5 seconds)<br>• Gentle neck stretches — ear to shoulder, hold 30s each side<br>• Heat pack on the neck for 15 minutes<br><br><strong>Avoid:</strong> Crunches, heavy shrugs, anything that strains the neck<br><br>Keep your neck neutral during all exercises — don't crane forward or look up. If pain persists or radiates into arms, see a doctor.`,
+      ]);
+    },
+    pain_hip:function(){
+      return pick([
+        `Hip pain is often from tightness, ${name}. Here's what to try:<br><br><strong>Common causes:</strong><br>• Tight hip flexors from sitting all day<br>• Weak glutes — hips compensate<br>• Going too deep on squats without mobility<br>• Not warming up properly<br><br><strong>What helps:</strong><br>• ${exLink('hip_stretch')} — 2-3×30s each side, daily<br>• ${exLink('hip_thrust')} — strengthens glutes to take pressure off the hip<br>• ${exLink('foam_roll')} — roll quads, hip flexors, and glutes<br>• ${exLink('dead_bug')} — core work that stabilizes the hips<br><br><strong>Tip:</strong> If you sit a lot, stand up every 30-60 minutes and do hip circles. It makes a huge difference!<br><br>⚠️ If the pain is in the groin area or you feel a catching/clicking sensation, see a physiotherapist.`,
+      ]);
+    },
+    pain_elbow:function(){
+      return pick([
+        `Elbow pain is usually from overuse, ${name}. Here's what to do:<br><br><strong>Types:</strong><br>• <strong>Outside of elbow</strong> (tennis elbow) — from gripping, curls, pull-ups<br>• <strong>Inside of elbow</strong> (golfer's elbow) — from chin-ups, heavy curls<br><br><strong>What helps:</strong><br>• Reduce grip-intensive exercises temporarily<br>• Use a lighter grip — don't death-grip the bar<br>• Wrist extensor stretches — arm out, pull fingers down, hold 30s<br>• Ice after training (15 min)<br>• Eccentric wrist curls with a light dumbbell<br><br><strong>Avoid:</strong> Heavy curls, skull crushers, excessive pull-up volume<br><br>Elbow issues can become chronic if you push through them. Take it seriously and reduce volume. If it doesn't improve in 2-3 weeks, see a physio.`,
+      ]);
+    },
+    pain_ankle:function(){
+      return pick([
+        `Ankle trouble, ${name}? Here's what I'd recommend:<br><br><strong>Common causes:</strong><br>• Poor ankle mobility (can't squat deep)<br>• Previous sprain that wasn't fully rehabbed<br>• Running on uneven surfaces<br>• Bad footwear<br><br><strong>What helps:</strong><br>• Ankle circles — 20 each direction, daily<br>• Calf stretches — wall stretch, 3×30s each side<br>• ${exLink('calf')} — light weight, full range of motion strengthens the ankle<br>• Balance work — stand on one foot for 30-60s<br><br><strong>For squatting:</strong> Elevate your heels with small plates if ankle mobility is limited<br><br>If there's swelling, bruising, or you can't bear weight, it could be a sprain — rest, ice, compress, elevate (RICE) and see a doctor if needed.`,
+      ]);
+    },
+    pain_general:function(){
+      return pick([
+        `I'm sorry you're in pain, ${name}. Let me help figure this out:<br><br><strong>First, what kind of pain?</strong><br>• <strong>Muscle soreness (DOMS)</strong> — normal 24-72h after training. Feels like deep ache. Gentle movement and ${exLink('foam_roll')} help.<br>• <strong>Sharp/sudden pain</strong> — could be a strain or tear. <strong>Stop the exercise immediately.</strong> Rest, ice, see a doctor.<br>• <strong>Joint pain</strong> — may be from bad form or overuse. Reduce weight, check form, rest the joint.<br>• <strong>Chronic/ongoing pain</strong> — lasting more than 2 weeks? See a physiotherapist.<br><br><strong>General advice:</strong><br>• Don't push through sharp pain — ever<br>• ${exLink('foam_roll')} helps with general muscle tightness<br>• ${exLink('hip_stretch')} + ${exLink('hamstring_stretch')} for lower body tightness<br>• Ice for acute pain, heat for stiffness<br><br>Tell me <strong>where</strong> it hurts (back, knee, shoulder, etc.) and I can give more specific advice! ❤️`,
+        `Ouch, ${name}! Pain is your body's way of saying something needs attention.<br><br><strong>Quick guide:</strong><br><br>🟢 <strong>Normal soreness:</strong> Dull muscle ache 1-3 days after training → keep moving gently, stretch, foam roll<br>🟡 <strong>Mild joint discomfort:</strong> → reduce weight, check form, warm up more<br>🔴 <strong>Sharp/sudden pain:</strong> → stop immediately, rest, ice, see a professional<br><br><strong>Things you can do now:</strong><br>• ${exLink('foam_roll')} — releases muscle tension<br>• ${exLink('hip_stretch')} — helps tight lower body<br>• Light walking — movement promotes healing<br>• Ice (new pain) or heat (stiffness)<br><br>Tell me which body part hurts and I'll give you targeted advice! And remember — <strong>no exercise is worth an injury</strong>. Listen to your body. ❤️`
+      ]);
+    },
+    warmup:function(){
+      return pick([
+        `Great question, ${name}! Warming up prevents injuries and improves performance:<br><br><strong>5-Minute General Warm-Up:</strong><br>1. Light cardio (jumping jacks, jogging in place) — 2 min<br>2. Arm circles — 20 forward, 20 backward<br>3. Hip circles — 10 each direction<br>4. Leg swings — 10 each leg, forward/back + side to side<br>5. Bodyweight squats — 15 reps<br><br><strong>Before upper body:</strong> Band pull-aparts, light push-ups, shoulder dislocates<br><strong>Before lower body:</strong> ${exLink('hip_stretch')}, bodyweight lunges, glute bridges<br><br><strong>Then:</strong> Do 2-3 warm-up sets of your first exercise with lighter weight before going heavy.<br><br>Never skip the warm-up — cold muscles are injury-prone muscles!`,
+        `Warming up is key, ${name}! Here's a quick routine:<br><br><strong>Phase 1 — Get blood flowing (2 min):</strong><br>• Jump rope, jog in place, or jumping jacks<br><br><strong>Phase 2 — Dynamic stretches (3 min):</strong><br>• Hip circles × 10 each way<br>• Arm circles × 20 each way<br>• Leg swings × 10 each leg<br>• Cat-cow stretches × 10<br>• Bodyweight squats × 15<br><br><strong>Phase 3 — Movement-specific (2 min):</strong><br>• If pressing: light push-ups, band pull-aparts<br>• If squatting: bodyweight squats, ${exLink('hip_stretch')}<br>• If pulling: light rows, dead hangs<br><br>Then do 2-3 ramp-up sets with lighter weight. Your performance will be noticeably better!`
+      ]);
+    },
+    cooldown:function(){
+      return pick([
+        `A proper cool-down helps recovery, ${name}:<br><br><strong>5-Minute Cool-Down:</strong><br>1. Light walking — 2 minutes (brings heart rate down gradually)<br>2. ${exLink('hamstring_stretch')} — 30s each side<br>3. ${exLink('hip_stretch')} — 30s each side<br>4. Chest stretch (doorway) — 30s<br>5. ${exLink('foam_roll')} — 5 min on the muscles you just trained<br><br><strong>Why it matters:</strong><br>• Reduces post-workout muscle tightness<br>• Promotes blood flow for faster recovery<br>• Helps prevent next-day soreness<br>• Great time to work on flexibility<br><br>Most people skip this, but it makes a big difference over time!`,
+      ]);
+    },
+    hydration:function(){
+      return pick([
+        `Hydration is huge for performance, ${name}!<br><br><strong>How much water?</strong><br>• <strong>Daily:</strong> At least 2-3 litres (more if you're active or it's hot)<br>• <strong>During training:</strong> 200-400ml every 15-20 minutes<br>• <strong>After training:</strong> Replace fluids lost — drink until your pee is light yellow<br><br><strong>Signs of dehydration:</strong><br>• Dark yellow pee<br>• Headache during/after training<br>• Dizziness or lightheadedness<br>• Performance drops (weights feel heavier than usual)<br>• Cramps<br><br><strong>Tips:</strong><br>• Start hydrating 2-3 hours before training<br>• Keep a water bottle with you at all times<br>• If training over 60 min, add electrolytes (pinch of salt + squeeze of lemon)<br><br>Dehydration drops your performance by up to 20% — it's that important!`,
+      ]);
+    },
+    sleep:function(){
+      return pick([
+        `Sleep is when your body actually builds muscle, ${name}! It's non-negotiable:<br><br><strong>How much?</strong> 7-9 hours per night minimum<br><br><strong>Why it matters for training:</strong><br>• Growth hormone peaks during deep sleep<br>• Muscles repair and grow overnight<br>• Poor sleep = higher cortisol = less gains, more fat<br>• Reaction time and motivation tank on bad sleep<br><br><strong>Better sleep tips:</strong><br>• Same bedtime every night (yes, weekends too)<br>• No screens 30-60 min before bed<br>• Cool, dark room (18-20°C is ideal)<br>• No caffeine after 2pm<br>• Don't train too close to bedtime (finish 2-3 hours before)<br>• ${exLink('foam_roll')} before bed helps relax muscles<br><br>A good night's sleep is worth more than any supplement!`,
+        `Sleep is literally your #1 recovery tool, ${name}:<br><br><strong>What happens when you sleep:</strong><br>• Human growth hormone (HGH) is released → muscle repair<br>• Glycogen stores refill → energy for tomorrow<br>• Brain consolidates motor patterns → better technique<br>• Inflammation goes down → less soreness<br><br><strong>Not sleeping enough?</strong> You're sabotaging your gains, even with perfect training and nutrition.<br><br><strong>Sleep better tonight:</strong><br>1. Put your phone away 1 hour before bed<br>2. Stretch or foam roll for 10 min<br>3. Keep the room cool and dark<br>4. Consistent schedule — even on weekends<br>5. Skip late-night caffeine<br><br>Aim for 7-9 hours. Your body will thank you!`
+      ]);
+    },
+    breathing:function(){
+      return pick([
+        `Breathing technique is underrated, ${name}! Here's how to breathe during exercise:<br><br><strong>For strength training:</strong><br>• <strong>Valsalva maneuver</strong> (heavy lifts): Take a deep breath into your belly, brace your core hard, hold during the rep, exhale at the top<br>• This creates internal pressure that protects your spine<br>• Use for squats, deadlifts, overhead press<br><br><strong>For lighter/isolation work:</strong><br>• Exhale during the hard part (pushing/pulling)<br>• Inhale during the easy part (lowering/returning)<br>• Example: Exhale pushing the bench press up, inhale lowering it<br><br><strong>For cardio:</strong><br>• Rhythmic breathing — match breaths to strides/pedals<br>• Running: inhale 2-3 steps, exhale 2-3 steps<br>• If you're gasping, slow down — you're going too hard<br><br><strong>Never hold your breath</strong> on lighter exercises — it spikes blood pressure unnecessarily.`,
+      ]);
+    },
+    supplements:function(){
+      return pick([
+        `Let's talk <strong>supplements</strong>, ${name}. Most are a waste of money, but a few actually work:<br><br><strong>Worth it (backed by science):</strong><br>• <strong>Creatine monohydrate</strong> — 5g daily, the most researched supplement. Improves strength, muscle size, and recovery<br>• <strong>Whey protein</strong> — convenient way to hit protein goals. Not magic, just food in powder form<br>• <strong>Vitamin D</strong> — if you don't get much sun (most people don't)<br>• <strong>Caffeine</strong> — proven performance booster. 200-400mg 30 min before training<br><br><strong>Save your money:</strong><br>• BCAAs — useless if you eat enough protein<br>• Fat burners — mostly caffeine in a fancy bottle<br>• Testosterone boosters — don't work<br><br><strong>Bottom line:</strong> Supplements are the cherry on top. Get your training, nutrition, and sleep right first — they do 95% of the work!`,
+        `Supplement talk, ${name}! Here's what actually matters:<br><br>🏆 <strong>Tier 1 (actually useful):</strong><br>• <strong>Creatine</strong> — 5g/day, every day. Proven to increase strength by 5-10%<br>• <strong>Protein powder</strong> — if you struggle to eat enough protein<br>• <strong>Caffeine</strong> — 30 min pre-workout for energy and focus<br><br>👍 <strong>Tier 2 (helpful for some):</strong><br>• <strong>Vitamin D</strong> — especially in winter or if you're indoors a lot<br>• <strong>Omega-3 fish oil</strong> — good for joint health<br>• <strong>Magnesium</strong> — helps sleep and recovery<br><br>👎 <strong>Tier 3 (skip these):</strong><br>• BCAAs, testosterone boosters, most "pre-workouts" with proprietary blends<br><br>Remember: <strong>no supplement replaces good food, sleep, and consistent training</strong>!`
+      ]);
+    },
+    age:function(){
+      const userAge=profile.age||null;
+      return pick([
+        `${userAge?`At ${userAge} years old, ${name}, here's`:`Great question, ${name}! Here's`} what you should know about age and exercise:<br><br><strong>Teens (13-17):</strong><br>• Focus on bodyweight and light weights with perfect form<br>• ${exLink('pushups')} ${exLink('pullup')} ${exLink('plank')} are perfect<br>• Don't max out — your joints are still developing<br>• Consistency over intensity<br><br><strong>Adults (18-40):</strong><br>• Prime years for building muscle and strength<br>• Push hard but recover properly<br><br><strong>40+:</strong><br>• Warm up longer, focus on mobility<br>• Recovery takes a bit longer — respect it<br>• Strength training is MORE important with age (prevents bone loss)<br><br><strong>The truth:</strong> You're never too young or too old to exercise. Adjust intensity, not existence! ${userAge&&userAge<=17?'At your age, bodyweight exercises and learning proper form will set you up for a lifetime of gains!':''}`,
+      ]);
+    },
+    home_workout:function(){
+      return pick([
+        `No gym? No problem, ${name}! Here's a full <strong>home workout</strong> using just your bodyweight:<br><br><strong>Upper Body:</strong><br>• ${exLink('pushups')} — 3×15-20 (chest, triceps)<br>• ${exLink('dips')} — 3×12 (use two chairs)<br><br><strong>Lower Body:</strong><br>• Bodyweight squats — 3×20<br>• ${exLink('lunges')} — 3×12 each leg (no dumbbells needed)<br><br><strong>Core:</strong><br>• ${exLink('plank')} — 3×45s<br>• ${exLink('mountain')} — 3×30s<br>• ${exLink('dead_bug')} — 3×10 each side<br><br><strong>Cardio:</strong><br>• ${exLink('burpees')} — 3×10<br>• ${exLink('jumprope')} — 10 min (or jumping jacks if no rope)<br><br>Do this 3-4x per week and you'll build serious strength and endurance! Add a backpack with books for extra resistance. 💪`,
+        `Home workouts can be just as effective, ${name}! Here's a 4-day plan:<br><br><strong>Day 1 — Push:</strong> ${exLink('pushups')} × 4 sets, ${exLink('dips')} × 3 sets (use chairs), pike push-ups × 3 sets<br><br><strong>Day 2 — Legs:</strong> Bodyweight squats × 4 sets, ${exLink('lunges')} × 3 sets, wall sit × 3×45s, ${exLink('calf')} raises × 4×20<br><br><strong>Day 3 — Pull + Core:</strong> ${exLink('pullup')} (doorframe bar) × 4 sets, ${exLink('plank')} + ${exLink('twist')} + ${exLink('legraise')}<br><br><strong>Day 4 — HIIT:</strong> ${exLink('burpees')} + ${exLink('mountain')} + ${exLink('jumprope')} — 30s work / 30s rest × 8 rounds<br><br>Invest in a <strong>pull-up bar</strong> and <strong>resistance bands</strong> — they open up a ton more exercises!`
+      ]);
+    },
     explain:function(){
       if(coachHistory.length>2){
         const lastBot=coachHistory.filter(h=>h.role==='bot').pop();
