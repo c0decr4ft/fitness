@@ -2233,9 +2233,9 @@ function calcStreak(log){
   const dates=[...new Set(log.map(e=>new Date(e.ts).toDateString()))].map(s=>new Date(s)).sort((a,b)=>b-a);
   const now=new Date();now.setHours(0,0,0,0);
   const gap=(a,b)=>Math.round((a-b)/(864e5));
-  if(gap(now,dates[0])>=7)return 0;
+  if(gap(now,dates[0])>7)return 0;
   let count=1;
-  for(let i=1;i<dates.length;i++){if(gap(dates[i-1],dates[i])>=7)break;count++;}
+  for(let i=1;i<dates.length;i++){if(gap(dates[i-1],dates[i])>7)break;count++;}
   return count;
 }
 function updateDashStats(){
@@ -2728,7 +2728,7 @@ function playTrack(id){
 function setMusicVolume(val){
   musicVolume=val/100;
   document.getElementById('music-vol-label').textContent=val+'%';
-  if(musicGain)musicGain.gain.setValueAtTime(musicVolume,musicCtx.currentTime);
+  if(musicGain&&musicCtx)musicGain.gain.setValueAtTime(musicVolume,musicCtx.currentTime);
 }
 
 document.addEventListener('click',e=>{
@@ -2748,7 +2748,7 @@ function playTimerAlarm(){
   if(settings.sound==='off')return;
   const wasMusicPlaying=musicPlaying;
   const prevTrackId=currentTrackId;
-  if(musicGain&&musicPlaying){
+  if(musicGain&&musicCtx&&musicPlaying){
     musicGain.gain.setValueAtTime(musicGain.gain.value,musicCtx.currentTime);
     musicGain.gain.linearRampToValueAtTime(0.02,musicCtx.currentTime+0.3);
   }
@@ -2779,9 +2779,9 @@ function playTimerAlarm(){
     });
     const totalAlarmTime=t-ctx.currentTime;
     if(navigator.vibrate)navigator.vibrate([200,100,200,100,200,100,400]);
-    if(wasMusicPlaying&&musicGain&&musicPlaying){
+    if(wasMusicPlaying&&musicGain&&musicCtx&&musicPlaying){
       setTimeout(()=>{
-        if(musicGain&&musicPlaying){
+        if(musicGain&&musicCtx&&musicPlaying){
           musicGain.gain.setValueAtTime(0.02,musicCtx.currentTime);
           musicGain.gain.linearRampToValueAtTime(musicVolume,musicCtx.currentTime+1.5);
         }
