@@ -1,21 +1,113 @@
 #!/usr/bin/env python3
-"""FORGE Fitness App Server - serves the app and syncs accounts across devices."""
-import json, os, threading
+"""FORGE Fitness App Server - serves the app and syncs accounts to the cloud."""
+import json, os, threading, urllib.request, urllib.error
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 
 DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'forge_cloud.json')
+CLOUD_DIR_ID = '019cc742-cdc5-7356-b86c-b65689ea51fd'
+BLOB_API = 'https://jsonblob.com/api/jsonBlob'
 lock = threading.Lock()
+
 
 def load_data():
     try:
         with open(DATA_FILE, 'r') as f:
             return json.load(f)
-    except:
+    except Exception:
         return {}
+
 
 def save_data(data):
     with open(DATA_FILE, 'w') as f:
         json.dump(data, f)
+
+
+def blob_get(blob_id):
+    """GET a jsonblob by ID (server-side, no CORS issues)."""
+    try:
+        req = urllib.request.Request(f'{BLOB_API}/{blob_id}',
+                                     headers={'Accept': 'application/json'})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            return json.loads(resp.read().decode())
+    except Exception as e:
+        print(f'  [cloud] GET blob {blob_id} failed: {e}')
+        return None
+
+
+def blob_create(obj):
+    """POST to create a new jsonblob. Returns the blob ID."""
+    try:
+        body = json.dumps(obj).encode()
+        req = urllib.request.Request(BLOB_API, data=body, method='POST',
+                                     headers={'Content-Type': 'application/json',
+                                              'Accept': 'application/json'})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            loc = resp.getheader('Location') or resp.getheader('X-jsonblob-Id') or ''
+            blob_id = loc.rsplit('/', 1)[-1] if '/' in loc else loc
+            if not blob_id:
+                blob_id = resp.getheader('X-jsonblob-Id', '')
+            return blob_id if blob_id else None
+    except Exception as e:
+        print(f'  [cloud] CREATE blob failed: {e}')
+        return None
+
+
+def blob_put(blob_id, obj):
+    """PUT to update an existing jsonblob."""
+    try:
+        body = json.dumps(obj).encode()
+        req = urllib.request.Request(f'{BLOB_API}/{blob_id}', data=body, method='PUT',
+                                     headers={'Content-Type': 'application/json',
+                                              'Accept': 'application/json'})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            return resp.status == 200
+    except Exception as e:
+        print(f'  [cloud] PUT blob {blob_id} failed: {e}')
+        return False
+
+
+def cloud_get_directory():
+    """Read the cloud directory (username → blob_id mapping)."""
+    data = blob_get(CLOUD_DIR_ID)
+    return data if data and isinstance(data, dict) else {'_forge_dir': True}
+
+
+def cloud_save_directory(directory):
+    """Write the cloud directory back."""
+    return blob_put(CLOUD_DIR_ID, directory)
+
+
+def cloud_upload_account(username, account_data):
+    """Upload an account to the cloud. Returns True on success."""
+    directory = cloud_get_directory()
+    blob_id = directory.get(username)
+
+    if blob_id:
+        ok = blob_put(blob_id, account_data)
+        if ok:
+            print(f'  [cloud] Updated {username} (blob {blob_id})')
+        return ok
+    else:
+        blob_id = blob_create(account_data)
+        if blob_id:
+            directory[username] = blob_id
+            cloud_save_directory(directory)
+            print(f'  [cloud] Created {username} → blob {blob_id}')
+            return True
+        return False
+
+
+def cloud_download_account(username):
+    """Download an account from the cloud by username. Returns dict or None."""
+    directory = cloud_get_directory()
+    blob_id = directory.get(username)
+    if not blob_id or blob_id is True:
+        return None
+    acc = blob_get(blob_id)
+    if acc and isinstance(acc, dict) and acc.get('u') == username:
+        return acc
+    return None
+
 
 class ForgeHandler(SimpleHTTPRequestHandler):
     def end_headers(self):
@@ -53,41 +145,68 @@ class ForgeHandler(SimpleHTTPRequestHandler):
         self.wfile.write(body)
 
     def _api_get(self):
-        key = self.path[5:]
-        with lock:
-            data = load_data()
-        if key == 'directory':
-            self._json_response(data.get('_dir', {}))
-        elif key.startswith('account/'):
-            username = key[8:]
-            acc = data.get('accounts', {}).get(username)
-            self._json_response(acc if acc else {}, 200 if acc else 404)
-        elif key == 'all':
-            self._json_response(data.get('_dir', {}))
-        else:
+        path = self.path.split('?')[0]
+        key = path[5:]
+
+        if key == 'health':
+            self._json_response({'ok': True, 'cloud': True})
+            return
+
+        if key.startswith('account/'):
+            username = urllib.request.unquote(key[8:])
+
+            with lock:
+                data = load_data()
+            local_acc = data.get('accounts', {}).get(username)
+
+            if local_acc:
+                self._json_response(local_acc)
+                return
+
+            cloud_acc = cloud_download_account(username)
+            if cloud_acc:
+                with lock:
+                    data = load_data()
+                    if 'accounts' not in data:
+                        data['accounts'] = {}
+                    data['accounts'][username] = cloud_acc
+                    save_data(data)
+                self._json_response(cloud_acc)
+                print(f'  [sync] Fetched {username} from cloud → cached locally')
+                return
+
             self._json_response({'error': 'not found'}, 404)
+            return
+
+        self._json_response({'error': 'not found'}, 404)
 
     def _api_post(self):
-        key = self.path[5:]
+        path = self.path.split('?')[0]
+        key = path[5:]
         body = self._read_body()
-        with lock:
-            data = load_data()
-            if key.startswith('account/'):
-                username = key[8:]
+
+        if key.startswith('account/'):
+            username = urllib.request.unquote(key[8:])
+
+            with lock:
+                data = load_data()
                 if 'accounts' not in data:
                     data['accounts'] = {}
                 data['accounts'][username] = body
-                if '_dir' not in data:
-                    data['_dir'] = {}
-                data['_dir'][username] = True
                 save_data(data)
-                self._json_response({'ok': True, 'user': username})
-            else:
-                self._json_response({'error': 'bad request'}, 400)
+
+            threading.Thread(target=cloud_upload_account, args=(username, body),
+                             daemon=True).start()
+
+            self._json_response({'ok': True, 'user': username})
+        else:
+            self._json_response({'error': 'bad request'}, 400)
 
     def log_message(self, fmt, *args):
-        if '/api/' in (args[0] if args else ''):
+        msg = args[0] if args else ''
+        if '/api/' in msg:
             super().log_message(fmt, *args)
+
 
 if __name__ == '__main__':
     import socket
@@ -98,16 +217,35 @@ if __name__ == '__main__':
         s.connect(('8.8.8.8', 80))
         ip = s.getsockname()[0]
         s.close()
-    except:
+    except Exception:
         ip = 'localhost'
 
+    print()
+    print('  ┌─────────────────────────────────────────┐')
+    print('  │       FORGE Fitness Server running!      │')
+    print('  ├─────────────────────────────────────────┤')
+    print(f'  │  Local:   http://localhost:{port}          │')
+    print(f'  │  Network: http://{ip}:{port}       │')
+    print('  ├─────────────────────────────────────────┤')
+    print('  │  Accounts sync to the cloud             │')
+    print('  │  automatically via jsonblob.com         │')
+    print('  └─────────────────────────────────────────┘')
+    print()
+
+    # Sync all existing local accounts to the cloud on startup
+    with lock:
+        startup_data = load_data()
+    accounts = startup_data.get('accounts', {})
+    if accounts:
+        print(f'  Syncing {len(accounts)} local account(s) to cloud...')
+        for uname, acc in accounts.items():
+            ok = cloud_upload_account(uname, acc)
+            status = '✓' if ok else '✗'
+            print(f'    {status} {uname}')
+        print()
+
     server = HTTPServer(('0.0.0.0', port), ForgeHandler)
-    print(f'\n  FORGE Fitness Server running!')
-    print(f'  Local:   http://localhost:{port}')
-    print(f'  Network: http://{ip}:{port}')
-    print(f'\n  Open the Network URL on your phone to use the app!')
-    print(f'  All accounts are shared between devices.\n')
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        print('\nServer stopped.')
+        print('\n  Server stopped.')
