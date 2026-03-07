@@ -179,6 +179,12 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 .user-name{font-family:'Bebas Neue',sans-serif;font-size:44px;line-height:1;}
 .user-name span{color:var(--accent);}
 .streak-pill{background:var(--accent);color:#000;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:8px 14px;border-radius:999px;white-space:nowrap;}
+.sync-badge{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all 0.3s;}
+.sync-live{background:rgba(76,175,80,0.2);color:#4caf50;animation:sync-pulse 2s infinite;}
+.sync-syncing{background:rgba(255,193,7,0.2);color:#ffc107;animation:sync-spin 1s linear infinite;}
+.sync-off{background:rgba(255,255,255,0.08);color:var(--muted);}
+@keyframes sync-pulse{0%,100%{box-shadow:0 0 0 0 rgba(76,175,80,0.3);}50%{box-shadow:0 0 0 6px rgba(76,175,80,0);}}
+@keyframes sync-spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:20px 36px;}
 .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;position:relative;overflow:hidden;transition:border-color 0.3s;}
 .stat-card:hover{border-color:var(--accent);}
@@ -745,7 +751,10 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
             <div class="user-name" id="dash-name">Let's <span>Work</span></div>
           </div>
         </div>
-        <div class="streak-pill">&#x1F525; <span id="streak-count">0</span>-day streak</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="sync-badge sync-off" id="sync-badge" title="Sync offline"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0020 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 004 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg></div>
+          <div class="streak-pill">&#x1F525; <span id="streak-count">0</span>-day streak</div>
+        </div>
       </div>
       <div class="stats-grid">
         <div class="stat-card"><div class="stat-label">This Week</div><div class="stat-val"><span id="stat-sessions">0</span> <span class="stat-unit">sessions</span></div><div class="stat-delta" id="stat-d1">start logging</div></div>
@@ -1084,6 +1093,23 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
         <div class="profile-card">
           <h3>Account</h3>
           <div class="profile-row"><span class="profile-row-label">Username</span><span class="profile-row-val" id="profile-username">—</span></div>
+
+          <div style="background:rgba(200,255,0,0.08);border:1px solid rgba(200,255,0,0.2);border-radius:12px;padding:16px;margin:12px 0;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);margin-bottom:8px;">✏️ Change Username</div>
+            <input class="auth-input" id="new-username" placeholder="New username" autocomplete="off" style="margin-bottom:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:13px;width:100%;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+            <div id="change-user-msg" style="display:none;font-size:12px;margin-bottom:8px;line-height:1.5;"></div>
+            <button class="save-profile-btn" onclick="doChangeUsername()" style="background:var(--accent);color:#000;width:100%;">Update Username</button>
+          </div>
+
+          <div style="background:rgba(200,255,0,0.08);border:1px solid rgba(200,255,0,0.2);border-radius:12px;padding:16px;margin:12px 0;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);margin-bottom:8px;">🔒 Change Password</div>
+            <input class="auth-input" id="old-password" type="password" placeholder="Current password" autocomplete="off" style="margin-bottom:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:13px;width:100%;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+            <input class="auth-input" id="new-password" type="password" placeholder="New password" autocomplete="off" style="margin-bottom:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:13px;width:100%;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+            <input class="auth-input" id="confirm-new-password" type="password" placeholder="Confirm new password" autocomplete="off" style="margin-bottom:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:13px;width:100%;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+            <div id="change-pw-msg" style="display:none;font-size:12px;margin-bottom:8px;line-height:1.5;"></div>
+            <button class="save-profile-btn" onclick="doChangePassword()" style="background:var(--accent);color:#000;width:100%;">Update Password</button>
+          </div>
+
           <div style="background:rgba(200,255,0,0.08);border:1px solid rgba(200,255,0,0.2);border-radius:12px;padding:16px;margin:12px 0;">
             <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);margin-bottom:6px;">☁️ Cloud Sync</div>
             <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5;">Your account is automatically synced to the cloud. On another device, just enter your <strong>username and password</strong> to log in — no codes needed!</p>
@@ -1427,6 +1453,8 @@ function saveAccounts(a){localStorage.setItem('forge_accounts',JSON.stringify(a)
 
 const MQTT_BROKERS=['wss://broker.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt'];
 const MQTT_PREFIX='forge-fit/a/';
+const DEVICE_ID='d_'+Math.random().toString(36).slice(2,10)+'_'+Date.now().toString(36);
+let _liveClient=null,_liveUser=null,_liveHash=null,_livePending=false,_liveIgnoreNext=false;
 
 async function _syncKey(pwHash){
   const enc=new TextEncoder();
@@ -1468,9 +1496,21 @@ function _mqttConnect(){
 async function syncAccountToCloud(username){
   try{
     const accs=getAccounts();const acc=accs[username];if(!acc)return false;
-    const payload={u:username,h:acc.hash,d:acc.data,c:acc.created,ts:Date.now()};
+    const now=Date.now();
+    if(acc.data)acc.data._syncTs=now;
+    saveAccounts(accs);
+    const payload={u:username,h:acc.hash,d:acc.data,c:acc.created,ts:now,dev:DEVICE_ID};
     const encrypted=await _syncEncrypt(payload,acc.hash);
     if(encrypted.length>120000){console.warn('Account data too large for cloud sync');return false;}
+    if(_liveClient&&_liveClient.connected&&_liveUser===username){
+      _liveIgnoreNext=true;
+      return new Promise((resolve)=>{
+        _liveClient.publish(MQTT_PREFIX+username,encrypted,{qos:1,retain:true},(err)=>{
+          if(err){console.warn('Live publish error:',err);_liveIgnoreNext=false;resolve(false);}
+          else{console.log('Cloud sync OK (live) for',username);resolve(true);}
+        });
+      });
+    }
     const client=await _mqttConnect();
     return new Promise((resolve)=>{
       client.publish(MQTT_PREFIX+username,encrypted,{qos:1,retain:true},(err)=>{
@@ -1508,6 +1548,91 @@ async function cloudSearchByUsername(username,password){
       }
     });
   });
+}
+
+function _updateSyncBadge(state){
+  const el=document.getElementById('sync-badge');if(!el)return;
+  el.className='sync-badge sync-'+state;
+  el.title=state==='live'?'Live sync active':state==='syncing'?'Syncing…':'Offline';
+}
+
+function startLiveSync(username,pwHash){
+  stopLiveSync();
+  if(typeof mqtt==='undefined'||!username||!pwHash)return;
+  _liveUser=username;_liveHash=pwHash;
+  _updateSyncBadge('syncing');
+  let brokerIdx=0;
+  let _skipRetained=true;
+  function tryConnect(){
+    if(brokerIdx>=MQTT_BROKERS.length){_updateSyncBadge('off');setTimeout(()=>{brokerIdx=0;tryConnect();},30000);return;}
+    const url=MQTT_BROKERS[brokerIdx];
+    const id='forge_live_'+DEVICE_ID;
+    const client=mqtt.connect(url,{clientId:id,clean:true,connectTimeout:15000,keepalive:30,reconnectPeriod:5000,protocolVersion:4});
+    const t=setTimeout(()=>{try{client.end(true);}catch(e){}brokerIdx++;tryConnect();},16000);
+    client.on('connect',()=>{
+      clearTimeout(t);
+      _liveClient=client;
+      _skipRetained=true;
+      client.subscribe(MQTT_PREFIX+username,{qos:1},(err)=>{
+        if(err){console.warn('Live sync subscribe failed');_updateSyncBadge('off');}
+        else{console.log('Live sync active for',username);_updateSyncBadge('live');setTimeout(()=>{_skipRetained=false;},2000);}
+      });
+    });
+    client.on('message',async(topic,msg)=>{
+      if(_liveIgnoreNext){_liveIgnoreNext=false;return;}
+      if(_skipRetained)return;
+      if(!currentUser||currentUser!==_liveUser)return;
+      try{
+        const b64=msg.toString();
+        const data=await _syncDecrypt(b64,_liveHash);
+        if(!data||data.u!==currentUser)return;
+        if(data.dev===DEVICE_ID)return;
+        const accs=getAccounts();const local=accs[currentUser];
+        if(!local)return;
+        const localTs=local.data&&local.data._syncTs||0;
+        const remoteTs=data.ts||0;
+        if(remoteTs<=localTs)return;
+        console.log('Live sync: incoming update from another device');
+        accs[currentUser].data=data.d||{};
+        if(data.d&&data.d._syncTs)accs[currentUser].data._syncTs=data.d._syncTs;
+        saveAccounts(accs);
+        S=accs[currentUser].data;
+        _refreshFullUI();
+        _showSyncToast();
+      }catch(e){console.warn('Live sync message error:',e);}
+    });
+    client.on('error',()=>{clearTimeout(t);try{client.end(true);}catch(e){}brokerIdx++;tryConnect();});
+    client.on('close',()=>{
+      _liveClient=null;_updateSyncBadge('off');
+      if(_liveUser&&currentUser===_liveUser){setTimeout(()=>{if(_liveUser)tryConnect();},5000);brokerIdx=0;}
+    });
+  }
+  tryConnect();
+}
+
+function stopLiveSync(){
+  _liveUser=null;_liveHash=null;
+  if(_liveClient){try{_liveClient.end(true);}catch(e){}_liveClient=null;}
+  _updateSyncBadge('off');
+}
+
+function _refreshFullUI(){
+  if(!S.profile)return;
+  applyProfile();applyExFilters();buildLog();buildQuickStart();updateTimerUI();applySettings();
+  try{renderAchievements();}catch(e){}
+  try{renderProfileStats();}catch(e){}
+}
+
+function _showSyncToast(){
+  let toast=document.getElementById('sync-toast');
+  if(!toast){
+    toast=document.createElement('div');toast.id='sync-toast';
+    toast.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:10px 20px;border-radius:12px;font-family:"Bebas Neue",sans-serif;font-size:15px;letter-spacing:1px;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;';
+    document.body.appendChild(toast);
+  }
+  toast.textContent='⚡ Synced from another device';
+  toast.style.opacity='1';
+  setTimeout(()=>{toast.style.opacity='0';},3000);
 }
 
 function authTab(tab){
@@ -1628,10 +1753,13 @@ function loginAs(u){
   }else{document.getElementById('setup-screen').classList.remove('hidden');}
   const un=document.getElementById('profile-username');if(un)un.textContent=u;
   syncAccountToCloud(u);
+  const acc=getAccounts()[u];
+  if(acc&&acc.hash)startLiveSync(u,acc.hash);
 }
 
 function doLogout(){
   if(currentUser&&S){save(S);}
+  stopLiveSync();
   currentUser=null;
   localStorage.removeItem('forge_current_user');
   S={};
@@ -1648,6 +1776,57 @@ function confirmDeleteAccount(){
     if(currentUser&&accs[currentUser]){delete accs[currentUser];saveAccounts(accs);}
     doLogout();
   });
+}
+
+async function doChangePassword(){
+  const msg=document.getElementById('change-pw-msg');
+  const oldPw=document.getElementById('old-password').value;
+  const newPw=document.getElementById('new-password').value;
+  const confirmPw=document.getElementById('confirm-new-password').value;
+  msg.style.display='none';
+  if(!oldPw||!newPw||!confirmPw){msg.textContent='Please fill in all fields.';msg.style.color='var(--danger)';msg.style.display='block';return;}
+  if(newPw.length<4){msg.textContent='New password must be at least 4 characters.';msg.style.color='var(--danger)';msg.style.display='block';return;}
+  if(newPw!==confirmPw){msg.textContent='New passwords do not match.';msg.style.color='var(--danger)';msg.style.display='block';return;}
+  const accs=getAccounts();const acc=accs[currentUser];if(!acc)return;
+  const oldHash=await hashPw(oldPw);
+  if(oldHash!==acc.hash){msg.textContent='Current password is incorrect.';msg.style.color='var(--danger)';msg.style.display='block';return;}
+  const newHash=await hashPw(newPw);
+  acc.hash=newHash;
+  saveAccounts(accs);
+  stopLiveSync();
+  startLiveSync(currentUser,newHash);
+  syncAccountToCloud(currentUser);
+  document.getElementById('old-password').value='';
+  document.getElementById('new-password').value='';
+  document.getElementById('confirm-new-password').value='';
+  msg.textContent='Password updated successfully!';msg.style.color='var(--accent)';msg.style.display='block';
+  setTimeout(()=>{msg.style.display='none';},4000);
+}
+
+async function doChangeUsername(){
+  const msg=document.getElementById('change-user-msg');
+  const newUser=document.getElementById('new-username').value.trim().toLowerCase();
+  msg.style.display='none';
+  if(!newUser){msg.textContent='Please enter a new username.';msg.style.color='var(--danger)';msg.style.display='block';return;}
+  if(newUser.length<3){msg.textContent='Username must be at least 3 characters.';msg.style.color='var(--danger)';msg.style.display='block';return;}
+  if(!/^[a-z0-9_]+$/.test(newUser)){msg.textContent='Username can only contain letters, numbers, and underscores.';msg.style.color='var(--danger)';msg.style.display='block';return;}
+  if(newUser===currentUser){msg.textContent='That is already your username.';msg.style.color='var(--danger)';msg.style.display='block';return;}
+  const accs=getAccounts();
+  if(accs[newUser]){msg.textContent='That username is already taken.';msg.style.color='var(--danger)';msg.style.display='block';return;}
+  const acc=accs[currentUser];if(!acc)return;
+  accs[newUser]={hash:acc.hash,data:acc.data,created:acc.created};
+  delete accs[currentUser];
+  saveAccounts(accs);
+  const oldUser=currentUser;
+  currentUser=newUser;
+  localStorage.setItem('forge_current_user',newUser);
+  const un=document.getElementById('profile-username');if(un)un.textContent=newUser;
+  stopLiveSync();
+  startLiveSync(newUser,accs[newUser].hash);
+  syncAccountToCloud(newUser);
+  document.getElementById('new-username').value='';
+  msg.textContent='Username changed to "'+newUser+'"!';msg.style.color='var(--accent)';msg.style.display='block';
+  setTimeout(()=>{msg.style.display='none';},4000);
 }
 
 function toggleTransferPanel(){
@@ -2386,285 +2565,175 @@ let musicCtx=null,musicGain=null,musicPlaying=false,musicNodes=[],currentTrackId
 
 function _noise(ctx,len){const b=ctx.createBuffer(1,ctx.sampleRate*len,ctx.sampleRate);const d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;return b;}
 function _kick(ctx,m,bt,freq,decay,vol){
-  const o=ctx.createOscillator(),o2=ctx.createOscillator(),g=ctx.createGain();
-  o.frequency.setValueAtTime(freq||150,bt);o.frequency.exponentialRampToValueAtTime(28,bt+0.08);
-  o2.frequency.setValueAtTime((freq||150)*0.7,bt);o2.frequency.exponentialRampToValueAtTime(20,bt+0.1);
-  o2.type='sine';
-  g.gain.setValueAtTime(vol||0.7,bt);g.gain.exponentialRampToValueAtTime(0.001,bt+(decay||0.18));
-  o.connect(g);o2.connect(g);g.connect(m);
-  o.start(bt);o.stop(bt+(decay||0.18)+0.01);o2.start(bt);o2.stop(bt+(decay||0.18)+0.01);
-  musicNodes.push(o,o2);
+  const o=ctx.createOscillator(),g=ctx.createGain();
+  o.frequency.setValueAtTime(freq||150,bt);o.frequency.exponentialRampToValueAtTime(30,bt+0.08);
+  g.gain.setValueAtTime(0.001,bt);g.gain.linearRampToValueAtTime(vol||0.6,bt+0.003);g.gain.exponentialRampToValueAtTime(0.001,bt+(decay||0.15));
+  o.connect(g);g.connect(m);o.start(bt);o.stop(bt+(decay||0.15)+0.05);musicNodes.push(o);
 }
 function _snare(ctx,m,bt,vol,len){
-  const b=_noise(ctx,len||0.12);const s=ctx.createBufferSource();s.buffer=b;
-  const g=ctx.createGain();g.gain.setValueAtTime(vol||0.45,bt);g.gain.exponentialRampToValueAtTime(0.001,bt+(len||0.12));
-  const f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=2000;
-  const o=ctx.createOscillator();const og=ctx.createGain();o.type='triangle';o.frequency.setValueAtTime(180,bt);o.frequency.exponentialRampToValueAtTime(90,bt+0.04);
-  og.gain.setValueAtTime((vol||0.45)*0.6,bt);og.gain.exponentialRampToValueAtTime(0.001,bt+0.06);
-  s.connect(f);f.connect(g);o.connect(og);og.connect(g);g.connect(m);
-  s.start(bt);o.start(bt);o.stop(bt+0.07);musicNodes.push(s,o);
+  const dur=len||0.1;const b=_noise(ctx,dur);const s=ctx.createBufferSource();s.buffer=b;
+  const g=ctx.createGain();g.gain.setValueAtTime(0.001,bt);g.gain.linearRampToValueAtTime(vol||0.4,bt+0.002);g.gain.exponentialRampToValueAtTime(0.001,bt+dur);
+  const f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=1500;
+  s.connect(f);f.connect(g);g.connect(m);s.start(bt);musicNodes.push(s);
 }
 function _hat(ctx,m,bt,vol,open){
-  const b=_noise(ctx,open?0.12:0.03);const s=ctx.createBufferSource();s.buffer=b;
-  const g=ctx.createGain();g.gain.setValueAtTime(vol||0.18,bt);g.gain.exponentialRampToValueAtTime(0.001,bt+(open?0.12:0.03));
-  const hp=ctx.createBiquadFilter();hp.type='highpass';hp.frequency.value=7000;
-  const bp=ctx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=10000;bp.Q.value=1;
-  s.connect(hp);hp.connect(bp);bp.connect(g);g.connect(m);s.start(bt);musicNodes.push(s);
+  const dur=open?0.08:0.025;const b=_noise(ctx,dur);const s=ctx.createBufferSource();s.buffer=b;
+  const g=ctx.createGain();g.gain.setValueAtTime(0.001,bt);g.gain.linearRampToValueAtTime(vol||0.15,bt+0.001);g.gain.exponentialRampToValueAtTime(0.001,bt+dur);
+  const hp=ctx.createBiquadFilter();hp.type='highpass';hp.frequency.value=8000;
+  s.connect(hp);hp.connect(g);g.connect(m);s.start(bt);musicNodes.push(s);
+}
+function _bass(ctx,m,bt,freq,dur,vol,type){
+  const o=ctx.createOscillator(),g=ctx.createGain();
+  o.type=type||'sine';o.frequency.value=freq;
+  const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=300;lp.Q.value=0.7;
+  g.gain.setValueAtTime(0.001,bt);g.gain.linearRampToValueAtTime(vol||0.2,bt+0.01);
+  g.gain.setValueAtTime(vol||0.2,bt+dur*0.8);g.gain.linearRampToValueAtTime(0.001,bt+dur);
+  o.connect(lp);lp.connect(g);g.connect(m);o.start(bt);o.stop(bt+dur+0.05);musicNodes.push(o);
 }
 function _synth(ctx,m,bt,freq,dur,vol,type,cutoff){
-  const o1=ctx.createOscillator(),o2=ctx.createOscillator(),g=ctx.createGain();
-  o1.type=type||'sawtooth';o1.frequency.value=freq;
-  o2.type=type||'sawtooth';o2.frequency.value=freq*1.005;
-  g.gain.setValueAtTime(vol||0.1,bt);g.gain.setValueAtTime(vol||0.1,bt+dur*0.7);g.gain.exponentialRampToValueAtTime(0.001,bt+dur);
+  const o=ctx.createOscillator(),g=ctx.createGain();
+  o.type=type||'sawtooth';o.frequency.value=freq;
+  g.gain.setValueAtTime(0.001,bt);g.gain.linearRampToValueAtTime(vol||0.08,bt+0.01);
+  g.gain.setValueAtTime(vol||0.08,bt+dur*0.7);g.gain.linearRampToValueAtTime(0.001,bt+dur);
   const f=ctx.createBiquadFilter();f.type='lowpass';
-  f.frequency.setValueAtTime(cutoff||1500,bt);f.frequency.exponentialRampToValueAtTime(Math.max((cutoff||1500)*0.15,60),bt+dur);
-  f.Q.value=2;
-  o1.connect(f);o2.connect(f);f.connect(g);g.connect(m);
-  o1.start(bt);o1.stop(bt+dur+0.01);o2.start(bt);o2.stop(bt+dur+0.01);musicNodes.push(o1,o2);
+  f.frequency.setValueAtTime(cutoff||1200,bt);f.frequency.linearRampToValueAtTime(Math.max(80,(cutoff||1200)*0.1),bt+dur);
+  f.Q.value=1;
+  o.connect(f);f.connect(g);g.connect(m);o.start(bt);o.stop(bt+dur+0.05);musicNodes.push(o);
 }
 function _pad(ctx,m,bt,freqs,dur,vol,attack){
-  const g=ctx.createGain();
-  g.gain.setValueAtTime(0.001,bt);g.gain.linearRampToValueAtTime(vol||0.1,bt+(attack||dur*0.3));g.gain.setValueAtTime(vol||0.1,bt+dur*0.7);g.gain.linearRampToValueAtTime(0.001,bt+dur);
-  const f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=1200;f.Q.value=0.5;
+  const g=ctx.createGain();const atk=attack||dur*0.3;
+  g.gain.setValueAtTime(0.001,bt);g.gain.linearRampToValueAtTime(vol||0.08,bt+atk);
+  g.gain.setValueAtTime(vol||0.08,bt+dur*0.75);g.gain.linearRampToValueAtTime(0.001,bt+dur);
+  const f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=1000;f.Q.value=0.5;
   f.connect(g);g.connect(m);
   freqs.forEach(fr=>{
     const o=ctx.createOscillator();o.type='sine';o.frequency.value=fr;
-    const o2=ctx.createOscillator();o2.type='triangle';o2.frequency.value=fr*2.002;
-    const ig=ctx.createGain();ig.gain.value=0.5;o2.connect(ig);
-    o.connect(f);ig.connect(f);o.start(bt);o.stop(bt+dur+0.02);o2.start(bt);o2.stop(bt+dur+0.02);musicNodes.push(o,o2);
+    o.connect(f);o.start(bt);o.stop(bt+dur+0.05);musicNodes.push(o);
   });
 }
 
 const MUSIC_TRACKS=[
-  {id:'hype',name:'Beast Mode',desc:'Aggressive trap-style with heavy 808s',emoji:'🔥',bpm:140,
+  {id:'hype',name:'Beast Mode',desc:'Hard-hitting trap with 808 bass',emoji:'🔥',bpm:140,
     pattern(ctx,master,t){
-      const d=60/140;const bars=8;
-      const bassNotes=[36.71,36.71,41.20,36.71,32.70,36.71,41.20,43.65];
+      const d=60/140,bars=8,notes=[36.71,36.71,41.20,36.71,32.70,36.71,41.20,43.65];
       for(let bar=0;bar<bars;bar++){
         const bb=t+bar*d*8;
         for(let i=0;i<8;i++){
           const bt=bb+i*d;
-          const absI=bar*8+i;
-          if(i===0||i===3||i===6){_kick(ctx,master,bt,160,0.22,0.8);}
-          if(i===4){_snare(ctx,master,bt,0.55,0.15);}
-          if(i===2&&bar%2===1){_snare(ctx,master,bt,0.35,0.08);}
-          _hat(ctx,master,bt+d*0.5,i%2===0?0.14:0.22,i===6);
-          if(i%2===0){_hat(ctx,master,bt,0.08,false);}
-          if(bar>=2&&i%4===0){
-            const rolls=[bt+d*0.25,bt+d*0.5,bt+d*0.75];
-            if(bar%2===1&&i===4)rolls.forEach((rt,ri)=>_hat(ctx,master,rt,0.12+ri*0.04,false));
-          }
+          if(i===0||i===3||i===6)_kick(ctx,master,bt,150,0.2,0.7);
+          if(i===4)_snare(ctx,master,bt,0.5,0.14);
+          if(i===2&&bar%2===1)_snare(ctx,master,bt,0.25,0.06);
+          _hat(ctx,master,bt+d*0.5,i%2===0?0.1:0.16,i===6);
         }
-        const o=ctx.createOscillator(),g=ctx.createGain();
-        o.type='sine';o.frequency.value=bassNotes[bar];
-        const sub=ctx.createOscillator();sub.type='sine';sub.frequency.value=bassNotes[bar]*0.5;
-        const distG=ctx.createGain();distG.gain.value=3;
-        const clip=ctx.createWaveShaper();const curve=new Float32Array(256);
-        for(let i=0;i<256;i++){const x=i/128-1;curve[i]=x<0?-Math.pow(-x,0.6):Math.pow(x,0.6);}
-        clip.curve=curve;
-        g.gain.setValueAtTime(0.35,bb);g.gain.setValueAtTime(0.35,bb+d*6);g.gain.exponentialRampToValueAtTime(0.01,bb+d*7.8);
-        const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=250;
-        o.connect(distG);sub.connect(distG);distG.connect(clip);clip.connect(lp);lp.connect(g);g.connect(master);
-        o.start(bb);o.stop(bb+d*8+0.01);sub.start(bb);sub.stop(bb+d*8+0.01);musicNodes.push(o,sub);
+        _bass(ctx,master,bb,notes[bar],d*7.5,0.3,'sine');
         if(bar>=4){
-          const lead=[293.66,329.63,349.23,293.66,261.63,293.66,349.23,392.00];
-          const lf=lead[bar-4+(bar<6?0:4)]||293.66;
-          _synth(ctx,master,bb,lf,d*4,0.08,'sawtooth',2500);
-          if(bar%2===0)_synth(ctx,master,bb+d*4,lf*1.335,d*3,0.06,'square',1800);
+          const lf=[293.66,329.63,349.23,293.66][bar-4]||293.66;
+          _synth(ctx,master,bb,lf,d*4,0.06,'sawtooth',2000);
         }
       }
       return t+bars*d*8;
     }},
 
-  {id:'steady',name:'Power Grind',desc:'Heavy industrial with grinding bass',emoji:'💪',bpm:118,
+  {id:'steady',name:'Power Grind',desc:'Heavy grinding workout rhythm',emoji:'💪',bpm:118,
     pattern(ctx,master,t){
-      const d=60/118;const bars=8;
-      const bassSeq=[55,55,49,55,41.2,41.2,49,55];
+      const d=60/118,bars=8,notes=[55,55,49,55,41.2,41.2,49,55];
       for(let bar=0;bar<bars;bar++){
         const bb=t+bar*d*8;
         for(let i=0;i<8;i++){
           const bt=bb+i*d;
-          if(i%2===0){_kick(ctx,master,bt,120,0.25,0.75);}
-          if(i===4){_snare(ctx,master,bt,0.6,0.18);}
-          _hat(ctx,master,bt+d*0.5,0.15,false);
-          if(i%4===0)_hat(ctx,master,bt,0.1,true);
-          if(bar>=4&&i===7){_snare(ctx,master,bt,0.3,0.06);}
+          if(i%2===0)_kick(ctx,master,bt,110,0.22,0.65);
+          if(i===4)_snare(ctx,master,bt,0.5,0.15);
+          _hat(ctx,master,bt+d*0.5,0.12,false);
+          if(i%4===0)_hat(ctx,master,bt,0.08,true);
+          if(bar>=4&&i===7)_snare(ctx,master,bt,0.2,0.05);
         }
-        const bf=bassSeq[bar];
-        for(let s=0;s<2;s++){
-          const sbt=bb+s*d*4;
-          const o1=ctx.createOscillator(),o2=ctx.createOscillator(),o3=ctx.createOscillator(),g=ctx.createGain();
-          o1.type='sawtooth';o1.frequency.value=bf;
-          o2.type='square';o2.frequency.value=bf*1.002;
-          o3.type='sawtooth';o3.frequency.value=bf*0.998;
-          g.gain.setValueAtTime(0.18,sbt);g.gain.setValueAtTime(0.18,sbt+d*3);g.gain.exponentialRampToValueAtTime(0.01,sbt+d*3.8);
-          const lp=ctx.createBiquadFilter();lp.type='lowpass';
-          lp.frequency.setValueAtTime(400,sbt);lp.frequency.linearRampToValueAtTime(s===1?600:200,sbt+d*4);
-          lp.Q.value=4;
-          o1.connect(lp);o2.connect(lp);o3.connect(lp);lp.connect(g);g.connect(master);
-          o1.start(sbt);o1.stop(sbt+d*4+0.01);o2.start(sbt);o2.stop(sbt+d*4+0.01);o3.start(sbt);o3.stop(sbt+d*4+0.01);
-          musicNodes.push(o1,o2,o3);
-        }
-        if(bar%2===0){
-          const stab=[bf*2,bf*3,bf*4];
-          stab.forEach(f=>{
-            const o=ctx.createOscillator(),g=ctx.createGain();o.type='sawtooth';o.frequency.value=f;
-            g.gain.setValueAtTime(0.04,bb);g.gain.exponentialRampToValueAtTime(0.001,bb+d*2);
-            const fl=ctx.createBiquadFilter();fl.type='lowpass';fl.frequency.setValueAtTime(3000,bb);fl.frequency.exponentialRampToValueAtTime(200,bb+d*2);
-            o.connect(fl);fl.connect(g);g.connect(master);o.start(bb);o.stop(bb+d*2+0.01);musicNodes.push(o);
-          });
-        }
+        _bass(ctx,master,bb,notes[bar],d*7.5,0.22,'sawtooth');
+        if(bar%2===0)_synth(ctx,master,bb,notes[bar]*2,d*2,0.04,'sawtooth',1500);
       }
       return t+bars*d*8;
     }},
 
-  {id:'cardio',name:'Cardio Rush',desc:'Pumping EDM with rising energy',emoji:'🏃',bpm:150,
+  {id:'cardio',name:'Cardio Rush',desc:'Pumping EDM energy',emoji:'🏃',bpm:150,
     pattern(ctx,master,t){
-      const d=60/150;const bars=8;
+      const d=60/150,bars=8;
       const chords=[[130.81,164.81,196],[146.83,174.61,220],[130.81,164.81,196],[110,146.83,174.61],
                      [130.81,164.81,196],[146.83,174.61,220],[164.81,196,261.63],[146.83,174.61,220]];
       for(let bar=0;bar<bars;bar++){
-        const bb=t+bar*d*8;
+        const bb=t+bar*d*8;const ch=chords[bar];
         for(let i=0;i<8;i++){
           const bt=bb+i*d;
-          _kick(ctx,master,bt,170,0.14,0.65);
-          if(i===4){_snare(ctx,master,bt,0.5,0.12);}
-          _hat(ctx,master,bt+d*0.5,0.2,false);
-          if(i%2===0)_hat(ctx,master,bt+d*0.25,0.08,false);
-          if(i===0)_hat(ctx,master,bt,0.12,true);
-          if(bar>=6&&i>=4){
-            _hat(ctx,master,bt+d*0.125,0.06,false);
-            _hat(ctx,master,bt+d*0.375,0.06,false);
-            _hat(ctx,master,bt+d*0.625,0.06,false);
-            _hat(ctx,master,bt+d*0.875,0.06,false);
+          _kick(ctx,master,bt,160,0.12,0.55);
+          if(i===4)_snare(ctx,master,bt,0.45,0.1);
+          _hat(ctx,master,bt+d*0.5,0.14,false);
+          if(i===0)_hat(ctx,master,bt,0.08,true);
+        }
+        _pad(ctx,master,bb,ch,d*8,bar<4?0.08:0.05,d*2);
+        _bass(ctx,master,bb,ch[0]*0.5,d*7.5,0.2,'sine');
+        if(bar>=4){
+          for(let i=0;i<4;i++){
+            const bt=bb+i*d*2;
+            _synth(ctx,master,bt,ch[i%3]*2,d*1.5,0.05,'sawtooth',2500);
           }
         }
-        const ch=chords[bar];
-        if(bar<4){
-          _pad(ctx,master,bb,ch,d*8,0.09,d*2);
-        }else{
-          for(let i=0;i<8;i++){
-            const bt=bb+i*d;
-            ch.forEach(f=>{
-              const o=ctx.createOscillator(),g=ctx.createGain();
-              o.type='sawtooth';o.frequency.value=f*2;
-              const o2=ctx.createOscillator();o2.type='sawtooth';o2.frequency.value=f*2*1.007;
-              g.gain.setValueAtTime(i%2===0?0.07:0.04,bt);g.gain.exponentialRampToValueAtTime(0.001,bt+d*0.7);
-              const fl=ctx.createBiquadFilter();fl.type='lowpass';fl.frequency.setValueAtTime(3000,bt);fl.frequency.exponentialRampToValueAtTime(500,bt+d*0.7);fl.Q.value=3;
-              o.connect(fl);o2.connect(fl);fl.connect(g);g.connect(master);
-              o.start(bt);o.stop(bt+d+0.01);o2.start(bt);o2.stop(bt+d+0.01);musicNodes.push(o,o2);
-            });
-          }
-        }
-        const bf=ch[0]*0.5;
-        const o=ctx.createOscillator(),g=ctx.createGain();
-        o.type='sine';o.frequency.value=bf;
-        g.gain.setValueAtTime(0.25,bb);g.gain.exponentialRampToValueAtTime(0.01,bb+d*7.5);
-        const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=200;
-        o.connect(lp);lp.connect(g);g.connect(master);o.start(bb);o.stop(bb+d*8+0.01);musicNodes.push(o);
         if(bar===3||bar===7){
-          for(let r=0;r<16;r++){
-            const rt=bb+d*4+r*(d*4/16);
-            _snare(ctx,master,rt,0.15+r*0.025,0.04);
+          for(let r=0;r<8;r++){
+            const rt=bb+d*4+r*(d*4/8);
+            _snare(ctx,master,rt,0.1+r*0.04,0.04);
           }
         }
       }
       return t+bars*d*8;
     }},
 
-  {id:'focus',name:'Deep Focus',desc:'Warm ambient with gentle waves',emoji:'🧘',bpm:72,
+  {id:'focus',name:'Deep Focus',desc:'Calm ambient for stretching',emoji:'🧘',bpm:72,
     pattern(ctx,master,t){
-      const d=60/72;const bars=8;
-      const progression=[[82.41,123.47,164.81],[87.31,130.81,174.61],[73.42,110,146.83],[82.41,123.47,164.81],
-                          [92.50,138.59,185.00],[87.31,130.81,174.61],[73.42,110,146.83],[82.41,123.47,164.81]];
+      const d=60/72,bars=8;
+      const prog=[[82.41,123.47,164.81],[87.31,130.81,174.61],[73.42,110,146.83],[82.41,123.47,164.81],
+                   [92.50,138.59,185.00],[87.31,130.81,174.61],[73.42,110,146.83],[82.41,123.47,164.81]];
       for(let bar=0;bar<bars;bar++){
-        const bb=t+bar*d*4;const ch=progression[bar];
-        _pad(ctx,master,bb,ch,d*4.2,0.13,d*1.5);
-        _pad(ctx,master,bb,[ch[0]*2,ch[1]*2],d*4.2,0.04,d*2);
-        const arp=[ch[2],ch[1],ch[2]*1.5,ch[1],ch[0]*2,ch[1],ch[2],ch[2]*0.75];
+        const bb=t+bar*d*4;const ch=prog[bar];
+        _pad(ctx,master,bb,ch,d*4,0.1,d*1.5);
+        const arp=[ch[2],ch[1],ch[2]*1.5,ch[0]*2];
         for(let i=0;i<4;i++){
-          const abt=bb+i*d;const af=arp[(bar*4+i)%8];
+          const abt=bb+i*d;const af=arp[i%4];
           const o=ctx.createOscillator(),g=ctx.createGain();
           o.type='sine';o.frequency.value=af;
-          g.gain.setValueAtTime(0.001,abt);g.gain.linearRampToValueAtTime(0.06,abt+0.05);g.gain.exponentialRampToValueAtTime(0.001,abt+d*0.9);
-          const dl=ctx.createDelay();dl.delayTime.value=d*0.75;
-          const dlG=ctx.createGain();dlG.gain.value=0.3;
-          o.connect(g);g.connect(master);g.connect(dl);dl.connect(dlG);dlG.connect(master);
-          o.start(abt);o.stop(abt+d+0.01);musicNodes.push(o);
+          g.gain.setValueAtTime(0.001,abt);g.gain.linearRampToValueAtTime(0.05,abt+0.02);g.gain.linearRampToValueAtTime(0.001,abt+d*0.85);
+          o.connect(g);g.connect(master);o.start(abt);o.stop(abt+d+0.05);musicNodes.push(o);
         }
-        if(bar%2===0){
-          const sub=ctx.createOscillator(),sg=ctx.createGain();
-          sub.type='sine';sub.frequency.value=ch[0]*0.5;
-          sg.gain.setValueAtTime(0.001,bb);sg.gain.linearRampToValueAtTime(0.12,bb+d);sg.gain.linearRampToValueAtTime(0.001,bb+d*4);
-          sub.connect(sg);sg.connect(master);sub.start(bb);sub.stop(bb+d*4+0.01);musicNodes.push(sub);
-        }
-        if(bar%4===0){
-          const swpBuf=_noise(ctx,d*4);const swpSrc=ctx.createBufferSource();swpSrc.buffer=swpBuf;
-          const swpG=ctx.createGain();swpG.gain.setValueAtTime(0.001,bb);swpG.gain.linearRampToValueAtTime(0.015,bb+d*2);swpG.gain.linearRampToValueAtTime(0.001,bb+d*4);
-          const bp=ctx.createBiquadFilter();bp.type='bandpass';bp.frequency.setValueAtTime(200,bb);bp.frequency.linearRampToValueAtTime(4000,bb+d*2);bp.frequency.linearRampToValueAtTime(200,bb+d*4);bp.Q.value=0.5;
-          swpSrc.connect(bp);bp.connect(swpG);swpG.connect(master);swpSrc.start(bb);musicNodes.push(swpSrc);
-        }
+        if(bar%2===0)_bass(ctx,master,bb,ch[0]*0.5,d*4,0.08,'sine');
       }
       return t+bars*d*4;
     }},
 
-  {id:'warrior',name:'Iron Will',desc:'Epic cinematic with war drums',emoji:'⚔️',bpm:128,
+  {id:'warrior',name:'Iron Will',desc:'Epic cinematic war drums',emoji:'⚔️',bpm:128,
     pattern(ctx,master,t){
-      const d=60/128;const bars=8;
+      const d=60/128,bars=8;
       const epic=[[82.41,123.47,164.81],[73.42,110,164.81],[65.41,98,130.81],[73.42,110,146.83],
                    [82.41,123.47,164.81],[87.31,130.81,174.61],[73.42,110,164.81],[82.41,110,146.83]];
       for(let bar=0;bar<bars;bar++){
         const bb=t+bar*d*8;const ch=epic[bar];
         for(let i=0;i<8;i++){
           const bt=bb+i*d;
-          if(i===0){_kick(ctx,master,bt,100,0.35,0.85);}
-          if(i===4){_kick(ctx,master,bt,100,0.35,0.85);_snare(ctx,master,bt,0.6,0.2);}
-          if(bar>=4&&(i===0||i===2||i===4||i===6)){
-            _kick(ctx,master,bt,80,0.28,0.5);
-          }
-          if(bar>=2&&i===7){_snare(ctx,master,bt+d*0.5,0.25,0.06);}
-          if(i===0||i===4)_hat(ctx,master,bt,0.1,true);
-          if(bar>=4){_hat(ctx,master,bt+d*0.5,0.12,false);}
+          if(i===0)_kick(ctx,master,bt,90,0.3,0.7);
+          if(i===4){_kick(ctx,master,bt,90,0.3,0.7);_snare(ctx,master,bt,0.5,0.18);}
+          if(bar>=4&&i%2===0)_kick(ctx,master,bt,70,0.2,0.35);
+          if(i===0||i===4)_hat(ctx,master,bt,0.07,true);
+          if(bar>=4)_hat(ctx,master,bt+d*0.5,0.08,false);
         }
-        if(bar<4||bar>=6){
-          const timpFreq=ch[0]*0.5;
-          const patterns=[[0,0,3,0,4,0,6,0],[0,2,3,0,4,6,7,0],[0,0,0,3,4,0,0,6],[0,2,0,4,0,6,7,0]];
-          const pat=patterns[bar%4];
-          pat.forEach((hit,i)=>{
-            if(hit===0&&i>0)return;
-            const bt=bb+i*d;
-            const to=ctx.createOscillator(),tg=ctx.createGain();
-            to.type='sine';to.frequency.setValueAtTime(timpFreq*1.5,bt);to.frequency.exponentialRampToValueAtTime(timpFreq,bt+0.05);
-            tg.gain.setValueAtTime(0.25,bt);tg.gain.exponentialRampToValueAtTime(0.001,bt+0.4);
-            to.connect(tg);tg.connect(master);to.start(bt);to.stop(bt+0.45);musicNodes.push(to);
-          });
-        }
-        _pad(ctx,master,bb,[ch[0],ch[1],ch[2]],d*8.2,0.1,d*2);
+        _pad(ctx,master,bb,ch,d*8,0.08,d*2);
+        _bass(ctx,master,bb,ch[0]*0.5,d*7.5,0.18,'sine');
         if(bar>=2){
-          const melody=[329.63,392,440,392,349.23,329.63,293.66,329.63,
-                        349.23,392,440,523.25,440,392,349.23,293.66];
+          const mel=[329.63,392,440,392,349.23,329.63,293.66,329.63];
           for(let i=0;i<4;i++){
-            const mf=melody[(bar*4+i)%16];
-            const mbt=bb+i*d*2;
-            const o=ctx.createOscillator(),o2=ctx.createOscillator(),g=ctx.createGain();
-            o.type='sawtooth';o.frequency.value=mf;
-            o2.type='square';o2.frequency.value=mf*1.003;
-            g.gain.setValueAtTime(0.001,mbt);g.gain.linearRampToValueAtTime(bar>=6?0.08:0.05,mbt+0.05);
-            g.gain.setValueAtTime(bar>=6?0.08:0.05,mbt+d*1.5);g.gain.exponentialRampToValueAtTime(0.001,mbt+d*2);
-            const fl=ctx.createBiquadFilter();fl.type='lowpass';fl.frequency.value=2200;fl.Q.value=1;
-            o.connect(fl);o2.connect(fl);fl.connect(g);g.connect(master);
-            o.start(mbt);o.stop(mbt+d*2+0.01);o2.start(mbt);o2.stop(mbt+d*2+0.01);musicNodes.push(o,o2);
+            const mf=mel[(bar*4+i)%8];
+            _synth(ctx,master,bb+i*d*2,mf,d*1.8,bar>=6?0.06:0.04,'sawtooth',1800);
           }
         }
-        const sub=ctx.createOscillator(),sg=ctx.createGain();
-        sub.type='sine';sub.frequency.value=ch[0]*0.5;
-        sg.gain.setValueAtTime(0.2,bb);sg.gain.exponentialRampToValueAtTime(0.01,bb+d*7.5);
-        sub.connect(sg);sg.connect(master);sub.start(bb);sub.stop(bb+d*8+0.01);musicNodes.push(sub);
         if(bar===7){
-          for(let r=0;r<32;r++){
-            const rt=bb+d*4+r*(d*4/32);
-            if(r%2===0)_kick(ctx,master,rt,90,0.12,0.3+r*0.015);
-            _snare(ctx,master,rt,0.1+r*0.015,0.04);
+          for(let r=0;r<8;r++){
+            const rt=bb+d*4+r*(d*4/8);
+            _snare(ctx,master,rt,0.08+r*0.04,0.04);
           }
         }
       }
@@ -3795,6 +3864,7 @@ function generateCoachReply(query){
       buildQuickStart();
       updateTimerUI();
       applySettings();
+      if(accs[saved].hash)startLiveSync(saved,accs[saved].hash);
       return;
     }
   }
