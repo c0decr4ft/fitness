@@ -1866,19 +1866,23 @@ function openSets(key){
   const tbody=document.getElementById('sets-rows');tbody.innerHTML='';setRowCount=0;
   const lastLog=(S.log||[]).find(l=>l.key===key);
   let defWt,defRp;
-  if(lastLog&&lastLog.details){
+  if(setsIsBW&&userWt){
+    defWt=effectiveWt;
+    if(lastLog&&lastLog.details){defRp=lastLog.details[0]?.rp||10;}
+    else if(setsIsTimed){
+      const secMatch=e.sets.match(/(\d+)s\b/);
+      defRp=secMatch?parseInt(secMatch[1]):minMatch?parseInt(minMatch[1])*60:60;
+    }else{defRp=parseInt(e.sets.match(/\d+x(\d+)/)?.[1])||10;}
+  }else if(setsIsTimed){
+    defWt=lastLog&&lastLog.details?lastLog.details[0]?.wt||0:0;
+    if(lastLog&&lastLog.details){defRp=lastLog.details[0]?.rp||60;}
+    else{
+      const secMatch=e.sets.match(/(\d+)s\b/);
+      defRp=secMatch?parseInt(secMatch[1]):minMatch?parseInt(minMatch[1])*60:e.sets==='5K'?1800:60;
+    }
+  }else if(lastLog&&lastLog.details){
     defWt=lastLog.details[0]?.wt||60;
     defRp=lastLog.details[0]?.rp||10;
-  }else if(setsIsTimed){
-    defWt=setsIsBW&&userWt?effectiveWt:0;
-    const secMatch=e.sets.match(/(\d+)s\b/);
-    if(secMatch){defRp=parseInt(secMatch[1]);}
-    else if(minMatch){defRp=parseInt(minMatch[1])*60;}
-    else if(e.sets==='5K'){defRp=1800;}
-    else{defRp=60;}
-  }else if(setsIsBW&&userWt){
-    defWt=effectiveWt;
-    defRp=parseInt(e.sets.match(/\d+x(\d+)/)?.[1])||10;
   }else{
     defWt=60;defRp=10;
   }
