@@ -10,7 +10,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mqtt@4.3.8/dist/mqtt.min.js"></script>
-<script>if(typeof mqtt==='undefined'){document.write('<script src="https://unpkg.com/mqtt@4.3.8/dist/mqtt.min.js"><\/script>')}</script>
+<script>
+if(typeof mqtt==='undefined'){
+  var s=document.createElement('script');s.src='https://unpkg.com/mqtt@4.3.8/dist/mqtt.min.js';
+  document.head.appendChild(s);
+}
+</script>
 <style>
 :root{
   --bg:#080808;--surface:#111;--surface2:#181818;--surface3:#1e1e1e;--border:#222;--border2:#2a2a2a;
@@ -756,7 +761,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <div class="sync-badge sync-off" id="sync-badge" title="Sync offline"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0020 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 004 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg></div>
+          <div class="sync-badge sync-off" id="sync-badge" title="Sync offline" onclick="showSyncStatus()" style="cursor:pointer;"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0020 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 004 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg></div>
           <div class="streak-pill">&#x1F525; <span id="streak-count">0</span>-day streak</div>
         </div>
       </div>
@@ -969,11 +974,11 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
     <div class="page" id="page-profile">
       <div class="profile-wrap">
         <div class="profile-header">
-          <div class="profile-avatar-wrap" style="cursor:pointer;-webkit-tap-highlight-color:transparent;" onclick="document.getElementById('avatar-input').click()">
+          <label for="avatar-input" class="profile-avatar-wrap" style="cursor:pointer;display:block;-webkit-tap-highlight-color:transparent;">
             <div class="profile-avatar" id="profile-avatar"></div>
-            <div class="profile-avatar-edit">&#9998;</div>
-          </div>
-          <input type="file" id="avatar-input" accept="image/*" style="display:none;" onchange="handleAvatarPick(event)">
+            <div class="profile-avatar-edit" aria-hidden="true">&#9998;</div>
+            <input type="file" id="avatar-input" accept="image/*" onchange="handleAvatarPick(event)" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
+          </label>
           <div class="profile-name-block"><h2 id="profile-page-name">—</h2><p id="profile-page-goal">—</p><p style="font-size:12px;margin-top:4px;" id="profile-level-text"></p></div>
         </div>
 
@@ -1446,7 +1451,12 @@ const ACHIEVEMENTS = [
 // ═══════════════════════════════════════════════════
 let currentUser=null;
 
+const _hasCrypto=!!(window.crypto&&window.crypto.subtle);
 async function hashPw(pw){
+  if(!_hasCrypto){
+    let h=0;for(let i=0;i<pw.length;i++){h=((h<<5)-h)+pw.charCodeAt(i);h|=0;}
+    return 'fb'+Math.abs(h).toString(16).padStart(14,'0');
+  }
   const enc=new TextEncoder().encode(pw);
   const buf=await crypto.subtle.digest('SHA-256',enc);
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
@@ -1466,6 +1476,7 @@ async function _syncKey(pwHash){
   return crypto.subtle.importKey('raw',raw,'AES-GCM',false,['encrypt','decrypt']);
 }
 async function _syncEncrypt(obj,pwHash){
+  if(!_hasCrypto){return btoa(unescape(encodeURIComponent(JSON.stringify({_v:1,_p:pwHash,_d:obj}))));}
   const key=await _syncKey(pwHash);
   const iv=crypto.getRandomValues(new Uint8Array(12));
   const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(JSON.stringify(obj))));
@@ -1474,8 +1485,18 @@ async function _syncEncrypt(obj,pwHash){
   return btoa(b);
 }
 async function _syncDecrypt(b64,pwHash){
+  const raw64=atob(b64);
+  try{
+    const jsonStr=decodeURIComponent(escape(raw64));
+    const obj=JSON.parse(jsonStr);
+    if(obj._v===1){
+      if(obj._p===pwHash)return obj._d;
+      throw new Error('wrong_pw');
+    }
+  }catch(e){if(e.message==='wrong_pw')throw e;}
+  if(!_hasCrypto)throw new Error('crypto_unavailable');
   const key=await _syncKey(pwHash);
-  const raw=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
+  const raw=Uint8Array.from(raw64,c=>c.charCodeAt(0));
   const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:raw.slice(0,12)},key,raw.slice(12));
   return JSON.parse(new TextDecoder().decode(pt));
 }
@@ -1499,18 +1520,28 @@ function _mqttConnect(){
 
 async function syncAccountToCloud(username){
   try{
+    if(typeof mqtt==='undefined'){console.warn('MQTT library not loaded');return false;}
     const accs=getAccounts();const acc=accs[username];if(!acc)return false;
     const now=Date.now();
     if(acc.data)acc.data._syncTs=now;
     saveAccounts(accs);
-    const payload={u:username,h:acc.hash,d:acc.data,c:acc.created,ts:now,dev:DEVICE_ID};
+    const dataCopy=JSON.parse(JSON.stringify(acc.data||{}));
+    if(dataCopy.profile&&dataCopy.profile.avatar&&dataCopy.profile.avatar.length>50000){
+      const canvas=document.createElement('canvas');canvas.width=100;canvas.height=100;
+      const img=new Image();
+      await new Promise((r,j)=>{img.onload=r;img.onerror=j;img.src=dataCopy.profile.avatar;});
+      canvas.getContext('2d').drawImage(img,0,0,100,100);
+      dataCopy.profile.avatar=canvas.toDataURL('image/jpeg',0.5);
+    }
+    const payload={u:username,h:acc.hash,d:dataCopy,c:acc.created,ts:now,dev:DEVICE_ID};
     const encrypted=await _syncEncrypt(payload,acc.hash);
-    if(encrypted.length>120000){console.warn('Account data too large for cloud sync');return false;}
+    if(encrypted.length>240000){console.warn('Account data too large for cloud sync');return false;}
+    _updateSyncBadge('syncing');
     if(_liveClient&&_liveClient.connected&&_liveUser===username){
       return new Promise((resolve)=>{
         _liveClient.publish(MQTT_PREFIX+username,encrypted,{qos:1,retain:true},(err)=>{
-          if(err){console.warn('Live publish error:',err);resolve(false);}
-          else{console.log('Cloud sync OK (live) for',username);resolve(true);}
+          if(err){console.warn('Live publish error:',err);_updateSyncBadge('off');resolve(false);}
+          else{console.log('Cloud sync OK (live) for',username);_updateSyncBadge('live');resolve(true);}
         });
       });
     }
@@ -1518,11 +1549,11 @@ async function syncAccountToCloud(username){
     return new Promise((resolve)=>{
       client.publish(MQTT_PREFIX+username,encrypted,{qos:1,retain:true},(err)=>{
         try{client.end();}catch(e){}
-        if(err){console.warn('MQTT publish error:',err);resolve(false);}
-        else{console.log('Cloud sync OK for',username);resolve(true);}
+        if(err){console.warn('MQTT publish error:',err);_updateSyncBadge('off');resolve(false);}
+        else{console.log('Cloud sync OK for',username);if(_liveClient&&_liveClient.connected)_updateSyncBadge('live');resolve(true);}
       });
     });
-  }catch(e){console.warn('Cloud sync error:',e);return false;}
+  }catch(e){console.warn('Cloud sync error:',e);_updateSyncBadge('off');return false;}
 }
 
 async function cloudSearchByUsername(username,password){
@@ -1564,6 +1595,7 @@ function startLiveSync(username,pwHash){
   if(typeof mqtt==='undefined'||!username||!pwHash)return;
   _liveUser=username;_liveHash=pwHash;
   _updateSyncBadge('syncing');
+  _startSyncPoll();
   let brokerIdx=0;
   let isFirstConnect=true;
   function tryConnect(){
@@ -1621,6 +1653,82 @@ function stopLiveSync(){
   _liveUser=null;_liveHash=null;
   if(_liveClient){try{_liveClient.end(true);}catch(e){}_liveClient=null;}
   _updateSyncBadge('off');
+  _stopSyncPoll();
+}
+let _syncPollTimer=null;
+let _syncPollBusy=false;
+async function _pullFromCloud(){
+  if(_syncPollBusy||!currentUser||typeof mqtt==='undefined')return;
+  const accs=getAccounts();const acc=accs[currentUser];
+  if(!acc||!acc.hash)return;
+  _syncPollBusy=true;
+  try{
+    const client=await _mqttConnect();
+    const result=await new Promise((resolve)=>{
+      let found=false;
+      const timeout=setTimeout(()=>{if(!found){try{client.end();}catch(e){}resolve(null);}},8000);
+      client.subscribe(MQTT_PREFIX+currentUser,{qos:1},(err)=>{
+        if(err){clearTimeout(timeout);try{client.end();}catch(e){}resolve(null);}
+      });
+      client.on('message',async(topic,msg)=>{
+        if(found)return;found=true;clearTimeout(timeout);
+        try{client.end();}catch(e){}
+        try{
+          const b64=msg.toString();
+          const data=await _syncDecrypt(b64,acc.hash);
+          resolve(data);
+        }catch(e){resolve(null);}
+      });
+    });
+    if(!result||!result.u||result.u!==currentUser)return;
+    if(result.dev===DEVICE_ID)return;
+    const local=getAccounts()[currentUser];
+    if(!local)return;
+    const localTs=(local.data&&local.data._syncTs)||0;
+    const remoteTs=result.ts||0;
+    if(remoteTs<=localTs)return;
+    console.log('Poll sync: update from device',result.dev);
+    const accs2=getAccounts();
+    accs2[currentUser].data=result.d||{};
+    if(result.d&&result.d._syncTs)accs2[currentUser].data._syncTs=result.d._syncTs;
+    saveAccounts(accs2);
+    S=accs2[currentUser].data;
+    _refreshFullUI();
+    _showSyncToast();
+  }catch(e){console.warn('Poll sync error:',e);}
+  finally{_syncPollBusy=false;}
+}
+function _startSyncPoll(){
+  _stopSyncPoll();
+  _syncPollTimer=setInterval(()=>{
+    if(document.visibilityState==='visible')_pullFromCloud();
+  },45000);
+  document.addEventListener('visibilitychange',_onSyncVisibility);
+}
+function _stopSyncPoll(){
+  clearInterval(_syncPollTimer);_syncPollTimer=null;
+  document.removeEventListener('visibilitychange',_onSyncVisibility);
+}
+function _onSyncVisibility(){
+  if(document.visibilityState!=='visible'||!currentUser)return;
+  const accs=getAccounts();const acc=accs[currentUser];
+  if(acc&&acc.hash&&(!_liveClient||!_liveClient.connected)){
+    console.log('Reconnecting live sync after tab focus');
+    startLiveSync(currentUser,acc.hash);
+  }
+  setTimeout(_pullFromCloud,1500);
+}
+
+function showSyncStatus(){
+  const mqttOk=typeof mqtt!=='undefined';
+  const connected=_liveClient&&_liveClient.connected;
+  let msg='';
+  if(!mqttOk)msg='Sync library failed to load. Try refreshing the page.';
+  else if(connected)msg='Live sync is active. Changes sync automatically between devices.';
+  else if(_liveUser)msg='Reconnecting to sync server…';
+  else if(!currentUser)msg='Log in to enable sync.';
+  else msg='Sync offline. Tap "Sync Account to Cloud" in Settings to retry.';
+  _showSyncToast(msg);
 }
 
 function _refreshFullUI(){
@@ -1628,18 +1736,19 @@ function _refreshFullUI(){
   applyProfile();applyExFilters();buildLog();buildQuickStart();updateTimerUI();applySettings();
   try{renderAchievements();}catch(e){}
   try{renderProfileStats();}catch(e){}
+  try{initImprovementPage();}catch(e){}
 }
 
-function _showSyncToast(){
+function _showSyncToast(msg){
   let toast=document.getElementById('sync-toast');
   if(!toast){
     toast=document.createElement('div');toast.id='sync-toast';
-    toast.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:10px 20px;border-radius:12px;font-family:"Bebas Neue",sans-serif;font-size:15px;letter-spacing:1px;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;';
+    toast.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:10px 20px;border-radius:12px;font-family:"DM Sans",sans-serif;font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;max-width:90vw;text-align:center;';
     document.body.appendChild(toast);
   }
-  toast.textContent='⚡ Synced from another device';
+  toast.textContent=msg||'⚡ Synced from another device';
   toast.style.opacity='1';
-  setTimeout(()=>{toast.style.opacity='0';},3000);
+  setTimeout(()=>{toast.style.opacity='0';},3500);
 }
 
 function authTab(tab){
@@ -1929,6 +2038,7 @@ function load(){
   return(accs[currentUser]&&accs[currentUser].data)||{};
 }
 let _cloudSyncTimer=null;
+let _cloudSyncPending=false;
 function save(s){
   if(!currentUser)return;
   const accs=getAccounts();
@@ -1936,9 +2046,18 @@ function save(s){
   accs[currentUser].data=s;
   saveAccounts(accs);
   clearTimeout(_cloudSyncTimer);
+  _cloudSyncPending=true;
   const u=currentUser;
-  _cloudSyncTimer=setTimeout(()=>syncAccountToCloud(u),5000);
+  _cloudSyncTimer=setTimeout(()=>{_cloudSyncPending=false;syncAccountToCloud(u);},3000);
 }
+window.addEventListener('beforeunload',()=>{
+  if(_cloudSyncPending&&currentUser){
+    clearTimeout(_cloudSyncTimer);_cloudSyncPending=false;
+    const accs=getAccounts();const acc=accs[currentUser];
+    if(acc&&acc.data){acc.data._syncTs=Date.now();saveAccounts(accs);}
+    try{syncAccountToCloud(currentUser);}catch(e){}
+  }
+});
 let S = {};
 
 // ═══════════════════════════════════════════════════
@@ -3871,7 +3990,10 @@ function generateCoachReply(query){
       buildQuickStart();
       updateTimerUI();
       applySettings();
-      if(accs[saved].hash)startLiveSync(saved,accs[saved].hash);
+      if(accs[saved].hash){
+        startLiveSync(saved,accs[saved].hash);
+        setTimeout(()=>syncAccountToCloud(saved),2000);
+      }
       return;
     }
   }
