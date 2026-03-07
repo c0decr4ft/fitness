@@ -569,7 +569,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 <div id="auth-screen">
   <div class="auth-box">
     <div class="auth-logo">FORGE</div>
-    <div class="auth-sub">Your fitness data is saved to your account.<br>Log in on any device to pick up where you left off.</div>
+    <div class="auth-sub">Your fitness data is saved to your account.<br>Transfer your account to use it on any device.</div>
     <div class="auth-tabs">
       <button class="auth-tab active" onclick="authTab('login')">Log In</button>
       <button class="auth-tab" onclick="authTab('signup')">Create Account</button>
@@ -581,9 +581,13 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
       <label class="field-label" style="margin-top:12px;">Password</label>
       <input class="field-input" id="login-pass" type="password" placeholder="Your password" autocomplete="off">
       <button class="auth-btn" onclick="doLogin()">Log In</button>
-      <div class="auth-divider">or restore from backup</div>
-      <textarea class="auth-import-area" id="import-code" placeholder="Paste your backup code here to restore your account on this device…"></textarea>
-      <button class="auth-btn secondary" onclick="importBackup()">Restore From Backup Code</button>
+      <div class="auth-divider">have an account on another device?</div>
+      <button class="auth-btn secondary" onclick="toggleTransferPanel()" id="transfer-toggle-btn" style="margin-bottom:0;">📲 Transfer Account From Another Device</button>
+      <div id="transfer-panel" style="display:none;margin-top:14px;">
+        <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5;">On your other device, go to <strong>Settings → Account → Share Account</strong> and copy the code. Then paste it here:</p>
+        <textarea class="auth-import-area" id="import-code" placeholder="Paste your account transfer code here…"></textarea>
+        <button class="auth-btn" onclick="importBackup()" style="margin-top:8px;">Restore Account</button>
+      </div>
     </div>
     <div class="auth-form" id="auth-signup">
       <div class="auth-err" id="signup-err"></div>
@@ -816,11 +820,11 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
     <div class="page" id="page-profile">
       <div class="profile-wrap">
         <div class="profile-header">
-          <div class="profile-avatar-wrap" onclick="pickAvatar()">
+          <label class="profile-avatar-wrap" for="avatar-input" style="cursor:pointer;">
             <div class="profile-avatar" id="profile-avatar"></div>
             <div class="profile-avatar-edit">&#9998;</div>
-          </div>
-          <input type="file" id="avatar-input" accept="image/*" style="display:none;" onchange="handleAvatarPick(event)">
+            <input type="file" id="avatar-input" accept="image/*" capture="environment" style="position:absolute;width:0;height:0;opacity:0;pointer-events:none;" onchange="handleAvatarPick(event)">
+          </label>
           <div class="profile-name-block"><h2 id="profile-page-name">—</h2><p id="profile-page-goal">—</p><p style="font-size:12px;margin-top:4px;" id="profile-level-text"></p></div>
         </div>
 
@@ -971,9 +975,13 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
         <div class="profile-card">
           <h3>Account</h3>
           <div class="profile-row"><span class="profile-row-label">Username</span><span class="profile-row-val" id="profile-username">—</span></div>
-          <button class="save-profile-btn" onclick="generateBackupCode()" style="background:var(--accent);color:#000;margin-bottom:10px;">Generate Backup Code</button>
-          <p style="font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.5;">Use this code to restore your account on another device. Copy it and paste it on the login screen.</p>
-          <textarea class="auth-import-area" id="backup-code-output" readonly style="display:none;margin-bottom:10px;" onclick="this.select();document.execCommand('copy');"></textarea>
+          <div style="background:rgba(200,255,0,0.08);border:1px solid rgba(200,255,0,0.2);border-radius:12px;padding:16px;margin:12px 0;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);margin-bottom:6px;">📲 Share Account</div>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5;">Want to use your account on another device? Generate a transfer code and paste it on the other device's login screen.</p>
+            <button class="save-profile-btn" onclick="generateBackupCode()" style="background:var(--accent);color:#000;margin-bottom:8px;width:100%;">Generate Transfer Code</button>
+            <textarea class="auth-import-area" id="backup-code-output" readonly style="display:none;margin-bottom:8px;font-size:10px;" onclick="this.select();try{navigator.clipboard.writeText(this.value);}catch(e){}"></textarea>
+            <div id="backup-copied-msg" style="display:none;font-size:11px;color:var(--accent);text-align:center;margin-bottom:8px;">✓ Code copied to clipboard! Paste it on your other device.</div>
+          </div>
           <button class="save-profile-btn" onclick="exportData()" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);">Export Data as JSON File</button>
         </div>
 
@@ -1306,8 +1314,8 @@ function authTab(tab){
 
 async function doSignup(){
   const u=document.getElementById('signup-user').value.trim().toLowerCase();
-  const p=document.getElementById('signup-pass').value;
-  const p2=document.getElementById('signup-pass2').value;
+  const p=document.getElementById('signup-pass').value.trim();
+  const p2=document.getElementById('signup-pass2').value.trim();
   const err=document.getElementById('signup-err');
   const ok=document.getElementById('signup-ok');
   err.style.display='none';ok.style.display='none';
@@ -1331,15 +1339,26 @@ async function doSignup(){
 }
 
 async function doLogin(){
-  const u=document.getElementById('login-user').value.trim().toLowerCase();
+  const raw=document.getElementById('login-user').value.trim();
+  const u=raw.toLowerCase();
   const p=document.getElementById('login-pass').value;
   const err=document.getElementById('login-err');
   err.style.display='none';
   if(!u||!p){err.textContent='Enter both username and password.';err.style.display='block';return;}
   const accs=getAccounts();
-  if(!accs[u]){err.textContent='Account not found. Create one first or restore from backup.';err.style.display='block';return;}
+  if(!accs[u]){
+    const similar=Object.keys(accs).find(k=>k.replace(/_/g,'')===u.replace(/_/g,'')||k.includes(u)||u.includes(k));
+    if(similar){err.textContent=`Account "${u}" not found. Did you mean "${similar}"?`;
+    }else{err.textContent='Account not found. Check the spelling or create a new account.';}
+    err.style.display='block';return;
+  }
   const h=await hashPw(p);
-  if(accs[u].hash!==h){err.textContent='Wrong password. Try again.';err.style.display='block';return;}
+  if(accs[u].hash!==h){
+    const trimH=await hashPw(p.trim());
+    if(accs[u].hash===trimH){loginAs(u);return;}
+    err.textContent='Wrong password. Make sure caps lock is off and check for extra spaces.';
+    err.style.display='block';return;
+  }
   loginAs(u);
 }
 
@@ -1359,8 +1378,10 @@ function loginAs(u){
 }
 
 function doLogout(){
+  if(currentUser&&S){save(S);}
   currentUser=null;
   localStorage.removeItem('forge_current_user');
+  S={};
   document.getElementById('auth-screen').classList.remove('hidden');
   document.getElementById('setup-screen').classList.add('hidden');
   document.getElementById('login-user').value='';
@@ -1376,8 +1397,14 @@ function confirmDeleteAccount(){
   });
 }
 
+function toggleTransferPanel(){
+  const panel=document.getElementById('transfer-panel');
+  panel.style.display=panel.style.display==='none'?'block':'none';
+}
+
 function generateBackupCode(){
   if(!currentUser)return;
+  save(S);
   const accs=getAccounts();
   const acc=accs[currentUser];if(!acc)return;
   const payload={u:currentUser,h:acc.hash,d:acc.data,c:acc.created};
@@ -1385,14 +1412,17 @@ function generateBackupCode(){
   const el=document.getElementById('backup-code-output');
   el.value=code;el.style.display='block';
   el.select();
-  try{navigator.clipboard.writeText(code);}catch(e){}
+  try{navigator.clipboard.writeText(code).then(()=>{
+    const msg=document.getElementById('backup-copied-msg');
+    if(msg){msg.style.display='block';setTimeout(()=>{msg.style.display='none';},4000);}
+  });}catch(e){}
 }
 
 function importBackup(){
   const raw=document.getElementById('import-code').value.trim();
   const err=document.getElementById('login-err');
   err.style.display='none';
-  if(!raw){err.textContent='Paste a backup code first.';err.style.display='block';return;}
+  if(!raw){err.textContent='Paste a transfer code first.';err.style.display='block';return;}
   try{
     const json=decodeURIComponent(escape(atob(raw)));
     const payload=JSON.parse(json);
@@ -1400,8 +1430,9 @@ function importBackup(){
     const accs=getAccounts();
     accs[payload.u]={hash:payload.h,data:payload.d||{},created:payload.c||Date.now()};
     saveAccounts(accs);
+    document.getElementById('import-code').value='';
     loginAs(payload.u);
-  }catch(e){err.textContent='Invalid backup code. Check that you copied the entire code.';err.style.display='block';}
+  }catch(e){err.textContent='Invalid transfer code. Make sure you copied the entire code from the other device.';err.style.display='block';}
 }
 
 function quickLogin(u){
@@ -1458,7 +1489,7 @@ let S = {};
 // ═══════════════════════════════════════════════════
 //  PHOTO HANDLING (removed)
 // ═══════════════════════════════════════════════════
-function pickAvatar(){document.getElementById('avatar-input').click();}
+function pickAvatar(){document.getElementById('avatar-input').click();} // kept for backward compat
 function handleAvatarPick(ev){
   const file=ev.target.files[0];if(!file)return;
   const reader=new FileReader();
