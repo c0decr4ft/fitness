@@ -569,7 +569,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 <div id="auth-screen">
   <div class="auth-box">
     <div class="auth-logo">FORGE</div>
-    <div class="auth-sub">Your fitness data is saved to your account.<br>Transfer your account to use it on any device.</div>
+    <div class="auth-sub">Your fitness data is saved to the cloud.<br>Log in with your username and password on any device.</div>
     <div class="auth-tabs">
       <button class="auth-tab active" onclick="authTab('login')">Log In</button>
       <button class="auth-tab" onclick="authTab('signup')">Create Account</button>
@@ -581,12 +581,12 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
       <label class="field-label" style="margin-top:12px;">Password</label>
       <input class="field-input" id="login-pass" type="password" placeholder="Your password" autocomplete="off">
       <button class="auth-btn" onclick="doLogin()">Log In</button>
-      <div class="auth-divider">have an account on another device?</div>
-      <button class="auth-btn secondary" onclick="toggleTransferPanel()" id="transfer-toggle-btn" style="margin-bottom:0;">📲 Transfer Account From Another Device</button>
+      <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.5;">☁️ Accounts sync to the cloud. Just enter your username and password — it works on any device!</p>
+      <div class="auth-divider">or restore from backup code</div>
+      <button class="auth-btn secondary" onclick="toggleTransferPanel()" id="transfer-toggle-btn" style="margin-bottom:0;font-size:11px;">I have a backup code</button>
       <div id="transfer-panel" style="display:none;margin-top:14px;">
-        <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5;">On your other device, go to <strong>Settings → Account → Share Account</strong> and copy the code. Then paste it here:</p>
-        <textarea class="auth-import-area" id="import-code" placeholder="Paste your account transfer code here…"></textarea>
-        <button class="auth-btn" onclick="importBackup()" style="margin-top:8px;">Restore Account</button>
+        <textarea class="auth-import-area" id="import-code" placeholder="Paste backup code here…"></textarea>
+        <button class="auth-btn secondary" onclick="importBackup()" style="margin-top:8px;">Restore From Code</button>
       </div>
     </div>
     <div class="auth-form" id="auth-signup">
@@ -976,11 +976,11 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
           <h3>Account</h3>
           <div class="profile-row"><span class="profile-row-label">Username</span><span class="profile-row-val" id="profile-username">—</span></div>
           <div style="background:rgba(200,255,0,0.08);border:1px solid rgba(200,255,0,0.2);border-radius:12px;padding:16px;margin:12px 0;">
-            <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);margin-bottom:6px;">📲 Share Account</div>
-            <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5;">Want to use your account on another device? Generate a transfer code and paste it on the other device's login screen.</p>
-            <button class="save-profile-btn" onclick="generateBackupCode()" style="background:var(--accent);color:#000;margin-bottom:8px;width:100%;">Generate Transfer Code</button>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);margin-bottom:6px;">☁️ Cloud Sync</div>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5;">Your account is automatically synced to the cloud. On another device, just enter your <strong>username and password</strong> to log in — no codes needed!</p>
+            <button class="save-profile-btn" onclick="generateBackupCode()" style="background:var(--accent);color:#000;margin-bottom:8px;width:100%;">Sync Account to Cloud</button>
             <textarea class="auth-import-area" id="backup-code-output" readonly style="display:none;margin-bottom:8px;font-size:10px;" onclick="this.select();try{navigator.clipboard.writeText(this.value);}catch(e){}"></textarea>
-            <div id="backup-copied-msg" style="display:none;font-size:11px;color:var(--accent);text-align:center;margin-bottom:8px;">✓ Code copied to clipboard! Paste it on your other device.</div>
+            <div id="backup-copied-msg" style="display:none;font-size:12px;text-align:center;margin-bottom:8px;line-height:1.5;"></div>
           </div>
           <button class="save-profile-btn" onclick="exportData()" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);">Export Data as JSON File</button>
         </div>
@@ -1302,6 +1302,82 @@ async function hashPw(pw){
 function getAccounts(){try{return JSON.parse(localStorage.getItem('forge_accounts'))||{};}catch(e){return{};}}
 function saveAccounts(a){localStorage.setItem('forge_accounts',JSON.stringify(a));}
 
+const CLOUD_API='https://jsonblob.com/api/jsonBlob';
+function getCloudIndex(){try{return JSON.parse(localStorage.getItem('forge_cloud_index'))||{};}catch(e){return{};}}
+function saveCloudIndex(idx){localStorage.setItem('forge_cloud_index',JSON.stringify(idx));}
+
+async function cloudUpload(username){
+  try{
+    const accs=getAccounts();const acc=accs[username];if(!acc)return;
+    const payload={u:username,h:acc.hash,d:acc.data,c:acc.created,ts:Date.now()};
+    const idx=getCloudIndex();
+    const existing=idx[username];
+    if(existing){
+      await fetch(CLOUD_API+'/'+existing,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    }else{
+      const r=await fetch(CLOUD_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      if(!r.ok)return null;
+      const blobId=r.headers.get('X-jsonblob-id')||r.headers.get('Location')?.split('/').pop();
+      if(blobId){idx[username]=blobId;saveCloudIndex(idx);}
+      return blobId;
+    }
+    return existing;
+  }catch(e){return null;}
+}
+
+async function cloudDownload(blobId){
+  try{
+    const r=await fetch(CLOUD_API+'/'+blobId);
+    if(!r.ok)return null;
+    return await r.json();
+  }catch(e){return null;}
+}
+
+async function cloudFindByCode(code){
+  const clean=code.trim();
+  if(!clean)return null;
+  return await cloudDownload(clean);
+}
+
+const CLOUD_DIR_ID='019cc742-cdc5-7356-b86c-b65689ea51fd';
+
+async function syncAccountToCloud(username){
+  if(!navigator.onLine)return;
+  try{
+    const blobId=await cloudUpload(username);
+    if(blobId)await cloudDirRegister(username,blobId);
+  }catch(e){}
+}
+
+async function cloudDirRegister(username,blobId){
+  try{
+    const r=await fetch(CLOUD_API+'/'+CLOUD_DIR_ID);
+    if(!r.ok)return;
+    const dir=await r.json();
+    dir[username]=blobId;
+    await fetch(CLOUD_API+'/'+CLOUD_DIR_ID,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(dir)});
+  }catch(e){}
+}
+
+async function cloudSearchByUsername(username){
+  if(!navigator.onLine)return null;
+  try{
+    const idx=getCloudIndex();
+    if(idx[username]){
+      const data=await cloudDownload(idx[username]);
+      if(data&&data.u===username){data._blobId=idx[username];return data;}
+    }
+    const r=await fetch(CLOUD_API+'/'+CLOUD_DIR_ID);
+    if(!r.ok)return null;
+    const dir=await r.json();
+    if(dir[username]){
+      const data=await cloudDownload(dir[username]);
+      if(data&&data.u===username){data._blobId=dir[username];return data;}
+    }
+    return null;
+  }catch(e){return null;}
+}
+
 function authTab(tab){
   document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('active'));
@@ -1328,6 +1404,7 @@ async function doSignup(){
   const h=await hashPw(p);
   accs[u]={hash:h,data:{},created:Date.now()};
   saveAccounts(accs);
+  syncAccountToCloud(u);
   ok.textContent='Account created! You can now log in.';ok.style.display='block';
   document.getElementById('signup-user').value='';
   document.getElementById('signup-pass').value='';
@@ -1343,15 +1420,35 @@ async function doLogin(){
   const u=raw.toLowerCase();
   const p=document.getElementById('login-pass').value;
   const err=document.getElementById('login-err');
+  const btn=document.querySelector('#auth-login .auth-btn');
   err.style.display='none';
   if(!u||!p){err.textContent='Enter both username and password.';err.style.display='block';return;}
-  const accs=getAccounts();
+  let accs=getAccounts();
+
   if(!accs[u]){
+    if(btn){btn.textContent='Searching online…';btn.disabled=true;}
+    const cloudAcc=await cloudSearchByUsername(u);
+    if(btn){btn.textContent='Log In';btn.disabled=false;}
+    if(cloudAcc){
+      const h=await hashPw(p);
+      const trimH=await hashPw(p.trim());
+      if(cloudAcc.h===h||cloudAcc.h===trimH){
+        accs[cloudAcc.u]={hash:cloudAcc.h,data:cloudAcc.d||{},created:cloudAcc.c||Date.now()};
+        saveAccounts(accs);
+        const idx=getCloudIndex();idx[cloudAcc.u]=cloudAcc._blobId;saveCloudIndex(idx);
+        loginAs(cloudAcc.u);
+        return;
+      }else{
+        err.textContent='Account found online but password is wrong. Check your password.';
+        err.style.display='block';return;
+      }
+    }
     const similar=Object.keys(accs).find(k=>k.replace(/_/g,'')===u.replace(/_/g,'')||k.includes(u)||u.includes(k));
     if(similar){err.textContent=`Account "${u}" not found. Did you mean "${similar}"?`;
-    }else{err.textContent='Account not found. Check the spelling or create a new account.';}
+    }else{err.textContent='Account not found on this device or online. Check the spelling or create a new account.';}
     err.style.display='block';return;
   }
+
   const h=await hashPw(p);
   if(accs[u].hash!==h){
     const trimH=await hashPw(p.trim());
@@ -1375,6 +1472,7 @@ function loginAs(u){
     applyProfile();applyExFilters();buildLog();buildQuickStart();updateTimerUI();applySettings();
   }else{document.getElementById('setup-screen').classList.remove('hidden');}
   const un=document.getElementById('profile-username');if(un)un.textContent=u;
+  syncAccountToCloud(u);
 }
 
 function doLogout(){
@@ -1402,20 +1500,28 @@ function toggleTransferPanel(){
   panel.style.display=panel.style.display==='none'?'block':'none';
 }
 
-function generateBackupCode(){
+async function generateBackupCode(){
   if(!currentUser)return;
   save(S);
-  const accs=getAccounts();
-  const acc=accs[currentUser];if(!acc)return;
-  const payload={u:currentUser,h:acc.hash,d:acc.data,c:acc.created};
-  const code=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-  const el=document.getElementById('backup-code-output');
-  el.value=code;el.style.display='block';
-  el.select();
-  try{navigator.clipboard.writeText(code).then(()=>{
-    const msg=document.getElementById('backup-copied-msg');
-    if(msg){msg.style.display='block';setTimeout(()=>{msg.style.display='none';},4000);}
-  });}catch(e){}
+  const btn=document.querySelector('[onclick="generateBackupCode()"]');
+  const msgEl=document.getElementById('backup-copied-msg');
+  if(btn){btn.textContent='Syncing to cloud…';btn.disabled=true;}
+
+  try{
+    await syncAccountToCloud(currentUser);
+    if(msgEl){msgEl.textContent='✓ Account synced to cloud! Your brother/sister can now log in from any device using your username and password.';msgEl.style.display='block';msgEl.style.color='var(--accent)';}
+  }catch(e){
+    if(msgEl){msgEl.textContent='Cloud sync failed. Generating backup code instead…';msgEl.style.display='block';msgEl.style.color='var(--danger)';}
+    const accs=getAccounts();
+    const acc=accs[currentUser];if(!acc)return;
+    const payload={u:currentUser,h:acc.hash,d:acc.data,c:acc.created};
+    const code=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+    const el=document.getElementById('backup-code-output');
+    el.value=code;el.style.display='block';el.select();
+    try{navigator.clipboard.writeText(code);}catch(e2){}
+  }finally{
+    if(btn){btn.textContent='Sync Account to Cloud';btn.disabled=false;}
+  }
 }
 
 function importBackup(){
@@ -1477,12 +1583,16 @@ function load(){
   const accs=getAccounts();
   return(accs[currentUser]&&accs[currentUser].data)||{};
 }
+let _cloudSyncTimer=null;
 function save(s){
   if(!currentUser)return;
   const accs=getAccounts();
   if(!accs[currentUser])return;
   accs[currentUser].data=s;
   saveAccounts(accs);
+  clearTimeout(_cloudSyncTimer);
+  const u=currentUser;
+  _cloudSyncTimer=setTimeout(()=>syncAccountToCloud(u),5000);
 }
 let S = {};
 
