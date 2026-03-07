@@ -820,10 +820,10 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
     <div class="page" id="page-profile">
       <div class="profile-wrap">
         <div class="profile-header">
-          <label class="profile-avatar-wrap" for="avatar-input" style="cursor:pointer;">
+          <label class="profile-avatar-wrap" for="avatar-input" style="cursor:pointer;display:block;">
             <div class="profile-avatar" id="profile-avatar"></div>
             <div class="profile-avatar-edit">&#9998;</div>
-            <input type="file" id="avatar-input" accept="image/*" capture="environment" style="position:absolute;width:0;height:0;opacity:0;pointer-events:none;" onchange="handleAvatarPick(event)">
+            <input type="file" id="avatar-input" accept="image/*" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:10;" onchange="handleAvatarPick(event)">
           </label>
           <div class="profile-name-block"><h2 id="profile-page-name">—</h2><p id="profile-page-goal">—</p><p style="font-size:12px;margin-top:4px;" id="profile-level-text"></p></div>
         </div>
