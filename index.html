@@ -1302,80 +1302,37 @@ async function hashPw(pw){
 function getAccounts(){try{return JSON.parse(localStorage.getItem('forge_accounts'))||{};}catch(e){return{};}}
 function saveAccounts(a){localStorage.setItem('forge_accounts',JSON.stringify(a));}
 
-const CLOUD_API='https://jsonblob.com/api/jsonBlob';
-function getCloudIndex(){try{return JSON.parse(localStorage.getItem('forge_cloud_index'))||{};}catch(e){return{};}}
-function saveCloudIndex(idx){localStorage.setItem('forge_cloud_index',JSON.stringify(idx));}
-
-async function cloudUpload(username){
-  try{
-    const accs=getAccounts();const acc=accs[username];if(!acc)return;
-    const payload={u:username,h:acc.hash,d:acc.data,c:acc.created,ts:Date.now()};
-    const idx=getCloudIndex();
-    const existing=idx[username];
-    if(existing){
-      await fetch(CLOUD_API+'/'+existing,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    }else{
-      const r=await fetch(CLOUD_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-      if(!r.ok)return null;
-      const blobId=r.headers.get('X-jsonblob-id')||r.headers.get('Location')?.split('/').pop();
-      if(blobId){idx[username]=blobId;saveCloudIndex(idx);}
-      return blobId;
-    }
-    return existing;
-  }catch(e){return null;}
+function getApiBase(){
+  return window.location.origin+'/api/';
 }
 
-async function cloudDownload(blobId){
-  try{
-    const r=await fetch(CLOUD_API+'/'+blobId);
-    if(!r.ok)return null;
-    return await r.json();
-  }catch(e){return null;}
+function cloudFetch(url,opts={}){
+  const ctrl=new AbortController();
+  const timer=setTimeout(()=>ctrl.abort(),10000);
+  return fetch(url,{...opts,signal:ctrl.signal}).finally(()=>clearTimeout(timer));
 }
-
-async function cloudFindByCode(code){
-  const clean=code.trim();
-  if(!clean)return null;
-  return await cloudDownload(clean);
-}
-
-const CLOUD_DIR_ID='019cc742-cdc5-7356-b86c-b65689ea51fd';
 
 async function syncAccountToCloud(username){
-  if(!navigator.onLine)return;
   try{
-    const blobId=await cloudUpload(username);
-    if(blobId)await cloudDirRegister(username,blobId);
-  }catch(e){}
-}
-
-async function cloudDirRegister(username,blobId){
-  try{
-    const r=await fetch(CLOUD_API+'/'+CLOUD_DIR_ID);
-    if(!r.ok)return;
-    const dir=await r.json();
-    dir[username]=blobId;
-    await fetch(CLOUD_API+'/'+CLOUD_DIR_ID,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(dir)});
-  }catch(e){}
+    const accs=getAccounts();const acc=accs[username];if(!acc)return false;
+    const payload={u:username,h:acc.hash,d:acc.data,c:acc.created,ts:Date.now()};
+    const r=await cloudFetch(getApiBase()+'account/'+encodeURIComponent(username),{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)
+    });
+    return r.ok;
+  }catch(e){console.warn('Sync error:',e);return false;}
 }
 
 async function cloudSearchByUsername(username){
-  if(!navigator.onLine)return null;
-  try{
-    const idx=getCloudIndex();
-    if(idx[username]){
-      const data=await cloudDownload(idx[username]);
-      if(data&&data.u===username){data._blobId=idx[username];return data;}
-    }
-    const r=await fetch(CLOUD_API+'/'+CLOUD_DIR_ID);
-    if(!r.ok)return null;
-    const dir=await r.json();
-    if(dir[username]){
-      const data=await cloudDownload(dir[username]);
-      if(data&&data.u===username){data._blobId=dir[username];return data;}
-    }
-    return null;
-  }catch(e){return null;}
+  if(!navigator.onLine)throw new Error('offline');
+  const r=await cloudFetch(getApiBase()+'account/'+encodeURIComponent(username));
+  if(!r.ok){
+    if(r.status===404)return null;
+    throw new Error('Server error ('+r.status+')');
+  }
+  const data=await r.json();
+  if(data&&data.u===username)return data;
+  return null;
 }
 
 function authTab(tab){
@@ -1394,6 +1351,7 @@ async function doSignup(){
   const p2=document.getElementById('signup-pass2').value.trim();
   const err=document.getElementById('signup-err');
   const ok=document.getElementById('signup-ok');
+  const btn=document.querySelector('#auth-signup .auth-btn');
   err.style.display='none';ok.style.display='none';
   if(!u||u.length<2){err.textContent='Username must be at least 2 characters.';err.style.display='block';return;}
   if(/[^a-z0-9_]/.test(u)){err.textContent='Username: only lowercase letters, numbers, and underscores.';err.style.display='block';return;}
@@ -1401,18 +1359,22 @@ async function doSignup(){
   if(p!==p2){err.textContent='Passwords do not match.';err.style.display='block';return;}
   const accs=getAccounts();
   if(accs[u]){err.textContent='That username is already taken on this device.';err.style.display='block';return;}
+  if(btn){btn.textContent='Creating…';btn.disabled=true;}
   const h=await hashPw(p);
   accs[u]={hash:h,data:{},created:Date.now()};
   saveAccounts(accs);
-  syncAccountToCloud(u);
-  ok.textContent='Account created! You can now log in.';ok.style.display='block';
+  let synced=false;
+  try{synced=await syncAccountToCloud(u);}catch(e){console.warn('Signup cloud sync:',e);}
+  if(btn){btn.textContent='Create Account';btn.disabled=false;}
+  ok.textContent=synced?'Account created and synced to cloud! You can log in from any device.':'Account created! Cloud sync will happen when you log in.';
+  ok.style.display='block';
   document.getElementById('signup-user').value='';
   document.getElementById('signup-pass').value='';
   document.getElementById('signup-pass2').value='';
   document.getElementById('login-user').value='';
   document.getElementById('login-pass').value='';
   renderAccountsList();
-  setTimeout(()=>authTab('login'),1200);
+  setTimeout(()=>authTab('login'),2000);
 }
 
 async function doLogin(){
@@ -1425,38 +1387,55 @@ async function doLogin(){
   if(!u||!p){err.textContent='Enter both username and password.';err.style.display='block';return;}
   let accs=getAccounts();
 
-  if(!accs[u]){
-    if(btn){btn.textContent='Searching online…';btn.disabled=true;}
-    const cloudAcc=await cloudSearchByUsername(u);
-    if(btn){btn.textContent='Log In';btn.disabled=false;}
-    if(cloudAcc){
-      const h=await hashPw(p);
-      const trimH=await hashPw(p.trim());
-      if(cloudAcc.h===h||cloudAcc.h===trimH){
-        accs[cloudAcc.u]={hash:cloudAcc.h,data:cloudAcc.d||{},created:cloudAcc.c||Date.now()};
-        saveAccounts(accs);
-        const idx=getCloudIndex();idx[cloudAcc.u]=cloudAcc._blobId;saveCloudIndex(idx);
-        loginAs(cloudAcc.u);
-        return;
-      }else{
-        err.textContent='Account found online but password is wrong. Check your password.';
-        err.style.display='block';return;
-      }
-    }
-    const similar=Object.keys(accs).find(k=>k.replace(/_/g,'')===u.replace(/_/g,'')||k.includes(u)||u.includes(k));
-    if(similar){err.textContent=`Account "${u}" not found. Did you mean "${similar}"?`;
-    }else{err.textContent='Account not found on this device or online. Check the spelling or create a new account.';}
-    err.style.display='block';return;
-  }
-
-  const h=await hashPw(p);
-  if(accs[u].hash!==h){
+  if(accs[u]){
+    const h=await hashPw(p);
+    if(accs[u].hash===h){loginAs(u);return;}
     const trimH=await hashPw(p.trim());
     if(accs[u].hash===trimH){loginAs(u);return;}
     err.textContent='Wrong password. Make sure caps lock is off and check for extra spaces.';
     err.style.display='block';return;
   }
-  loginAs(u);
+
+  if(btn){btn.textContent='Searching online…';btn.disabled=true;}
+  let cloudAcc=null;
+  let cloudErr=null;
+  try{
+    cloudAcc=await cloudSearchByUsername(u);
+  }catch(e){
+    cloudErr=e;
+    console.warn('Cloud search failed:',e);
+  }
+  if(btn){btn.textContent='Log In';btn.disabled=false;}
+
+  if(cloudAcc){
+    const h=await hashPw(p);
+    const trimH=await hashPw(p.trim());
+    if(cloudAcc.h===h||cloudAcc.h===trimH){
+      accs=getAccounts();
+      accs[cloudAcc.u]={hash:cloudAcc.h,data:cloudAcc.d||{},created:cloudAcc.c||Date.now()};
+      saveAccounts(accs);
+      loginAs(cloudAcc.u);
+      return;
+    }
+    err.textContent='Account found online but password is wrong. Check your password.';
+    err.style.display='block';return;
+  }
+
+  if(cloudErr){
+    if(cloudErr.message==='offline'){
+      err.textContent='You are offline. Connect to the internet to search for cloud accounts, or create a new account.';
+    }else if(cloudErr.name==='AbortError'){
+      err.textContent='Cloud search timed out. Check your internet connection and try again.';
+    }else{
+      err.textContent='Could not search the cloud. Check your internet and try again. ('+cloudErr.message+')';
+    }
+    err.style.display='block';return;
+  }
+
+  const similar=Object.keys(accs).find(k=>k.replace(/_/g,'')===u.replace(/_/g,'')||k.includes(u)||u.includes(k));
+  if(similar){err.textContent=`Account "${u}" not found. Did you mean "${similar}"?`;
+  }else{err.textContent='Account "'+u+'" not found on this device or in the cloud. Make sure you synced it first, or create a new account.';}
+  err.style.display='block';
 }
 
 function loginAs(u){
@@ -1505,23 +1484,27 @@ async function generateBackupCode(){
   save(S);
   const btn=document.querySelector('[onclick="generateBackupCode()"]');
   const msgEl=document.getElementById('backup-copied-msg');
+  const codeEl=document.getElementById('backup-code-output');
   if(btn){btn.textContent='Syncing to cloud…';btn.disabled=true;}
+  if(msgEl)msgEl.style.display='none';
+  if(codeEl)codeEl.style.display='none';
 
-  try{
-    await syncAccountToCloud(currentUser);
-    if(msgEl){msgEl.textContent='✓ Account synced to cloud! Your brother/sister can now log in from any device using your username and password.';msgEl.style.display='block';msgEl.style.color='var(--accent)';}
-  }catch(e){
-    if(msgEl){msgEl.textContent='Cloud sync failed. Generating backup code instead…';msgEl.style.display='block';msgEl.style.color='var(--danger)';}
+  let ok=false;
+  try{ok=await syncAccountToCloud(currentUser);}catch(e){console.warn('Manual sync error:',e);}
+
+  if(ok){
+    if(msgEl){msgEl.textContent='✓ Account synced to cloud! Anyone can now log in from any device with your username and password.';msgEl.style.display='block';msgEl.style.color='var(--accent)';}
+  }else{
+    if(msgEl){msgEl.textContent='Cloud sync failed — generating a backup code instead. Copy it and paste on the other device.';msgEl.style.display='block';msgEl.style.color='var(--danger)';}
     const accs=getAccounts();
-    const acc=accs[currentUser];if(!acc)return;
-    const payload={u:currentUser,h:acc.hash,d:acc.data,c:acc.created};
-    const code=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-    const el=document.getElementById('backup-code-output');
-    el.value=code;el.style.display='block';el.select();
-    try{navigator.clipboard.writeText(code);}catch(e2){}
-  }finally{
-    if(btn){btn.textContent='Sync Account to Cloud';btn.disabled=false;}
+    const acc=accs[currentUser];if(acc){
+      const payload={u:currentUser,h:acc.hash,d:acc.data,c:acc.created};
+      const code=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+      if(codeEl){codeEl.value=code;codeEl.style.display='block';codeEl.select();}
+      try{navigator.clipboard.writeText(code);}catch(e2){}
+    }
   }
+  if(btn){btn.textContent='Sync Account to Cloud';btn.disabled=false;}
 }
 
 function importBackup(){
