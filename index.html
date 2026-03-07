@@ -2317,7 +2317,7 @@ function logWeight(){
   S.weightLog.push({wt,ts:Date.now()});
   if(S.weightLog.length>100)S.weightLog=S.weightLog.slice(-100);
   if(S.profile)S.profile.weight=wt;
-  save(S);input.value='';renderWeightChart();renderBMIDash();renderBMIProfile();
+  save(S);input.value='';renderWeightChart();applyProfile();
 }
 function renderWeightChart(){
   const log=S.weightLog||[];
