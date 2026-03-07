@@ -9,7 +9,8 @@
 <title>FORGE — Fitness</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mqtt@4.3.8/dist/mqtt.min.js"></script>
+<script>if(typeof mqtt==='undefined'){document.write('<script src="https://unpkg.com/mqtt@4.3.8/dist/mqtt.min.js"><\/script>')}</script>
 <style>
 :root{
   --bg:#080808;--surface:#111;--surface2:#181818;--surface3:#1e1e1e;--border:#222;--border2:#2a2a2a;
@@ -369,6 +370,9 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 .profile-row-val{font-weight:600;font-family:'Space Mono',monospace;font-size:13px;}
 .edit-field-input{background:var(--surface2);border:1px solid var(--border);border-radius:7px;color:var(--text);padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:13px;width:140px;transition:border-color 0.2s;}
 .edit-field-input:focus{outline:none;border-color:var(--accent);}
+.auth-input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:13px;width:100%;box-sizing:border-box;transition:border-color 0.2s;outline:none;}
+.auth-input:focus{border-color:var(--accent);}
+.auth-input::placeholder{color:var(--muted);opacity:0.7;}
 .save-profile-btn{width:100%;padding:13px;background:var(--accent);border:none;border-radius:12px;color:#000;font-size:14px;font-weight:700;font-family:'DM Sans',sans-serif;text-transform:uppercase;letter-spacing:2px;cursor:pointer;transition:all 0.2s;margin-top:6px;}
 .save-profile-btn:hover{box-shadow:0 0 20px rgba(200,255,0,0.3);}
 .danger-zone{background:var(--surface);border:1px solid rgba(255,59,59,0.3);border-radius:14px;padding:22px;margin-top:14px;}
@@ -965,11 +969,11 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
     <div class="page" id="page-profile">
       <div class="profile-wrap">
         <div class="profile-header">
-          <label class="profile-avatar-wrap" for="avatar-input" style="cursor:pointer;display:block;">
+          <div class="profile-avatar-wrap" style="cursor:pointer;-webkit-tap-highlight-color:transparent;" onclick="document.getElementById('avatar-input').click()">
             <div class="profile-avatar" id="profile-avatar"></div>
             <div class="profile-avatar-edit">&#9998;</div>
-            <input type="file" id="avatar-input" accept="image/*" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:10;" onchange="handleAvatarPick(event)">
-          </label>
+          </div>
+          <input type="file" id="avatar-input" accept="image/*" style="display:none;" onchange="handleAvatarPick(event)">
           <div class="profile-name-block"><h2 id="profile-page-name">—</h2><p id="profile-page-goal">—</p><p style="font-size:12px;margin-top:4px;" id="profile-level-text"></p></div>
         </div>
 
@@ -1094,28 +1098,28 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
           <h3>Account</h3>
           <div class="profile-row"><span class="profile-row-label">Username</span><span class="profile-row-val" id="profile-username">—</span></div>
 
-          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin:12px 0;">
-            <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);margin-bottom:8px;">✏️ Change Username</div>
-            <input class="auth-input" id="new-username" placeholder="New username" autocomplete="off" style="margin-bottom:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:13px;width:100%;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+          <div class="profile-row" style="flex-direction:column;align-items:stretch;">
+            <span class="profile-row-label" style="margin-bottom:8px;">Change Username</span>
+            <input class="auth-input" id="new-username" placeholder="New username" autocomplete="off" style="margin-bottom:10px;">
             <div id="change-user-msg" style="display:none;font-size:12px;margin-bottom:8px;line-height:1.5;"></div>
-            <button class="save-profile-btn" onclick="doChangeUsername()" style="background:var(--accent);color:#000;width:100%;">Update Username</button>
+            <button class="save-profile-btn" onclick="doChangeUsername()">Update Username</button>
           </div>
 
-          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin:12px 0;">
-            <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);margin-bottom:8px;">🔒 Change Password</div>
-            <input class="auth-input" id="old-password" type="password" placeholder="Current password" autocomplete="off" style="margin-bottom:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:13px;width:100%;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
-            <input class="auth-input" id="new-password" type="password" placeholder="New password" autocomplete="off" style="margin-bottom:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:13px;width:100%;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
-            <input class="auth-input" id="confirm-new-password" type="password" placeholder="Confirm new password" autocomplete="off" style="margin-bottom:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:13px;width:100%;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+          <div class="profile-row" style="flex-direction:column;align-items:stretch;">
+            <span class="profile-row-label" style="margin-bottom:8px;">Change Password</span>
+            <input class="auth-input" id="old-password" type="password" placeholder="Current password" autocomplete="off" style="margin-bottom:8px;">
+            <input class="auth-input" id="new-password" type="password" placeholder="New password" autocomplete="off" style="margin-bottom:8px;">
+            <input class="auth-input" id="confirm-new-password" type="password" placeholder="Confirm new password" autocomplete="off" style="margin-bottom:10px;">
             <div id="change-pw-msg" style="display:none;font-size:12px;margin-bottom:8px;line-height:1.5;"></div>
-            <button class="save-profile-btn" onclick="doChangePassword()" style="background:var(--accent);color:#000;width:100%;">Update Password</button>
+            <button class="save-profile-btn" onclick="doChangePassword()">Update Password</button>
           </div>
 
-          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin:12px 0;">
-            <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);margin-bottom:6px;">☁️ Cloud Sync</div>
+          <div class="profile-row" style="flex-direction:column;align-items:stretch;">
+            <span class="profile-row-label" style="margin-bottom:8px;">Cloud Sync</span>
             <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5;">Your account is automatically synced to the cloud. On another device, just enter your <strong>username and password</strong> to log in — no codes needed!</p>
-            <button class="save-profile-btn" onclick="generateBackupCode()" style="background:var(--accent);color:#000;margin-bottom:8px;width:100%;">Sync Account to Cloud</button>
-            <textarea class="auth-import-area" id="backup-code-output" readonly style="display:none;margin-bottom:8px;font-size:10px;" onclick="this.select();try{navigator.clipboard.writeText(this.value);}catch(e){}"></textarea>
-            <div id="backup-copied-msg" style="display:none;font-size:12px;text-align:center;margin-bottom:8px;line-height:1.5;"></div>
+            <button class="save-profile-btn" onclick="generateBackupCode()">Sync Account to Cloud</button>
+            <textarea class="auth-import-area" id="backup-code-output" readonly style="display:none;margin-top:8px;font-size:10px;" onclick="this.select();try{navigator.clipboard.writeText(this.value);}catch(e){}"></textarea>
+            <div id="backup-copied-msg" style="display:none;font-size:12px;text-align:center;margin-top:8px;line-height:1.5;"></div>
           </div>
           <button class="save-profile-btn" onclick="exportData()" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);">Export Data as JSON File</button>
         </div>
@@ -1454,7 +1458,7 @@ function saveAccounts(a){localStorage.setItem('forge_accounts',JSON.stringify(a)
 const MQTT_BROKERS=['wss://broker.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt'];
 const MQTT_PREFIX='forge-fit/a/';
 const DEVICE_ID='d_'+Math.random().toString(36).slice(2,10)+'_'+Date.now().toString(36);
-let _liveClient=null,_liveUser=null,_liveHash=null,_livePending=false,_liveIgnoreNext=false;
+let _liveClient=null,_liveUser=null,_liveHash=null;
 
 async function _syncKey(pwHash){
   const enc=new TextEncoder();
@@ -1484,7 +1488,7 @@ function _mqttConnect(){
       if(brokerIdx>=MQTT_BROKERS.length)return reject(new Error('mqtt_all_failed'));
       const url=MQTT_BROKERS[brokerIdx];
       const id='forge_'+Math.random().toString(36).slice(2,10);
-      const client=mqtt.connect(url,{clientId:id,clean:true,connectTimeout:15000,keepalive:60,reconnectPeriod:0,protocolVersion:4});
+      const client=mqtt.connect(url,{clientId:id,clean:true,connectTimeout:12000,keepalive:60,reconnectPeriod:0,protocolVersion:4});
       const t=setTimeout(()=>{try{client.end(true);}catch(e){}brokerIdx++;tryBroker().then(resolve,reject);},16000);
       client.on('connect',()=>{clearTimeout(t);console.log('MQTT connected to',url);resolve(client);});
       client.on('error',()=>{clearTimeout(t);try{client.end(true);}catch(e){}brokerIdx++;tryBroker().then(resolve,reject);});
@@ -1503,10 +1507,9 @@ async function syncAccountToCloud(username){
     const encrypted=await _syncEncrypt(payload,acc.hash);
     if(encrypted.length>120000){console.warn('Account data too large for cloud sync');return false;}
     if(_liveClient&&_liveClient.connected&&_liveUser===username){
-      _liveIgnoreNext=true;
       return new Promise((resolve)=>{
         _liveClient.publish(MQTT_PREFIX+username,encrypted,{qos:1,retain:true},(err)=>{
-          if(err){console.warn('Live publish error:',err);_liveIgnoreNext=false;resolve(false);}
+          if(err){console.warn('Live publish error:',err);resolve(false);}
           else{console.log('Cloud sync OK (live) for',username);resolve(true);}
         });
       });
@@ -1562,25 +1565,25 @@ function startLiveSync(username,pwHash){
   _liveUser=username;_liveHash=pwHash;
   _updateSyncBadge('syncing');
   let brokerIdx=0;
-  let _skipRetained=true;
+  let isFirstConnect=true;
   function tryConnect(){
-    if(brokerIdx>=MQTT_BROKERS.length){_updateSyncBadge('off');setTimeout(()=>{brokerIdx=0;tryConnect();},30000);return;}
+    if(!_liveUser)return;
+    if(brokerIdx>=MQTT_BROKERS.length){_updateSyncBadge('off');setTimeout(()=>{if(_liveUser){brokerIdx=0;tryConnect();}},30000);return;}
     const url=MQTT_BROKERS[brokerIdx];
-    const id='forge_live_'+DEVICE_ID;
-    const client=mqtt.connect(url,{clientId:id,clean:true,connectTimeout:15000,keepalive:30,reconnectPeriod:5000,protocolVersion:4});
+    const id='forge_live_'+DEVICE_ID+'_'+Date.now().toString(36);
+    const client=mqtt.connect(url,{clientId:id,clean:true,connectTimeout:15000,keepalive:30,reconnectPeriod:0,protocolVersion:4});
     const t=setTimeout(()=>{try{client.end(true);}catch(e){}brokerIdx++;tryConnect();},16000);
     client.on('connect',()=>{
       clearTimeout(t);
       _liveClient=client;
-      _skipRetained=true;
       client.subscribe(MQTT_PREFIX+username,{qos:1},(err)=>{
         if(err){console.warn('Live sync subscribe failed');_updateSyncBadge('off');}
-        else{console.log('Live sync active for',username);_updateSyncBadge('live');setTimeout(()=>{_skipRetained=false;},2000);}
+        else{console.log('Live sync active for',username,'on',url);_updateSyncBadge('live');}
       });
     });
-    client.on('message',async(topic,msg)=>{
-      if(_liveIgnoreNext){_liveIgnoreNext=false;return;}
-      if(_skipRetained)return;
+    client.on('message',async(topic,msg,packet)=>{
+      if(isFirstConnect&&packet&&packet.retain){isFirstConnect=false;return;}
+      isFirstConnect=false;
       if(!currentUser||currentUser!==_liveUser)return;
       try{
         const b64=msg.toString();
@@ -1589,10 +1592,10 @@ function startLiveSync(username,pwHash){
         if(data.dev===DEVICE_ID)return;
         const accs=getAccounts();const local=accs[currentUser];
         if(!local)return;
-        const localTs=local.data&&local.data._syncTs||0;
+        const localTs=(local.data&&local.data._syncTs)||0;
         const remoteTs=data.ts||0;
         if(remoteTs<=localTs)return;
-        console.log('Live sync: incoming update from another device');
+        console.log('Live sync: incoming update from device',data.dev);
         accs[currentUser].data=data.d||{};
         if(data.d&&data.d._syncTs)accs[currentUser].data._syncTs=data.d._syncTs;
         saveAccounts(accs);
@@ -1601,10 +1604,14 @@ function startLiveSync(username,pwHash){
         _showSyncToast();
       }catch(e){console.warn('Live sync message error:',e);}
     });
-    client.on('error',()=>{clearTimeout(t);try{client.end(true);}catch(e){}brokerIdx++;tryConnect();});
+    client.on('error',(err)=>{console.warn('MQTT error:',err);clearTimeout(t);try{client.end(true);}catch(e){}brokerIdx++;tryConnect();});
     client.on('close',()=>{
-      _liveClient=null;_updateSyncBadge('off');
-      if(_liveUser&&currentUser===_liveUser){setTimeout(()=>{if(_liveUser)tryConnect();},5000);brokerIdx=0;}
+      if(_liveClient===client)_liveClient=null;
+      _updateSyncBadge('off');
+      if(_liveUser&&currentUser===_liveUser){
+        isFirstConnect=false;
+        setTimeout(()=>{if(_liveUser){brokerIdx=0;tryConnect();}},5000);
+      }
     });
   }
   tryConnect();
