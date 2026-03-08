@@ -639,8 +639,8 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
     <div class="auth-logo">FORGE</div>
     <div class="auth-sub">Your fitness data is saved to the cloud.<br>Log in with your username and password on any device.</div>
     <div class="auth-tabs">
-      <button class="auth-tab active" onclick="authTab('login')">Log In</button>
-      <button class="auth-tab" onclick="authTab('signup')">Create Account</button>
+      <button class="auth-tab active" onclick="authTab('login')" data-i18n="auth.login">Log In</button>
+      <button class="auth-tab" onclick="authTab('signup')" data-i18n="auth.createAccount">Create Account</button>
     </div>
     <div class="auth-form active" id="auth-login">
       <div class="auth-err" id="login-err"></div>
@@ -648,7 +648,8 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
       <input class="field-input" id="login-user" type="text" placeholder="Your username" autocomplete="off">
       <label class="field-label" style="margin-top:12px;">Password</label>
       <input class="field-input" id="login-pass" type="password" placeholder="Your password" autocomplete="off">
-      <button class="auth-btn" onclick="doLogin()">Log In</button>
+      <button class="auth-btn" onclick="doLogin()" data-i18n="auth.logIn">Log In</button>
+      <button class="auth-btn secondary" onclick="tryDemo()" style="margin-top:10px;">Try Demo — explore the app</button>
       <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.5;">☁️ Accounts sync to the cloud. Just enter your username and password — it works on any device!</p>
       <div class="auth-divider">or restore from backup code</div>
       <button class="auth-btn secondary" onclick="toggleTransferPanel()" id="transfer-toggle-btn" style="margin-bottom:0;font-size:11px;">I have a backup code</button>
@@ -666,7 +667,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
       <input class="field-input" id="signup-pass" type="password" placeholder="At least 6 characters" autocomplete="off">
       <label class="field-label" style="margin-top:12px;">Confirm Password</label>
       <input class="field-input" id="signup-pass2" type="password" placeholder="Type password again" autocomplete="off">
-      <button class="auth-btn" onclick="doSignup()">Create Account</button>
+      <button class="auth-btn" onclick="doSignup()" data-i18n="auth.createAccount">Create Account</button>
     </div>
     <div class="auth-accounts" id="auth-accounts-list"></div>
   </div>
@@ -689,14 +690,14 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
       <div>
         <label class="field-label">Training Goal</label>
         <select class="field-input" id="setup-goal">
-          <option value="Build Muscle">Build Muscle</option>
-          <option value="Lose Fat">Lose Fat</option>
-          <option value="Improve Endurance">Improve Endurance</option>
-          <option value="Stay Active">Stay Active</option>
+          <option value="Build Muscle" data-i18n="setup.buildMuscle">Build Muscle</option>
+          <option value="Lose Fat" data-i18n="setup.loseFat">Lose Fat</option>
+          <option value="Improve Endurance" data-i18n="setup.improveEndurance">Improve Endurance</option>
+          <option value="Stay Active" data-i18n="setup.stayActive">Stay Active</option>
         </select>
       </div>
     </div>
-    <button class="setup-btn" onclick="saveProfile()">Start Training</button>
+    <button class="setup-btn" onclick="saveProfile()" data-i18n="auth.startTraining">Start Training</button>
   </div>
 </div>
 
@@ -738,21 +739,21 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 
   <!-- MOBILE BOTTOM NAV -->
   <nav class="bottom-nav">
-    <button class="nav-btn active" onclick="showPage('dashboard',this)"><svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg><span class="nav-label">Home</span></button>
-    <button class="nav-btn" onclick="showPage('exercises',this)"><svg viewBox="0 0 24 24"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/></svg><span class="nav-label">Exercises</span></button>
-    <button class="nav-btn" onclick="showPage('timer',this)"><svg viewBox="0 0 24 24"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42A7.93 7.93 0 0012 4c-4.42 0-8 3.58-8 8s3.57 8 8 8 8-3.58 8-8c0-1.85-.63-3.55-1.67-4.91zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg><span class="nav-label">Timer</span></button>
-    <button class="nav-btn" onclick="showPage('coach',this)"><svg viewBox="0 0 24 24"><path d="M21 10.5h-1V8c0-1.1-.9-2-2-2h-3V4.5C15 3.12 13.88 2 12.5 2h-1C10.12 2 9 3.12 9 4.5V6H6c-1.1 0-2 .9-2 2v2.5H3c-.55 0-1 .45-1 1v3c0 .55.45 1 1 1h1V20c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-3.5h1c.55 0 1-.45 1-1v-3c0-.55-.45-1-1-1zM9.5 13.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm5 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM8 18l1.5-3h5L16 18H8z"/></svg><span class="nav-label">Coach</span></button>
-    <button class="nav-btn" onclick="toggleMoreMenu(this)"><svg viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg><span class="nav-label">More</span></button>
+    <button class="nav-btn active" onclick="showPage('dashboard',this)"><svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg><span class="nav-label" data-i18n="nav.home">Home</span></button>
+    <button class="nav-btn" onclick="showPage('exercises',this)"><svg viewBox="0 0 24 24"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/></svg><span class="nav-label" data-i18n="nav.exercises">Exercises</span></button>
+    <button class="nav-btn" onclick="showPage('timer',this)"><svg viewBox="0 0 24 24"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42A7.93 7.93 0 0012 4c-4.42 0-8 3.58-8 8s3.57 8 8 8 8-3.58 8-8c0-1.85-.63-3.55-1.67-4.91zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg><span class="nav-label" data-i18n="nav.timer">Timer</span></button>
+    <button class="nav-btn" onclick="showPage('coach',this)"><svg viewBox="0 0 24 24"><path d="M21 10.5h-1V8c0-1.1-.9-2-2-2h-3V4.5C15 3.12 13.88 2 12.5 2h-1C10.12 2 9 3.12 9 4.5V6H6c-1.1 0-2 .9-2 2v2.5H3c-.55 0-1 .45-1 1v3c0 .55.45 1 1 1h1V20c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-3.5h1c.55 0 1-.45 1-1v-3c0-.55-.45-1-1-1zM9.5 13.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm5 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM8 18l1.5-3h5L16 18H8z"/></svg><span class="nav-label" data-i18n="nav.coach">Coach</span></button>
+    <button class="nav-btn" onclick="toggleMoreMenu(this)"><svg viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg><span class="nav-label" data-i18n="nav.more">More</span></button>
   </nav>
   <div class="more-sheet" id="more-sheet">
     <div class="more-sheet-handle"></div>
     <div class="more-sheet-grid">
-      <button class="more-sheet-item" onclick="moreNav('programs',this)"><svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9h-4v4h-2v-4H9V9h4V5h2v4h4v2z"/></svg><span>Programs</span></button>
-      <button class="more-sheet-item" onclick="moreNav('progress',this)"><svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg><span>Progress</span></button>
-      <button class="more-sheet-item" onclick="moreNav('improvement',this)"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><span>Improvement</span></button>
-      <button class="more-sheet-item" onclick="moreNav('log',this)"><svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg><span>Log</span></button>
-      <button class="more-sheet-item" onclick="moreNav('profile',this)"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4-1.3 4-4S14.7 4 12 4 8 5.3 8 8s1.3 4 4 4zm0 2c-2.7 0-8 1.4-8 4v2h16v-2c0-2.6-5.3-4-8-4z"/></svg><span>Profile</span></button>
-      <button class="more-sheet-item" onclick="moreNav('settings',this)"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1115.6 12 3.6 3.6 0 0112 15.6z"/></svg><span>Settings</span></button>
+      <button class="more-sheet-item" onclick="moreNav('programs',this)"><svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9h-4v4h-2v-4H9V9h4V5h2v4h4v2z"/></svg><span data-i18n="nav.programs">Programs</span></button>
+      <button class="more-sheet-item" onclick="moreNav('progress',this)"><svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg><span data-i18n="nav.progress">Progress</span></button>
+      <button class="more-sheet-item" onclick="moreNav('improvement',this)"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><span data-i18n="nav.improvement">Improvement</span></button>
+      <button class="more-sheet-item" onclick="moreNav('log',this)"><svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg><span data-i18n="nav.log">Log</span></button>
+      <button class="more-sheet-item" onclick="moreNav('profile',this)"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4-1.3 4-4S14.7 4 12 4 8 5.3 8 8s1.3 4 4 4zm0 2c-2.7 0-8 1.4-8 4v2h16v-2c0-2.6-5.3-4-8-4z"/></svg><span data-i18n="nav.profile">Profile</span></button>
+      <button class="more-sheet-item" onclick="moreNav('settings',this)"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1115.6 12 3.6 3.6 0 0112 15.6z"/></svg><span data-i18n="nav.settings">Settings</span></button>
     </div>
   </div>
   <div class="more-sheet-backdrop" id="more-backdrop" onclick="closeMoreMenu()"></div>
@@ -774,10 +775,10 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
         </div>
       </div>
       <div class="stats-grid">
-        <div class="stat-card"><div class="stat-label">This Week</div><div class="stat-val"><span id="stat-sessions">0</span> <span class="stat-unit">sessions</span></div><div class="stat-delta" id="stat-d1">start logging</div></div>
-        <div class="stat-card"><div class="stat-label">Total Volume</div><div class="stat-val"><span id="stat-volume">0</span> <span class="stat-unit">kg</span></div><div class="stat-delta">all time</div></div>
-        <div class="stat-card"><div class="stat-label">Sets Logged</div><div class="stat-val"><span id="stat-sets">0</span> <span class="stat-unit">sets</span></div><div class="stat-delta">all time</div></div>
-        <div class="stat-card"><div class="stat-label">Personal Records</div><div class="stat-val"><span id="stat-prs">0</span> <span class="stat-unit">PRs</span></div><div class="stat-delta" id="stat-d4">keep pushing</div></div>
+        <div class="stat-card"><div class="stat-label" data-i18n="dash.thisWeek">This Week</div><div class="stat-val"><span id="stat-sessions">0</span> <span class="stat-unit">sessions</span></div><div class="stat-delta" id="stat-d1">start logging</div></div>
+        <div class="stat-card"><div class="stat-label" data-i18n="dash.totalVolume">Total Volume</div><div class="stat-val"><span id="stat-volume">0</span> <span class="stat-unit">kg</span></div><div class="stat-delta">all time</div></div>
+        <div class="stat-card"><div class="stat-label" data-i18n="dash.setsLogged">Sets Logged</div><div class="stat-val"><span id="stat-sets">0</span> <span class="stat-unit">sets</span></div><div class="stat-delta">all time</div></div>
+        <div class="stat-card"><div class="stat-label" data-i18n="dash.personalRecords">Personal Records</div><div class="stat-val"><span id="stat-prs">0</span> <span class="stat-unit">PRs</span></div><div class="stat-delta" id="stat-d4">keep pushing</div></div>
       </div>
       <div class="xp-bar-wrap" id="xp-dash-bar" style="margin:0 36px 20px;">
         <div class="xp-top"><span class="xp-level" id="xp-level-dash">Level 1</span><span class="xp-label" id="xp-label-dash">0 / 100 XP</span></div>
@@ -792,18 +793,18 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
         <div class="pr-list" id="pr-list"></div>
       </div>
       <div class="week-section">
-        <div class="sec-title">This Week</div>
+        <div class="sec-title" data-i18n="dash.thisWeek">This Week</div>
         <div class="week-grid" id="week-grid"></div>
       </div>
       <div class="plan-section">
-        <div class="sec-title">Quick Start</div>
+        <div class="sec-title" data-i18n="dash.quickStart">Quick Start</div>
         <div class="plan-grid" id="quick-start-grid"></div>
       </div>
     </div>
 
     <!-- EXERCISES -->
     <div class="page" id="page-exercises">
-      <div class="page-header"><div class="page-title">Exercises</div><div class="page-sub">Tap any exercise to see the guide, then log your sets</div></div>
+      <div class="page-header"><div class="page-title" data-i18n="pages.exercises">Exercises</div><div class="page-sub" data-i18n="pages.exercisesSub">Tap any exercise to see the guide, then log your sets</div></div>
       <div class="search-row">
         <input class="search-input" id="ex-search" type="text" placeholder="Search exercises…" oninput="applyExFilters()">
         <span class="ex-count" id="ex-count">0 exercises</span>
@@ -823,13 +824,13 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 
     <!-- PROGRAMS -->
     <div class="page" id="page-programs">
-      <div class="page-header"><div class="page-title">Programs</div><div class="page-sub">Pre-built workout splits — tap a program to expand, tap an exercise to view it</div></div>
+      <div class="page-header"><div class="page-title" data-i18n="pages.programs">Programs</div><div class="page-sub" data-i18n="pages.programsSub">Pre-built workout splits — tap a program to expand, tap an exercise to view it</div></div>
       <div class="programs-wrap" id="programs-list"></div>
     </div>
 
     <!-- PROGRESS -->
     <div class="page" id="page-progress">
-      <div class="page-header"><div class="page-title">Progress</div><div class="page-sub">Track your volume, personal records, and achievements</div></div>
+      <div class="page-header"><div class="page-title" data-i18n="pages.progress">Progress</div><div class="page-sub" data-i18n="pages.progressSub">Track your volume, personal records, and achievements</div></div>
       <div class="prog-wrap">
         <div class="stats-row">
           <div class="mini-stat"><div class="mini-stat-val" id="p-total-workouts">0</div><div class="mini-stat-label">Total Workouts</div></div>
@@ -857,7 +858,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 
     <!-- IMPROVEMENT -->
     <div class="page" id="page-improvement">
-      <div class="page-header"><div class="page-title">Improvement</div><div class="page-sub">Track your daily progress and see how you're improving</div></div>
+      <div class="page-header"><div class="page-title" data-i18n="pages.improvement">Improvement</div><div class="page-sub" data-i18n="pages.improvementSub">Track your daily progress and see how you're improving</div></div>
       <div class="prog-wrap">
 
         <!-- TODAY'S CHECK-IN -->
@@ -968,7 +969,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
     <div class="page" id="page-log">
       <div class="log-wrap">
         <div class="log-toolbar">
-          <div><div class="page-title">Workout Log</div><div class="page-sub" style="margin-top:4px;">Your saved training history</div></div>
+          <div><div class="page-title" data-i18n="dash.workoutLog">Workout Log</div><div class="page-sub" style="margin-top:4px;" data-i18n="pages.logSub">Your saved training history</div></div>
           <button class="delete-log-btn" onclick="confirmDeleteLog()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
             Clear Log
@@ -982,7 +983,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
     <div class="page" id="page-profile">
       <div class="profile-wrap">
         <div class="profile-header">
-          <div class="profile-avatar-wrap" style="cursor:pointer;-webkit-tap-highlight-color:transparent;" onclick="showAvatarSourceSheet()">
+          <div class="profile-avatar-wrap" style="cursor:pointer;-webkit-tap-highlight-color:transparent;" onclick="onAvatarClick()">
             <div class="profile-avatar" id="profile-avatar"></div>
             <div class="profile-avatar-edit" aria-hidden="true">&#9998;</div>
           </div>
@@ -991,8 +992,8 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
           <div id="avatar-source-sheet" class="avatar-source-sheet" style="display:none;">
             <div class="avatar-source-backdrop" onclick="hideAvatarSourceSheet()"></div>
             <div class="avatar-source-actions">
-              <button type="button" class="avatar-source-btn" onclick="document.getElementById('avatar-camera-input').click();hideAvatarSourceSheet();">📷 Take Photo</button>
-              <button type="button" class="avatar-source-btn" onclick="document.getElementById('avatar-input').click();hideAvatarSourceSheet();">🖼️ Choose from Gallery</button>
+              <button type="button" class="avatar-source-btn" onclick="document.getElementById('avatar-camera-input').click();hideAvatarSourceSheet();">Take Photo</button>
+              <button type="button" class="avatar-source-btn" onclick="document.getElementById('avatar-input').click();hideAvatarSourceSheet();">Choose from Gallery</button>
               <button type="button" class="avatar-source-btn avatar-source-cancel" onclick="hideAvatarSourceSheet()">Cancel</button>
             </div>
           </div>
@@ -1029,13 +1030,13 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
           </div>
           <div class="profile-row"><span class="profile-row-label">Goal</span>
             <select class="edit-field-input" id="edit-goal">
-              <option value="Build Muscle">Build Muscle</option>
-              <option value="Lose Fat">Lose Fat</option>
-              <option value="Improve Endurance">Improve Endurance</option>
-              <option value="Stay Active">Stay Active</option>
+              <option value="Build Muscle" data-i18n="setup.buildMuscle">Build Muscle</option>
+              <option value="Lose Fat" data-i18n="setup.loseFat">Lose Fat</option>
+              <option value="Improve Endurance" data-i18n="setup.improveEndurance">Improve Endurance</option>
+              <option value="Stay Active" data-i18n="setup.stayActive">Stay Active</option>
             </select>
           </div>
-          <button class="save-profile-btn" onclick="updateProfile()">Save Changes</button>
+          <button class="save-profile-btn" onclick="updateProfile()" data-i18n="common.save">Save Changes</button>
         </div>
 
         <div class="profile-card" id="bmi-profile-card">
@@ -1063,19 +1064,19 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
     <!-- SETTINGS -->
     <div class="page" id="page-settings">
       <div class="profile-wrap">
-        <div class="page-header" style="border:none;padding:0 0 22px;"><div class="page-title">Settings</div><div class="page-sub">Customize your experience</div></div>
+        <div class="page-header" style="border:none;padding:0 0 22px;"><div class="page-title" data-i18n="pages.settings">Settings</div><div class="page-sub" data-i18n="pages.settingsSub">Customize your experience</div></div>
 
         <div class="profile-card">
-          <h3>Units</h3>
+          <h3 data-i18n="settings.units">Units</h3>
           <div class="profile-row">
-            <span class="profile-row-label">Weight Unit</span>
+            <span class="profile-row-label" data-i18n="settings.weightUnit">Weight Unit</span>
             <div class="toggle-group" id="unit-weight-toggle">
               <button class="toggle-opt active" onclick="setSetting('weightUnit','kg',this)">kg</button>
               <button class="toggle-opt" onclick="setSetting('weightUnit','lbs',this)">lbs</button>
             </div>
           </div>
           <div class="profile-row">
-            <span class="profile-row-label">Height Unit</span>
+            <span class="profile-row-label" data-i18n="settings.heightUnit">Height Unit</span>
             <div class="toggle-group" id="unit-height-toggle">
               <button class="toggle-opt active" onclick="setSetting('heightUnit','cm',this)">cm</button>
               <button class="toggle-opt" onclick="setSetting('heightUnit','ft',this)">ft/in</button>
@@ -1084,9 +1085,9 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
         </div>
 
         <div class="profile-card">
-          <h3>Rest Timer</h3>
+          <h3 data-i18n="nav.timer">Rest Timer</h3>
           <div class="profile-row">
-            <span class="profile-row-label">Default Duration</span>
+            <span class="profile-row-label" data-i18n="settings.restTimer">Default Duration</span>
             <select class="edit-field-input" id="setting-rest-timer" onchange="setSetting('restTimer',this.value)" style="width:auto;min-width:100px;">
               <option value="30">0:30</option>
               <option value="60">1:00</option>
@@ -1097,11 +1098,30 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
             </select>
           </div>
           <div class="profile-row">
-            <span class="profile-row-label">Sound Alert</span>
+            <span class="profile-row-label" data-i18n="settings.soundAlert">Sound Alert</span>
             <div class="toggle-group" id="sound-toggle">
               <button class="toggle-opt active" onclick="setSetting('sound','on',this)">On</button>
               <button class="toggle-opt" onclick="setSetting('sound','off',this)">Off</button>
             </div>
+          </div>
+        </div>
+
+        <div class="profile-card">
+          <h3 data-i18n="settings.languageSection">Language</h3>
+          <div class="profile-row">
+            <span class="profile-row-label" data-i18n="settings.language">Country / Language</span>
+            <select class="edit-field-input" id="setting-language" onchange="setLanguage(this.value)" style="width:auto;min-width:180px;">
+              <option value="en">United States (English)</option>
+              <option value="en-GB">United Kingdom (English)</option>
+              <option value="es">Spain (Español)</option>
+              <option value="fr">France (Français)</option>
+              <option value="de">Germany (Deutsch)</option>
+              <option value="it">Italy (Italiano)</option>
+              <option value="pt">Portugal (Português)</option>
+              <option value="pt-BR">Brazil (Português)</option>
+              <option value="ja">Japan (日本語)</option>
+              <option value="zh">China (中文)</option>
+            </select>
           </div>
         </div>
 
@@ -1159,12 +1179,12 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
       </div>
     </div>
     <div class="page" id="page-coach">
-      <h1 class="page-title">AI COACH</h1>
-      <p class="page-sub">Ask your personal fitness AI for workout recommendations</p>
+      <h1 class="page-title" data-i18n="pages.coach">AI COACH</h1>
+      <p class="page-sub" data-i18n="pages.coachSub">Ask your personal fitness AI for workout recommendations</p>
       <div class="coach-chat" id="coach-chat">
         <div class="coach-msg bot">
           <div class="coach-avatar">🤖</div>
-          <div class="coach-bubble">Hey! I'm your AI fitness coach. Ask me anything — how to do specific exercises, what you should work on, workout plans, nutrition tips, or just say hello! I'll use your profile and workout history to give you personalised advice.</div>
+          <div class="coach-bubble" id="coach-welcome-msg">Hey! I'm your AI fitness coach. Ask me anything — how to do specific exercises, what you should work on, workout plans, nutrition tips, or just say hello! I'll use your profile and workout history to give you personalised advice.</div>
         </div>
       </div>
       <div class="coach-quick-btns" id="coach-quick-btns">
@@ -1464,6 +1484,60 @@ const ACHIEVEMENTS = [
 ];
 
 // ═══════════════════════════════════════════════════
+//  I18N / TRANSLATIONS
+// ═══════════════════════════════════════════════════
+const LANG={
+  en:{nav:{home:'Home',exercises:'Exercises',programs:'Programs',progress:'Progress',improvement:'Improvement',timer:'Timer',log:'Log',coach:'AI Coach',profile:'Profile',settings:'Settings',more:'More'},auth:{login:'Log In',createAccount:'Create Account',username:'Username',password:'Password',yourUsername:'Your username',yourPassword:'Your password',logIn:'Log In',chooseUsername:'Choose a Username',createPassword:'Create Password',confirmPassword:'Confirm Password',startTraining:'Start Training'},setup:{yourName:'Your Name',weight:'Weight (kg)',height:'Height (cm)',age:'Age',goal:'Training Goal',buildMuscle:'Build Muscle',loseFat:'Lose Fat',improveEndurance:'Improve Endurance',stayActive:'Stay Active'},dash:{goodMorning:'Good morning',goodAfternoon:'Good afternoon',goodEvening:'Good evening',training:'Training',thisWeek:'This Week',totalVolume:'Total Volume',setsLogged:'Sets Logged',personalRecords:'Personal Records',sessions:'sessions',allTime:'all time',startLogging:'start logging',keepPushing:'keep pushing',streak:'day streak',quickStart:'Quick Start',workoutLog:'Workout Log'},pages:{exercises:'Exercises',exercisesSub:'Tap any exercise to see the guide, then log your sets',programs:'Programs',programsSub:'Pre-built workout splits — tap a program to expand, tap an exercise to view it',progress:'Progress',progressSub:'Track your volume, personal records, and achievements',improvement:'Improvement',improvementSub:"Track your daily progress and see how you're improving",log:'Workout Log',logSub:'Your saved training history',profile:'Profile',settings:'Settings',settingsSub:'Customize your experience',coach:'AI COACH',coachSub:'Ask your personal fitness AI for workout recommendations'},settings:{units:'Units',weightUnit:'Weight Unit',heightUnit:'Height Unit',restTimer:'Rest Timer',soundAlert:'Sound Alert',theme:'Theme',language:'Country / Language',languageSection:'Language',account:'Account',appearance:'Appearance',session:'Session'},profile:{name:'Name',weight:'Weight (kg)',height:'Height (cm)',age:'Age',gender:'Gender',goal:'Goal',bmi:'BMI',category:'Category',idealWeight:'Ideal weight range',suggestedCal:'Suggested daily calories',proteinTarget:'Protein target',waterTarget:'Water intake'},common:{save:'Save Changes',cancel:'Cancel',delete:'Delete',start:'Start',done:'Done'}},
+  es:{nav:{home:'Inicio',exercises:'Ejercicios',programs:'Programas',progress:'Progreso',improvement:'Mejora',timer:'Temporizador',log:'Registro',coach:'Coach IA',profile:'Perfil',settings:'Ajustes',more:'Más'},auth:{login:'Iniciar sesión',createAccount:'Crear cuenta',username:'Usuario',password:'Contraseña',yourUsername:'Tu usuario',yourPassword:'Tu contraseña',logIn:'Iniciar sesión',chooseUsername:'Elige un usuario',createPassword:'Crear contraseña',confirmPassword:'Confirmar contraseña',startTraining:'Empezar a entrenar'},setup:{yourName:'Tu nombre',weight:'Peso (kg)',height:'Altura (cm)',age:'Edad',goal:'Objetivo de entrenamiento',buildMuscle:'Ganar músculo',loseFat:'Perder grasa',improveEndurance:'Mejorar resistencia',stayActive:'Mantenerse activo'},dash:{goodMorning:'Buenos días',goodAfternoon:'Buenas tardes',goodEvening:'Buenas noches',training:'Entrenamiento',thisWeek:'Esta semana',totalVolume:'Volumen total',setsLogged:'Series registradas',personalRecords:'Récords personales',sessions:'sesiones',allTime:'total',startLogging:'empieza a registrar',keepPushing:'sigue así',streak:'días seguidos',quickStart:'Inicio rápido',workoutLog:'Registro de entrenamientos'},pages:{exercises:'Ejercicios',exercisesSub:'Toca un ejercicio para ver la guía y registrar tus series',programs:'Programas',programsSub:'Rutinas predefinidas — toca un programa para expandir, toca un ejercicio para verlo',progress:'Progreso',progressSub:'Sigue tu volumen, récords personales y logros',improvement:'Mejora',improvementSub:'Sigue tu progreso diario y mejora',log:'Registro de entrenamientos',logSub:'Tu historial de entrenamientos guardado',profile:'Perfil',settings:'Ajustes',settingsSub:'Personaliza tu experiencia',coach:'COACH IA',coachSub:'Pregunta a tu IA de fitness personal por recomendaciones de entrenamiento'},settings:{units:'Unidades',weightUnit:'Unidad de peso',heightUnit:'Unidad de altura',restTimer:'Temporizador de descanso',soundAlert:'Alerta sonora',theme:'Tema',language:'País / Idioma',languageSection:'Idioma',account:'Cuenta',appearance:'Apariencia',session:'Sesión'},profile:{name:'Nombre',weight:'Peso (kg)',height:'Altura (cm)',age:'Edad',gender:'Género',goal:'Objetivo',bmi:'IMC',category:'Categoría',idealWeight:'Rango de peso ideal',suggestedCal:'Calorías diarias sugeridas',proteinTarget:'Objetivo de proteínas',waterTarget:'Ingesta de agua'},common:{save:'Guardar cambios',cancel:'Cancelar',delete:'Eliminar',start:'Iniciar',done:'Hecho'}},
+  fr:{nav:{home:'Accueil',exercises:'Exercices',programs:'Programmes',progress:'Progression',improvement:'Amélioration',timer:'Minuteur',log:'Journal',coach:'Coach IA',profile:'Profil',settings:'Paramètres',more:'Plus'},auth:{login:'Connexion',createAccount:'Créer un compte',username:'Nom d\'utilisateur',password:'Mot de passe',yourUsername:'Votre nom d\'utilisateur',yourPassword:'Votre mot de passe',logIn:'Connexion',chooseUsername:'Choisir un nom d\'utilisateur',createPassword:'Créer un mot de passe',confirmPassword:'Confirmer le mot de passe',startTraining:'Commencer l\'entraînement'},setup:{yourName:'Votre nom',weight:'Poids (kg)',height:'Taille (cm)',age:'Âge',goal:'Objectif d\'entraînement',buildMuscle:'Prendre du muscle',loseFat:'Perdre du gras',improveEndurance:'Améliorer l\'endurance',stayActive:'Rester actif'},dash:{goodMorning:'Bonjour',goodAfternoon:'Bon après-midi',goodEvening:'Bonsoir',training:'Entraînement',thisWeek:'Cette semaine',totalVolume:'Volume total',setsLogged:'Séries enregistrées',personalRecords:'Records personnels',sessions:'séances',allTime:'total',startLogging:'commencez à enregistrer',keepPushing:'continuez',streak:'jours d\'affilée',quickStart:'Démarrage rapide',workoutLog:'Journal d\'entraînement'},pages:{exercises:'Exercices',exercisesSub:'Appuyez sur un exercice pour voir le guide et enregistrer vos séries',programs:'Programmes',programsSub:'Splits d\'entraînement prédéfinis — appuyez pour développer',progress:'Progression',progressSub:'Suivez votre volume, records et récompenses',improvement:'Amélioration',improvementSub:'Suivez votre progression quotidienne',log:'Journal d\'entraînement',logSub:'Votre historique d\'entraînement enregistré',profile:'Profil',settings:'Paramètres',settingsSub:'Personnalisez votre expérience',coach:'COACH IA',coachSub:'Demandez des recommandations à votre coach fitness IA'},settings:{units:'Unités',weightUnit:'Unité de poids',heightUnit:'Unité de taille',restTimer:'Durée par défaut',soundAlert:'Alerte sonore',theme:'Thème',language:'Pays / Langue',languageSection:'Langue',account:'Compte',appearance:'Apparence',session:'Session'},profile:{name:'Nom',weight:'Poids (kg)',height:'Taille (cm)',age:'Âge',gender:'Genre',goal:'Objectif',bmi:'IMC',category:'Catégorie',idealWeight:'Fourchette de poids idéale',suggestedCal:'Calories quotidiennes suggérées',proteinTarget:'Objectif protéines',waterTarget:'Apport en eau'},common:{save:'Enregistrer',cancel:'Annuler',delete:'Supprimer',start:'Démarrer',done:'Terminé'}},
+  de:{nav:{home:'Start',exercises:'Übungen',programs:'Programme',progress:'Fortschritt',improvement:'Verbesserung',timer:'Timer',log:'Protokoll',coach:'KI-Coach',profile:'Profil',settings:'Einstellungen',more:'Mehr'},auth:{login:'Anmelden',createAccount:'Konto erstellen',username:'Benutzername',password:'Passwort',yourUsername:'Dein Benutzername',yourPassword:'Dein Passwort',logIn:'Anmelden',chooseUsername:'Benutzername wählen',createPassword:'Passwort erstellen',confirmPassword:'Passwort bestätigen',startTraining:'Training starten'},setup:{yourName:'Dein Name',weight:'Gewicht (kg)',height:'Größe (cm)',age:'Alter',goal:'Trainingsziel',buildMuscle:'Muskeln aufbauen',loseFat:'Fett verlieren',improveEndurance:'Ausdauer verbessern',stayActive:'Aktiv bleiben'},dash:{goodMorning:'Guten Morgen',goodAfternoon:'Guten Tag',goodEvening:'Guten Abend',training:'Training',thisWeek:'Diese Woche',totalVolume:'Gesamtvolumen',setsLogged:'Sätze protokolliert',personalRecords:'Persönliche Rekorde',sessions:'Einheiten',allTime:'insgesamt',startLogging:'Protokoll starten',keepPushing:'weiter so',streak:'Tage Streak',quickStart:'Schnellstart',workoutLog:'Trainingsprotokoll'},pages:{exercises:'Übungen',exercisesSub:'Tippe auf eine Übung für die Anleitung und zum Protokollieren',programs:'Programme',programsSub:'Vorgefertigte Trainingspläne — tippe zum Erweitern',progress:'Fortschritt',progressSub:'Verfolge Volumen, Rekorde und Erfolge',improvement:'Verbesserung',improvementSub:'Verfolge deinen täglichen Fortschritt',log:'Trainingsprotokoll',logSub:'Dein gespeichertes Trainingsprotokoll',profile:'Profil',settings:'Einstellungen',settingsSub:'Passe deine Erfahrung an',coach:'KI-COACH',coachSub:'Frage deinen KI-Fitness-Coach nach Empfehlungen'},settings:{units:'Einheiten',weightUnit:'Gewichtseinheit',heightUnit:'Größeneinheit',restTimer:'Standard-Pause',soundAlert:'Ton-Alarm',theme:'Design',language:'Land / Sprache',languageSection:'Sprache',account:'Konto',appearance:'Erscheinung',session:'Sitzung'},profile:{name:'Name',weight:'Gewicht (kg)',height:'Größe (cm)',age:'Alter',gender:'Geschlecht',goal:'Ziel',bmi:'BMI',category:'Kategorie',idealWeight:'Idealgewicht-Bereich',suggestedCal:'Empfohlene tägliche Kalorien',proteinTarget:'Proteinziel',waterTarget:'Wasseraufnahme'},common:{save:'Speichern',cancel:'Abbrechen',delete:'Löschen',start:'Start',done:'Fertig'}},
+  it:{nav:{home:'Home',exercises:'Esercizi',programs:'Programmi',progress:'Progressi',improvement:'Miglioramento',timer:'Timer',log:'Registro',coach:'Coach IA',profile:'Profilo',settings:'Impostazioni',more:'Altro'},auth:{login:'Accedi',createAccount:'Crea account',username:'Nome utente',password:'Password',yourUsername:'Il tuo username',yourPassword:'La tua password',logIn:'Accedi',chooseUsername:'Scegli un username',createPassword:'Crea password',confirmPassword:'Conferma password',startTraining:'Inizia ad allenarti'},setup:{yourName:'Il tuo nome',weight:'Peso (kg)',height:'Altezza (cm)',age:'Età',goal:'Obiettivo di allenamento',buildMuscle:'Costruire muscoli',loseFat:'Perdere grasso',improveEndurance:'Migliorare resistenza',stayActive:'Rimanere attivo'},dash:{goodMorning:'Buongiorno',goodAfternoon:'Buon pomeriggio',goodEvening:'Buonasera',training:'Allenamento',thisWeek:'Questa settimana',totalVolume:'Volume totale',setsLogged:'Serie registrate',personalRecords:'Record personali',sessions:'sessioni',allTime:'totale',startLogging:'inizia a registrare',keepPushing:'continua così',streak:'giorni di fila',quickStart:'Avvio rapido',workoutLog:'Registro allenamenti'},pages:{exercises:'Esercizi',exercisesSub:'Tocca un esercizio per la guida e per registrare le serie',programs:'Programmi',programsSub:'Split predefiniti — tocca per espandere',progress:'Progressi',progressSub:'Segui volume, record e traguardi',improvement:'Miglioramento',improvementSub:'Segui i tuoi progressi quotidiani',log:'Registro allenamenti',logSub:'La tua cronologia di allenamenti salvata',profile:'Profilo',settings:'Impostazioni',settingsSub:'Personalizza la tua esperienza',coach:'COACH IA',coachSub:'Chiedi consigli al tuo coach fitness IA'},settings:{units:'Unità',weightUnit:'Unità peso',heightUnit:'Unità altezza',restTimer:'Pausa predefinita',soundAlert:'Avviso sonoro',theme:'Tema',language:'Paese / Lingua',languageSection:'Lingua',account:'Account',appearance:'Aspetto',session:'Sessione'},profile:{name:'Nome',weight:'Peso (kg)',height:'Altezza (cm)',age:'Età',gender:'Genere',goal:'Obiettivo',bmi:'IMC',category:'Categoria',idealWeight:'Range peso ideale',suggestedCal:'Calorie giornaliere suggerite',proteinTarget:'Obiettivo proteine',waterTarget:'Assunzione acqua'},common:{save:'Salva modifiche',cancel:'Annulla',delete:'Elimina',start:'Avvia',done:'Fatto'}},
+  pt:{nav:{home:'Início',exercises:'Exercícios',programs:'Programas',progress:'Progresso',improvement:'Melhoria',timer:'Timer',log:'Registo',coach:'Coach IA',profile:'Perfil',settings:'Definições',more:'Mais'},auth:{login:'Entrar',createAccount:'Criar conta',username:'Nome de utilizador',password:'Palavra-passe',yourUsername:'O teu nome de utilizador',yourPassword:'A tua palavra-passe',logIn:'Entrar',chooseUsername:'Escolhe um nome de utilizador',createPassword:'Criar palavra-passe',confirmPassword:'Confirmar palavra-passe',startTraining:'Começar a treinar'},setup:{yourName:'O teu nome',weight:'Peso (kg)',height:'Altura (cm)',age:'Idade',goal:'Objetivo de treino',buildMuscle:'Ganhar músculo',loseFat:'Perder gordura',improveEndurance:'Melhorar resistência',stayActive:'Manter-se ativo'},dash:{goodMorning:'Bom dia',goodAfternoon:'Boa tarde',goodEvening:'Boa noite',training:'Treino',thisWeek:'Esta semana',totalVolume:'Volume total',setsLogged:'Séries registadas',personalRecords:'Recordes pessoais',sessions:'sessões',allTime:'total',startLogging:'começa a registar',keepPushing:'continua assim',streak:'dias seguidos',quickStart:'Início rápido',workoutLog:'Registo de treinos'},pages:{exercises:'Exercícios',exercisesSub:'Toca num exercício para ver o guia e registar as séries',programs:'Programas',programsSub:'Splits pré-definidos — toca para expandir',progress:'Progresso',progressSub:'Acompanha volume, recordes e conquistas',improvement:'Melhoria',improvementSub:'Acompanha o teu progresso diário',log:'Registo de treinos',logSub:'O teu histórico de treinos guardado',profile:'Perfil',settings:'Definições',settingsSub:'Personaliza a tua experiência',coach:'COACH IA',coachSub:'Pergunta ao teu coach fitness IA por recomendações'},settings:{units:'Unidades',weightUnit:'Unidade de peso',heightUnit:'Unidade de altura',restTimer:'Duração padrão',soundAlert:'Alerta sonoro',theme:'Tema',language:'País / Idioma',languageSection:'Idioma',account:'Conta',appearance:'Aparência',session:'Sessão'},profile:{name:'Nome',weight:'Peso (kg)',height:'Altura (cm)',age:'Idade',gender:'Género',goal:'Objetivo',bmi:'IMC',category:'Categoria',idealWeight:'Intervalo de peso ideal',suggestedCal:'Calorias diárias sugeridas',proteinTarget:'Objetivo de proteínas',waterTarget:'Ingestão de água'},common:{save:'Guardar alterações',cancel:'Cancelar',delete:'Eliminar',start:'Iniciar',done:'Feito'}},
+  ja:{nav:{home:'ホーム',exercises:'エクササイズ',programs:'プログラム',progress:'進捗',improvement:'改善',timer:'タイマー',log:'ログ',coach:'AIコーチ',profile:'プロフィール',settings:'設定',more:'その他'},auth:{login:'ログイン',createAccount:'アカウント作成',username:'ユーザー名',password:'パスワード',yourUsername:'ユーザー名',yourPassword:'パスワード',logIn:'ログイン',chooseUsername:'ユーザー名を選択',createPassword:'パスワードを作成',confirmPassword:'パスワードを確認',startTraining:'トレーニング開始'},setup:{yourName:'名前',weight:'体重 (kg)',height:'身長 (cm)',age:'年齢',goal:'トレーニング目標',buildMuscle:'筋肉をつける',loseFat:'脂肪を減らす',improveEndurance:'持久力を改善',stayActive:'アクティブにする'},dash:{goodMorning:'おはようございます',goodAfternoon:'こんにちは',goodEvening:'こんばんは',training:'トレーニング',thisWeek:'今週',totalVolume:'総ボリューム',setsLogged:'記録したセット',personalRecords:'自己記録',sessions:'セッション',allTime:'合計',startLogging:'記録を開始',keepPushing:'頑張り続けて',streak:'日連続',quickStart:'クイックスタート',workoutLog:'ワークアウトログ'},pages:{exercises:'エクササイズ',exercisesSub:'エクササイズをタップしてガイドを見て、セットを記録',programs:'プログラム',programsSub:'プリセットのワークアウトスプリット — タップして展開',progress:'進捗',progressSub:'ボリューム、自己記録、実績を追跡',improvement:'改善',improvementSub:'日々の進捗を追跡',log:'ワークアウトログ',logSub:'保存したトレーニング履歴',profile:'プロフィール',settings:'設定',settingsSub:'体験をカスタマイズ',coach:'AIコーチ',coachSub:'AIフィットネスコーチにトレーニングの推奨を聞く'},settings:{units:'単位',weightUnit:'体重単位',heightUnit:'身長単位',restTimer:'デフォルト時間',soundAlert:'サウンドアラート',theme:'テーマ',language:'国 / 言語',languageSection:'言語',account:'アカウント',appearance:'外観',session:'セッション'},profile:{name:'名前',weight:'体重 (kg)',height:'身長 (cm)',age:'年齢',gender:'性別',goal:'目標',bmi:'BMI',category:'カテゴリ',idealWeight:'理想体重範囲',suggestedCal:'推奨1日カロリー',proteinTarget:'タンパク質目標',waterTarget:'水分摂取量'},common:{save:'変更を保存',cancel:'キャンセル',delete:'削除',start:'開始',done:'完了'}},
+  zh:{nav:{home:'首页',exercises:'练习',programs:'计划',progress:'进度',improvement:'改善',timer:'计时器',log:'日志',coach:'AI教练',profile:'个人资料',settings:'设置',more:'更多'},auth:{login:'登录',createAccount:'创建账户',username:'用户名',password:'密码',yourUsername:'您的用户名',yourPassword:'您的密码',logIn:'登录',chooseUsername:'选择用户名',createPassword:'创建密码',confirmPassword:'确认密码',startTraining:'开始训练'},setup:{yourName:'您的姓名',weight:'体重 (kg)',height:'身高 (cm)',age:'年龄',goal:'训练目标',buildMuscle:'增肌',loseFat:'减脂',improveEndurance:'提高耐力',stayActive:'保持活跃'},dash:{goodMorning:'早上好',goodAfternoon:'下午好',goodEvening:'晚上好',training:'训练',thisWeek:'本周',totalVolume:'总容量',setsLogged:'已记录组数',personalRecords:'个人记录',sessions:'次',allTime:'总计',startLogging:'开始记录',keepPushing:'继续加油',streak:'天连续',quickStart:'快速开始',workoutLog:'训练日志'},pages:{exercises:'练习',exercisesSub:'点击任意练习查看指南并记录组数',programs:'计划',programsSub:'预设训练计划 — 点击展开',progress:'进度',progressSub:'跟踪容量、个人记录和成就',improvement:'改善',improvementSub:'跟踪您的日常进步',log:'训练日志',logSub:'您保存的训练历史',profile:'个人资料',settings:'设置',settingsSub:'自定义您的体验',coach:'AI教练',coachSub:'向您的AI健身教练咨询训练建议'},settings:{units:'单位',weightUnit:'重量单位',heightUnit:'高度单位',restTimer:'默认时长',soundAlert:'声音提醒',theme:'主题',language:'国家 / 语言',languageSection:'语言',account:'账户',appearance:'外观',session:'会话'},profile:{name:'姓名',weight:'体重 (kg)',height:'身高 (cm)',age:'年龄',gender:'性别',goal:'目标',bmi:'BMI',category:'类别',idealWeight:'理想体重范围',suggestedCal:'建议每日热量',proteinTarget:'蛋白质目标',waterTarget:'饮水量'},common:{save:'保存更改',cancel:'取消',delete:'删除',start:'开始',done:'完成'}}
+};
+const LANG_FALLBACK={en:'en',es:'es',fr:'fr',de:'de',it:'it',pt:'pt','pt-BR':'pt',ja:'ja',zh:'zh','en-GB':'en'};
+const goalKey={'Build Muscle':'setup.buildMuscle','Lose Fat':'setup.loseFat','Improve Endurance':'setup.improveEndurance','Stay Active':'setup.stayActive'};
+function getLang(){
+  const lang=(typeof S!=='undefined'&&S&&S.settings&&S.settings.language)||localStorage.getItem('forge_lang')||'en';
+  return LANG[lang]?lang:(LANG_FALLBACK[lang]||'en');
+}
+function t(key){
+  const keys=key.split('.');
+  let v=LANG[getLang()];
+  for(const k of keys){v=v?.[k];}
+  if(v)return v;
+  v=LANG.en;for(const k of keys){v=v?.[k];}
+  return v||key;
+}
+function setLanguage(lang){
+  if(!S.settings)S.settings={};
+  S.settings.language=lang;
+  save(S);
+  localStorage.setItem('forge_lang',lang);
+  const el=document.getElementById('setting-language');if(el)el.value=lang;
+  applyTranslations();
+  applyProfile();
+  applySettings();
+  applyExFilters();
+  buildLog();
+  buildQuickStart();
+}
+function applyTranslations(){
+  const lang=getLang();
+  document.documentElement.lang=lang.split('-')[0];
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n');
+    if(!k)return;
+    const val=t(k);
+    if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){if(el.placeholder!==undefined)el.placeholder=val;}
+    else el.textContent=val;
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{const k=el.getAttribute('data-i18n-placeholder');if(k)el.placeholder=t(k);});
+  const w=document.getElementById('coach-welcome-msg');if(w)w.textContent=coachT('welcome');
+}
+
+// ═══════════════════════════════════════════════════
 //  AUTH & ACCOUNT SYSTEM
 // ═══════════════════════════════════════════════════
 let currentUser=null;
@@ -1750,6 +1824,7 @@ function showSyncStatus(){
 
 function _refreshFullUI(){
   if(!S.profile)return;
+  applyTranslations();
   applyProfile();applyExFilters();buildLog();buildQuickStart();updateTimerUI();applySettings();
   try{renderAchievements();}catch(e){}
   try{renderProfileStats();}catch(e){}
@@ -1809,6 +1884,20 @@ async function doSignup(){
   document.getElementById('login-pass').value='';
   renderAccountsList();
   setTimeout(()=>authTab('login'),2000);
+}
+
+async function tryDemo(){
+  const u='demo';
+  const p='demo123';
+  let accs=getAccounts();
+  if(!accs[u]){
+    const h=await hashPw(p);
+    accs[u]={hash:h,data:{profile:{name:'Demo',weight:75,height:178,age:28,goal:'Build Muscle'},log:[{key:'bench',name:'Bench Press',cat:'Push',muscle:'Chest, Triceps',sets:3,volume:2400,maxWeight:80,ts:Date.now()-86400000,details:[{wt:80,rp:10},{wt:80,rp:8},{wt:75,rp:10}]},{key:'squat',name:'Barbell Squat',cat:'Legs',muscle:'Quads, Glutes',sets:3,volume:3000,maxWeight:100,ts:Date.now()-2*86400000,details:[{wt:100,rp:5},{wt:95,rp:6},{wt:90,rp:8}]}],prs:{bench:{weight:80,reps:10},squat:{weight:100,reps:5}},hrLog:[],settings:{}},created:Date.now()};
+    saveAccounts(accs);
+  }
+  document.getElementById('login-user').value=u;
+  document.getElementById('login-pass').value=p;
+  doLogin();
 }
 
 async function doLogin(){
@@ -2081,6 +2170,16 @@ let S = {};
 // ═══════════════════════════════════════════════════
 //  PHOTO HANDLING (removed)
 // ═══════════════════════════════════════════════════
+function isMobileDevice(){
+  return window.matchMedia('(pointer: coarse)').matches;
+}
+function onAvatarClick(){
+  if(isMobileDevice()){
+    showAvatarSourceSheet();
+  }else{
+    document.getElementById('avatar-input').click();
+  }
+}
 function showAvatarSourceSheet(){
   const sheet=document.getElementById('avatar-source-sheet');
   if(sheet){sheet.style.display='flex';sheet.style.pointerEvents='auto';}
@@ -2089,7 +2188,7 @@ function hideAvatarSourceSheet(){
   const sheet=document.getElementById('avatar-source-sheet');
   if(sheet){sheet.style.display='none';}
 }
-function pickAvatar(){showAvatarSourceSheet();}
+function pickAvatar(){onAvatarClick();}
 function handleAvatarPick(ev){
   const file=ev.target.files[0];if(!file)return;
   const reader=new FileReader();
@@ -2236,11 +2335,11 @@ function saveProfile(){
 function applyProfile(){
   const p=S.profile;if(!p)return;
   const hour=new Date().getHours();
-  const greet=hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
+  const greet=hour<12?t('dash.goodMorning'):hour<17?t('dash.goodAfternoon'):t('dash.goodEvening');
   document.getElementById('dash-greet').textContent=greet;
   document.getElementById('dash-name').innerHTML=`${p.name}'s <span>Training</span>`;
   document.getElementById('profile-page-name').textContent=p.name;
-  document.getElementById('profile-page-goal').textContent=`Goal: ${p.goal||'—'}`;
+  document.getElementById('profile-page-goal').textContent=`${t('profile.goal')}: ${p.goal?(goalKey[p.goal]?t(goalKey[p.goal]):p.goal):'—'}`;
   document.getElementById('edit-name').value=p.name||'';
   document.getElementById('edit-weight').value=p.weight||'';
   document.getElementById('edit-height').value=p.height||'';
@@ -3422,6 +3521,10 @@ function applySettings(){
     const g=document.getElementById('theme-toggle');
     if(g){g.querySelectorAll('.toggle-opt').forEach(b=>{b.classList.remove('active');if(b.textContent.toLowerCase()===s.theme)b.classList.add('active');});}
   }
+  if(s.language){
+    const el=document.getElementById('setting-language');
+    if(el)el.value=s.language;
+  }
   if(s.animSpeed){
     const el=document.getElementById('setting-anim-speed');
     if(el)el.value=s.animSpeed;
@@ -3495,6 +3598,28 @@ function exLink(key){
   return`<span class="coach-ex-link" onclick="openDemo('${key}')">${e.name}</span>`;
 }
 
+const COACH_LANG={
+  en:{welcome:"Hey! I'm your AI fitness coach. Ask me anything — how to do specific exercises, what you should work on, workout plans, nutrition tips, or just say hello! I'll use your profile and workout history to give you personalised advice.",weekEmpty:"You haven't logged any workouts this week yet.",weekFull:"This week: <strong>{{count}}</strong> sets across {{cats}}.",whatKnow:"What would you like to know?",workedRecently:"Have you worked out recently?",greeting:["Hey {{name}}! 👋 How's it going? Ready to talk training? Ask me anything — how to do an exercise, what to work on, nutrition, or just chat!<br><br>{{extra}}","What's up, {{name}}! Good to hear from you. I'm here if you need workout advice, want to learn an exercise, or just want to chat about fitness.<br><br>{{extra}}","Hi {{name}}! 😊 {{extra}}<br><br>Ask me anything — \"how do I do a deadlift?\", \"what should I train today?\", or whatever you want!","Hey hey! 💪 Good to see you, {{name}}. What can I help with? Exercise form, workout plans, what to eat — I'm all ears!<br><br>{{extra}}"],howareyou:["I'm doing great, {{name}}! Always ready to talk training. 💪 What can I help you with today?","I'm good, thanks for asking! More importantly — how's your training going? {{extra}}","All good here! I'm just a fitness AI, but I'm always fired up to help you train. What's on your mind?"],thanks:["You're welcome, {{name}}! Always here when you need workout advice. 💪","No problem! That's what I'm here for. Feel free to ask anything else about your training!","Glad I could help, {{name}}! Remember, consistency is the key. Keep showing up!","Anytime! Let me know when you need your next workout plan or have questions. 🤜🤛"],bye:["See you next time, {{name}}! Remember — the hardest part is showing up. You've got this! 🔥","Later, {{name}}! Don't forget to stretch and stay hydrated. Come back anytime for workout advice!","Take care! Rest well and come back stronger. I'll be here whenever you need me. 💪"],yes:["Great! So what would you like to know? I can help with workouts, exercises, nutrition, recovery — ask me anything about training!","Awesome! Fire away, {{name}} — what do you want to work on? 💪","Let's do it! What's on your mind? A workout plan, exercise form, what to train today...?"],no:["No worries, {{name}}! I'm here whenever you need me. Just ask if you want workout advice, exercise tips, or anything fitness-related!","That's cool! Take your time. When you're ready to talk training, I'm here. 💪"],laugh:["Haha glad I could entertain you, {{name}}! 😄 But seriously, want to talk training? I've got workout plans, exercise tips, nutrition advice — you name it!","😂 I try! But my real talent is fitness advice. What can I help you with? Workout plan? Exercise tips?"],positive:["Thanks, {{name}}! 😊 I'm here to help you crush your goals. Anything else you want to know about training, nutrition, or recovery?","Glad you're finding this helpful! Keep up the amazing work, {{name}}. Is there anything specific about your training you'd like to improve?","Thanks! Remember, consistency beats perfection. You're already doing great by being here. What's next? 💪"]},
+  es:{welcome:"¡Hola! Soy tu coach de fitness IA. Pregúntame lo que quieras: cómo hacer ejercicios, qué entrenar, planes de entrenamiento, nutrición o ¡solo saluda! Usaré tu perfil e historial para darte consejos personalizados.",weekEmpty:"Aún no has registrado entrenamientos esta semana.",weekFull:"Esta semana: <strong>{{count}}</strong> series en {{cats}}.",whatKnow:"¿Qué te gustaría saber?",workedRecently:"¿Has entrenado recientemente?",greeting:["¡Hola {{name}}! 👋 ¿Qué tal? ¿Listo para hablar de entrenamiento? Pregunta lo que quieras — ejercicios, qué trabajar, nutrición...<br><br>{{extra}}","¿Qué tal, {{name}}! Me alegra saber de ti. Estoy aquí para consejos de entrenamiento, aprender ejercicios o charlar de fitness.<br><br>{{extra}}","¡Hola {{name}}! 😊 {{extra}}<br><br>Pregunta lo que quieras — \"¿cómo hago un deadlift?\", \"¿qué debería entrenar hoy?\" o lo que sea.","¡Hey {{name}}! 💪 ¿En qué puedo ayudarte? Técnica, planes de entrenamiento, nutrición... ¡todo!<br><br>{{extra}}"],howareyou:["¡Muy bien, {{name}}! Siempre listo para hablar de entrenamiento. 💪 ¿En qué puedo ayudarte hoy?","Bien, ¡gracias por preguntar! Lo importante — ¿cómo va tu entrenamiento? {{extra}}","¡Todo bien! Soy una IA de fitness, pero siempre dispuesta a ayudarte a entrenar. ¿Qué tienes en mente?"],thanks:["¡De nada, {{name}}! Siempre aquí cuando necesites consejos de entrenamiento. 💪","¡Sin problema! Para eso estoy. Pregunta lo que quieras sobre tu entrenamiento.","¡Me alegra ayudar, {{name}}! Recuerda, la constancia es clave. ¡Sigue así!","¡Cuando quieras! Avísame cuando necesites tu próximo plan o tengas preguntas. 🤜🤛"],bye:["¡Hasta la próxima, {{name}}! Recuerda — lo más difícil es aparecer. ¡Tú puedes! 🔥","¡Nos vemos, {{name}}! No olvides estirar e hidratarte. Vuelve cuando quieras.","¡Cuídate! Descansa bien y vuelve más fuerte. Estaré aquí cuando me necesites. 💪"],yes:["¡Genial! ¿Qué te gustaría saber? Puedo ayudar con entrenamientos, ejercicios, nutrición, recuperación — ¡pregunta lo que quieras!","¡Perfecto! Adelante, {{name}} — ¿en qué quieres trabajar? 💪","¡Vamos! ¿Qué tienes en mente? ¿Plan de entrenamiento, técnica, qué entrenar hoy...?"],no:["¡Sin problema, {{name}}! Estoy aquí cuando me necesites. Pregunta si quieres consejos de entrenamiento o ejercicios.","¡Vale! Tómate tu tiempo. Cuando quieras hablar de entrenamiento, aquí estaré. 💪"],laugh:["¡Jaja me alegra haberte entretenido, {{name}}! 😄 Pero en serio, ¿quieres hablar de entrenamiento? Tengo planes, consejos, nutrición...","😂 ¡Lo intento! Pero mi talento real es el fitness. ¿En qué puedo ayudarte?"],positive:["¡Gracias, {{name}}! 😊 Estoy aquí para ayudarte a alcanzar tus metas. ¿Algo más sobre entrenamiento o nutrición?","¡Me alegra que te ayude! Sigue así, {{name}}. ¿Algo específico que quieras mejorar?","¡Gracias! La constancia vence a la perfección. Ya estás haciendo bien. ¿Qué sigue? 💪"]},
+  fr:{welcome:"Salut ! Je suis ton coach fitness IA. Demande-moi tout : comment faire des exercices, quoi travailler, plans d'entraînement, nutrition ou dis juste bonjour ! J'utilise ton profil pour des conseils personnalisés.",weekEmpty:"Tu n'as pas encore enregistré d'entraînement cette semaine.",weekFull:"Cette semaine : <strong>{{count}}</strong> séries sur {{cats}}.",whatKnow:"Que veux-tu savoir ?",workedRecently:"As-tu trainé récemment ?",greeting:["Salut {{name}} ! 👋 Ça va ? Prêt à parler entraînement ? Demande-moi tout — exercices, quoi travailler, nutrition...<br><br>{{extra}}","Quoi de neuf, {{name}} ! Content d'avoir de tes nouvelles. Je suis là pour des conseils, apprendre un exercice ou discuter fitness.<br><br>{{extra}}","Salut {{name}} ! 😊 {{extra}}<br><br>Demande-moi tout — \"comment faire un deadlift ?\", \"quoi faire aujourd'hui ?\" ou autre !","Hey {{name}} ! 💪 En quoi puis-je t'aider ? Technique, plans, nutrition — tout !<br><br>{{extra}}"],howareyou:["Très bien, {{name}} ! Toujours prêt à parler entraînement. 💪 En quoi puis-je t'aider ?","Bien, merci ! Plus important — comment va ton entraînement ? {{extra}}","Tout va bien ! Je suis une IA fitness mais toujours prête à t'aider. De quoi as-tu envie ?"],thanks:["De rien, {{name}} ! Toujours là pour tes conseils fitness. 💪","Pas de souci ! C'est pour ça que je suis là. Demande-moi tout sur ton entraînement !","Content d'avoir aidé, {{name}} ! La régularité est la clé. Continue !","Quand tu veux ! Dis-moi quand tu as besoin d'un plan ou de conseils. 🤜🤛"],bye:["À la prochaine, {{name}} ! Le plus dur c'est de venir. Tu peux le faire ! 🔥","À plus, {{name}} ! N'oublie pas de t'étirer et de t'hydrater. Reviens quand tu veux !","Prends soin de toi ! Repose-toi bien et reviens plus fort. Je serai là. 💪"],yes:["Super ! Que veux-tu savoir ? Entraînement, exercices, nutrition, récup — demande-moi tout !","Parfait ! Vas-y, {{name}} — sur quoi veux-tu travailler ? 💪","Allons-y ! De quoi as-tu envie ? Plan, technique, quoi faire aujourd'hui... ?"],no:["Pas de souci, {{name}} ! Je suis là quand tu as besoin. Demande conseil quand tu veux !","Pas grave ! Prends ton temps. Quand tu voudras parler entraînement, je suis là. 💪"],laugh:["Haha content de t'avoir amusé, {{name}} ! 😄 Mais sérieusement, on parle entraînement ? J'ai des plans, des conseils...","😂 J'essaie ! Mais mon vrai talent c'est le fitness. En quoi puis-je t'aider ?"],positive:["Merci, {{name}} ! 😊 Je suis là pour t'aider à atteindre tes objectifs. Autre chose ?","Content que ça t'aide ! Continue comme ça, {{name}}. Tu veux améliorer quelque chose ?","Merci ! La régularité bat la perfection. Tu fais déjà bien. Et ensuite ? 💪"]},
+  de:{welcome:"Hey! Ich bin dein KI-Fitness-Coach. Frag mich alles — Übungen, Trainingspläne, Ernährung oder sag einfach Hallo! Ich nutze dein Profil für persönliche Tipps.",weekEmpty:"Du hast diese Woche noch kein Training protokolliert.",weekFull:"Diese Woche: <strong>{{count}}</strong> Sätze bei {{cats}}.",whatKnow:"Was möchtest du wissen?",workedRecently:"Hast du diese Woche schon trainiert?",greeting:["Hey {{name}}! 👋 Wie geht's? Bereit für Training? Frag mich alles — Übungen, was trainieren, Ernährung...<br><br>{{extra}}","Was geht, {{name}}! Gut von dir zu hören. Ich bin da für Trainingsberatung, Übungen lernen oder Fitness-Chat.<br><br>{{extra}}","Hi {{name}}! 😊 {{extra}}<br><br>Frag mich alles — \"Wie mache ich Deadlift?\", \"Was soll ich heute trainieren?\" oder was auch immer!","Hey {{name}}! 💪 Wobei kann ich helfen? Technik, Pläne, Ernährung — alles!<br><br>{{extra}}"],howareyou:["Mir geht's gut, {{name}}! Immer bereit für Training. 💪 Wobei kann ich helfen?","Gut, danke! Wichtiger — wie läuft dein Training? {{extra}}","Alles gut! Ich bin eine Fitness-KI, aber immer bereit zu helfen. Was hast du im Sinn?"],thanks:["Gern geschehen, {{name}}! Immer da für Trainingsberatung. 💪","Kein Problem! Dafür bin ich da. Frag mich alles über dein Training!","Freut mich zu helfen, {{name}}! Regelmäßigkeit ist der Schlüssel. Weiter so!","Jederzeit! Sag Bescheid, wenn du einen Plan brauchst. 🤜🤛"],bye:["Bis zum nächsten Mal, {{name}}! Das Schwerste ist aufzutauchen. Du schaffst das! 🔥","Tschüss, {{name}}! Vergiss nicht zu dehnen und zu trinken. Komm jederzeit wieder!","Pass auf dich auf! Ruhe dich aus und komm stärker zurück. Ich bin hier. 💪"],yes:["Super! Was möchtest du wissen? Training, Übungen, Ernährung — frag mich alles!","Klar! Los geht's, {{name}} — woran willst du arbeiten? 💪","Lass uns anfangen! Was hast du im Sinn? Plan, Technik, was heute trainieren...?"],no:["Kein Problem, {{name}}! Ich bin da, wenn du mich brauchst. Frag nach Trainingsberatung!","Alles klar! Nimm dir Zeit. Wenn du über Training reden willst, bin ich da. 💪"],laugh:["Haha freut mich, dich zu unterhalten, {{name}}! 😄 Aber ernsthaft, willst du über Training reden? Ich habe Pläne, Tipps...","😂 Ich versuche es! Aber mein echtes Talent ist Fitness. Wobei kann ich helfen?"],positive:["Danke, {{name}}! 😊 Ich helfe dir, deine Ziele zu erreichen. Noch etwas?","Freut mich, dass es hilft! Mach weiter so, {{name}}. Was willst du verbessern?","Danke! Regelmäßigkeit schlägt Perfektion. Du machst schon gut. Was als Nächstes? 💪"]},
+  it:{welcome:"Ciao! Sono il tuo coach fitness IA. Chiedimi tutto — esercizi, piani di allenamento, nutrizione o saluta! Userò il tuo profilo per consigli personalizzati.",weekEmpty:"Non hai ancora registrato allenamenti questa settimana.",weekFull:"Questa settimana: <strong>{{count}}</strong> serie su {{cats}}.",whatKnow:"Cosa vorresti sapere?",workedRecently:"Hai fatto allenamento di recente?",greeting:["Ciao {{name}}! 👋 Come va? Pronto a parlare di allenamento? Chiedimi tutto — esercizi, cosa lavorare, nutrizione...<br><br>{{extra}}","Come va, {{name}}! Buono sentirti. Sono qui per consigli, imparare esercizi o parlare di fitness.<br><br>{{extra}}","Ciao {{name}}! 😊 {{extra}}<br><br>Chiedimi tutto — \"come faccio lo stacco?\", \"cosa allenare oggi?\" o altro!","Ehi {{name}}! 💪 In cosa posso aiutarti? Tecnica, piani, nutrizione — tutto!<br><br>{{extra}}"],howareyou:["Sto benissimo, {{name}}! Sempre pronto per l'allenamento. 💪 In cosa posso aiutarti?","Bene, grazie! Più importante — come va il tuo allenamento? {{extra}}","Tutto bene! Sono un'IA fitness ma sempre pronta ad aiutarti. Cosa hai in mente?"],thanks:["Prego, {{name}}! Sempre qui per consigli di allenamento. 💪","Nessun problema! Sono qui per questo. Chiedimi tutto sul tuo allenamento!","Felice di aver aiutato, {{name}}! La costanza è la chiave. Continua così!","Quando vuoi! Fammi sapere quando ti serve un piano. 🤜🤛"],bye:["Alla prossima, {{name}}! La parte più difficile è presentarsi. Ce la puoi fare! 🔥","A dopo, {{name}}! Non dimenticare di stretching e idratazione. Torna quando vuoi!","Stammi bene! Riposa e torna più forte. Sarò qui. 💪"],yes:["Ottimo! Cosa vorresti sapere? Allenamento, esercizi, nutrizione — chiedimi tutto!","Perfetto! Avanti, {{name}} — su cosa vuoi lavorare? 💪","Andiamo! Cosa hai in mente? Piano, tecnica, cosa allenare oggi...?"],no:["Nessun problema, {{name}}! Sono qui quando mi servi. Chiedi consigli quando vuoi!","Va bene! Prenditi il tuo tempo. Quando vuoi parlare di allenamento, sono qui. 💪"],laugh:["Haha felice di averti divertito, {{name}}! 😄 Ma seriamente, vuoi parlare di allenamento? Ho piani, consigli...","😂 Ci provo! Ma il mio vero talento è il fitness. In cosa posso aiutarti?"],positive:["Grazie, {{name}}! 😊 Sono qui per aiutarti a raggiungere i tuoi obiettivi. Altro?","Felice che ti aiuti! Continua così, {{name}}. Cosa vorresti migliorare?","Grazie! La costanza batte la perfezione. Stai già facendo bene. Cosa dopo? 💪"]},
+  pt:{welcome:"Olá! Sou o teu coach de fitness IA. Pergunta-me tudo — exercícios, planos de treino, nutrição ou diz só olá! Uso o teu perfil para conselhos personalizados.",weekEmpty:"Ainda não registaste treinos esta semana.",weekFull:"Esta semana: <strong>{{count}}</strong> séries em {{cats}}.",whatKnow:"O que gostarias de saber?",workedRecently:"Treinaste recentemente?",greeting:["Olá {{name}}! 👋 Como vai? Pronto para falar de treino? Pergunta o que quiseres — exercícios, o que trabalhar, nutrição...<br><br>{{extra}}","Como vai, {{name}}! Bom saber de ti. Estou aqui para conselhos, aprender exercícios ou falar de fitness.<br><br>{{extra}}","Olá {{name}}! 😊 {{extra}}<br><br>Pergunta o que quiseres — \"como faço deadlift?\", \"o que treinar hoje?\" ou o que for!","Ei {{name}}! 💪 Em que posso ajudar? Técnica, planos, nutrição — tudo!<br><br>{{extra}}"],howareyou:["Estou ótimo, {{name}}! Sempre pronto para falar de treino. 💪 Em que posso ajudar?","Bem, obrigado! Mais importante — como vai o teu treino? {{extra}}","Tudo bem! Sou uma IA de fitness mas sempre pronta a ajudar. O que tens em mente?"],thanks:["De nada, {{name}}! Sempre aqui para conselhos de treino. 💪","Sem problema! É para isso que estou. Pergunta o que quiseres sobre o teu treino!","Fico feliz por ajudar, {{name}}! A consistência é a chave. Continua assim!","Quando quiseres! Avisa quando precisares de um plano. 🤜🤛"],bye:["Até à próxima, {{name}}! A parte mais difícil é aparecer. Tu consegues! 🔥","Até logo, {{name}}! Não te esqueças de alongar e hidratar. Volta quando quiseres!","Cuida-te! Descansa bem e volta mais forte. Estarei aqui. 💪"],yes:["Ótimo! O que gostarias de saber? Treino, exercícios, nutrição — pergunta o que quiseres!","Perfeito! Avança, {{name}} — em que queres trabalhar? 💪","Vamos lá! O que tens em mente? Plano, técnica, o que treinar hoje...?"],no:["Sem problema, {{name}}! Estou aqui quando precisares. Pergunta conselhos quando quiseres!","Tudo bem! Leva o teu tempo. Quando quiseres falar de treino, estou aqui. 💪"],laugh:["Haha fico feliz por te ter entretido, {{name}}! 😄 Mas a sério, queres falar de treino? Tenho planos, dicas...","😂 Tento! Mas o meu talento real é fitness. Em que posso ajudar?"],positive:["Obrigado, {{name}}! 😊 Estou aqui para te ajudar a atingir os teus objetivos. Mais alguma coisa?","Fico feliz por ajudar! Continua assim, {{name}}. O que gostarias de melhorar?","Obrigado! A consistência vence a perfeição. Já estás a fazer bem. O que a seguir? 💪"]},
+  ja:{welcome:"こんにちは！AIフィットネスコーチです。エクササイズのやり方、トレーニング計画、栄養など何でも聞いてください！プロフィールと履歴を使ってパーソナライズしたアドバイスをします。",weekEmpty:"今週はまだトレーニングを記録していません。",weekFull:"今週：<strong>{{count}}</strong>セット、{{cats}}。",whatKnow:"何を知りたいですか？",workedRecently:"最近トレーニングした？",greeting:["やあ{{name}}さん！👋 調子は？トレーニングの話する？エクササイズ、何を鍛えるか、栄養など何でも聞いて！<br><br>{{extra}}","どうした{{name}}さん！連絡くれてありがとう。トレーニングのアドバイス、エクササイズの学習、フィットネスの話 — 何でも！<br><br>{{extra}}","こんにちは{{name}}さん！😊 {{extra}}<br><br>「デッドリフトのやり方は？」「今日何をトレーニング？」など何でも聞いて！","やあ{{name}}さん！💪 何を手伝おう？フォーム、プラン、栄養 — 何でも！<br><br>{{extra}}"],howareyou:["元気だよ、{{name}}さん！いつでもトレーニングの話する準備できてる。💪 何を手伝おう？","元気、ありがとう！大事なのは — トレーニングはどう？{{extra}}","大丈夫！フィットネスAIだけど、いつでも手伝うよ。何が気になる？"],thanks:["どういたしまして、{{name}}さん！トレーニングのアドバイスはいつでも。💪","問題ない！そのためにいるんだ。トレーニングについて何でも聞いて！","お役に立てて嬉しい、{{name}}さん！継続が鍵だ。頑張って！","いつでも！次のプランや質問があれば言って。🤜🤛"],bye:["また次回、{{name}}さん！一番大変なのは来ること。君ならできる！🔥","またね、{{name}}さん！ストレッチと水分補給を忘れずに。いつでも戻ってきて！","お大事に！よく休んで、より強く戻ってきて。ここにいるよ。💪"],yes:["いいね！何を知りたい？トレーニング、エクササイズ、栄養 — 何でも聞いて！","よし！どうぞ、{{name}}さん — 何をやりたい？💪","やろう！何が気になる？プラン、フォーム、今日何をトレーニング...？"],no:["大丈夫、{{name}}さん！必要な時はいつでもここにいるよ。アドバイスが欲しくなったら聞いて！","了解！焦らなくていい。トレーニングの話がしたくなったら、ここにいるよ。💪"],laugh:["はは、楽しんでもらえて嬉しい、{{name}}さん！😄 でもマジで、トレーニングの話する？プランやアドバイスがあるよ。","😂 頑張るよ！でも本当の才能はフィットネス。何を手伝おう？"],positive:["ありがとう、{{name}}さん！😊 目標達成を手伝うよ。他に何か？","役に立って嬉しい！その調子、{{name}}さん。何を改善したい？","ありがとう！継続は力。もう十分やってる。次は？💪"]},
+  zh:{welcome:"你好！我是你的AI健身教练。可以问我任何问题——如何做练习、该练什么、训练计划、营养建议，或者打个招呼！我会根据你的资料和训练历史给你个性化建议。",weekEmpty:"本周还没有记录任何训练。",weekFull:"本周：<strong>{{count}}</strong>组，{{cats}}。",whatKnow:"你想了解什么？",workedRecently:"最近有训练吗？",greeting:["嘿{{name}}！👋 怎么样？准备好聊训练了吗？可以问我任何问题——如何做练习、练什么、营养...<br><br>{{extra}}","{{name}}你好！很高兴收到你的消息。我在这里提供训练建议、学习练习或聊健身。<br><br>{{extra}}","{{name}}你好！😊 {{extra}}<br><br>可以问我任何问题——"硬拉怎么做？""今天该练什么？"等等！","嘿{{name}}！💪 需要什么帮助？动作、计划、营养——都可以！<br><br>{{extra}}"],howareyou:["我很好，{{name}}！随时准备聊训练。💪 需要什么帮助？","很好，谢谢！更重要的是——你的训练怎么样？{{extra}}","不错！我是健身AI，但随时准备帮你训练。你想了解什么？"],thanks:["不客气，{{name}}！随时为你提供训练建议。💪","没问题！我就是为此而来的。关于训练有什么都可以问！","很高兴能帮到你，{{name}}！坚持是关键。继续加油！","随时！需要计划或有问题时告诉我。🤜🤛"],bye:["下次见，{{name}}！最难的是出现。你可以的！🔥","再见，{{name}}！别忘了拉伸和补水。随时回来！","保重！好好休息，更强归来。我在这里。💪"],yes:["好的！你想了解什么？训练、练习、营养——什么都可以问！","太好了！说吧，{{name}}——你想练什么？💪","来吧！你想了解什么？计划、技术、今天练什么...？"],no:["没关系，{{name}}！需要时我都在。想要训练建议随时问！","好的！慢慢来。想聊训练时，我在这里。💪"],laugh:["哈哈很高兴逗你开心，{{name}}！😄 但说真的，想聊训练吗？我有计划、建议...","😂 我试试！但我真正的专长是健身。需要什么帮助？"],positive:["谢谢，{{name}}！😊 我在这里帮你达成目标。还有什么？","很高兴对你有帮助！继续加油，{{name}}。想改善什么？","谢谢！坚持胜过完美。你已经做得很好了。接下来呢？💪"]}
+};
+
+function coachT(key,vars){
+  const raw=getLang();
+  const lang=LANG_FALLBACK[raw]||raw;
+  const L=COACH_LANG[lang]||COACH_LANG[LANG_FALLBACK[lang]]||COACH_LANG.en;
+  let s=(typeof key==='string'?L[key]:key);
+  if(Array.isArray(s))s=s[Math.floor(Math.random()*s.length)];
+  if(!s)return key;
+  for(const[k,v]of Object.entries(vars||{}))s=String(s).replace(new RegExp(`{{${k}}}`,'g'),v);
+  return s;
+}
+
 function generateCoachReply(query){
   const q=query.toLowerCase().trim();
   const log=S.log||[];
@@ -3519,9 +3644,9 @@ function generateCoachReply(query){
     return Object.entries(EX).filter(([k,e])=>cats.includes(e.cat)).sort(()=>Math.random()-0.5).slice(0,n).map(([k])=>exLink(k)).join(' ');
   }
   function weekSummary(){
-    if(!recentLog.length)return"You haven't logged any workouts this week yet.";
+    if(!recentLog.length)return coachT('weekEmpty');
     const cats=Object.entries(recentCats).map(([c,n])=>`${c} (${n}x)`).join(', ');
-    return`This week: <strong>${recentLog.length} sets</strong> across ${cats}.`;
+    return coachT('weekFull',{count:recentLog.length,cats});
   }
   function prSummary(){
     if(!prKeys.length)return'';
@@ -3620,28 +3745,10 @@ function generateCoachReply(query){
   }
 
   const R={
-    thanks:[
-      `You're welcome, ${name}! Always here when you need workout advice. 💪`,
-      `No problem! That's what I'm here for. Feel free to ask anything else about your training!`,
-      `Glad I could help, ${name}! Remember, consistency is the key. Keep showing up!`,
-      `Anytime! Let me know when you need your next workout plan or have questions. 🤜🤛`,
-    ],
-    greeting:[
-      `Hey ${name}! 👋 How's it going? Ready to talk training? Ask me anything — how to do an exercise, what to work on, nutrition, or just chat!<br><br>${recentLog.length?weekSummary():'What would you like to know?'}`,
-      `What's up, ${name}! Good to hear from you. I'm here if you need workout advice, want to learn an exercise, or just want to chat about fitness.<br><br>What's on your mind?`,
-      `Hi ${name}! 😊 ${recentLog.length?'I see you\'ve been putting in work! '+weekSummary():'Welcome! Let\'s get you moving.'}<br><br>Ask me anything — "how do I do a deadlift?", "what should I train today?", or whatever you want!`,
-      `Hey hey! 💪 Good to see you, ${name}. What can I help with? Exercise form, workout plans, what to eat — I'm all ears!`,
-    ],
-    bye:[
-      `See you next time, ${name}! Remember — the hardest part is showing up. You've got this! 🔥`,
-      `Later, ${name}! Don't forget to stretch and stay hydrated. Come back anytime for workout advice!`,
-      `Take care! Rest well and come back stronger. I'll be here whenever you need me. 💪`,
-    ],
-    howareyou:[
-      `I'm doing great, ${name}! Always ready to talk training. 💪 What can I help you with today?`,
-      `I'm good, thanks for asking! More importantly — how's your training going? ${recentLog.length?weekSummary():'Have you worked out recently?'}`,
-      `All good here! I'm just a fitness AI, but I'm always fired up to help you train. What's on your mind?`,
-    ],
+    thanks:()=>coachT('thanks',{name}),
+    greeting:()=>{const extra=recentLog.length?weekSummary():coachT('whatKnow');return coachT('greeting',{name,extra});},
+    bye:()=>coachT('bye',{name}),
+    howareyou:()=>coachT('howareyou',{name,extra:recentLog.length?weekSummary():coachT('workedRecently')}),
     howto_exercise:function(){
       const key=findExerciseInQuery(q);
       if(!key||!EX[key]){
@@ -3669,19 +3776,9 @@ function generateCoachReply(query){
         `<strong>${e.name}</strong> — a ${e.cat.toLowerCase()} movement targeting <strong>${e.muscle}</strong>.<br><br><strong>Equipment:</strong> ${e.equip}<br><strong>Difficulty:</strong> ${'⭐'.repeat(e.diff)}${'☆'.repeat(5-e.diff)}<br><strong>Suggested sets/reps:</strong> ${e.sets}<br><br>Ask me "how do I do ${e.name.toLowerCase()}?" for the full steps, or tap ${exLink(key)}!`,
       ]);
     },
-    laugh:[
-      `Haha glad I could entertain you, ${name}! 😄 But seriously, want to talk training? I've got workout plans, exercise tips, nutrition advice — you name it!`,
-      `😂 I try! But my real talent is fitness advice. What can I help you with? Workout plan? Exercise tips?`,
-    ],
-    yes:[
-      `Great! So what would you like to know? I can help with workouts, exercises, nutrition, recovery — ask me anything about training!`,
-      `Awesome! Fire away, ${name} — what do you want to work on? 💪`,
-      `Let's do it! What's on your mind? A workout plan, exercise form, what to train today...?`,
-    ],
-    no:[
-      `No worries, ${name}! I'm here whenever you need me. Just ask if you want workout advice, exercise tips, or anything fitness-related!`,
-      `That's cool! Take your time. When you're ready to talk training, I'm here. 💪`,
-    ],
+    laugh:()=>coachT('laugh',{name}),
+    yes:()=>coachT('yes',{name}),
+    no:()=>coachT('no',{name}),
     today:function(){
       const variants=[];
       if(!recentLog.length){
@@ -3874,11 +3971,7 @@ function generateCoachReply(query){
       `I'm your <strong>AI fitness coach</strong>, ${name}! I can help with:<br><br>• 🏋️ <strong>Workouts</strong> — "What should I train today?"<br>• 📋 <strong>Training plans</strong> — "Give me a workout plan"<br>• 💪 <strong>Muscle groups</strong> — "Best chest exercises?"<br>• 🔥 <strong>Fat loss / muscle gain</strong> — "How do I lose fat?"<br>• 🥗 <strong>Nutrition & supplements</strong> — "What should I eat?"<br>• 📊 <strong>Progress</strong> — "Show my PRs"<br>• 🧘 <strong>Recovery & mobility</strong> — "How should I recover?"<br>• 🩹 <strong>Pain & injury advice</strong> — "My back hurts" or "My knee is sore"<br>• 🏠 <strong>Home workouts</strong> — "I don't have a gym"<br>• 💤 <strong>Sleep & hydration</strong> — "How much should I sleep?"<br>• 🔥 <strong>Warm-ups & cool-downs</strong> — "How should I warm up?"<br>• 💬 <strong>General chat</strong> — "Hello!", "Thank you", just talk to me!<br><br>I use your workout log and profile to personalize everything. Just ask!`,
       `Hey ${name}! I'm your personal AI coach. Try asking me things like:<br><br>• "What should I train today?"<br>• "My back hurts — what should I do?"<br>• "I want to get stronger"<br>• "How do I do a push-up properly?"<br>• "I don't have a gym — home workout?"<br>• "What muscles am I neglecting?"<br>• "How much protein do I need?"<br>• "How should I warm up?"<br>• "I'm not feeling motivated"<br>• "Should I take creatine?"<br><br>I'll use your workout history and goals to give personalized advice!`
     ],
-    positive:[
-      `Thanks, ${name}! 😊 I'm here to help you crush your goals. Anything else you want to know about training, nutrition, or recovery?`,
-      `Glad you're finding this helpful! Keep up the amazing work, ${name}. Is there anything specific about your training you'd like to improve?`,
-      `Thanks! Remember, consistency beats perfection. You're already doing great by being here. What's next? 💪`,
-    ],
+    positive:()=>coachT('positive',{name}),
     pain_back:function(){
       return pick([
         `I'm sorry your back hurts, ${name}. Here's what might help:<br><br><strong>Immediate relief:</strong><br>• Avoid heavy lifting until the pain subsides<br>• Gentle movement is better than total rest<br>• Ice for 15-20 min if it's a new pain, heat if it's ongoing stiffness<br><br><strong>Exercises that help back pain:</strong><br>• ${exLink('dead_bug')} — strengthens core without stressing the spine<br>• ${exLink('hip_stretch')} — tight hip flexors pull on your lower back<br>• ${exLink('plank')} — builds core stability to protect the spine<br>• ${exLink('foam_roll')} — release tension in the back muscles<br><br><strong>Avoid for now:</strong> Heavy deadlifts, barbell rows, back squats<br><br>⚠️ <strong>Important:</strong> If the pain is sharp, shooting down your legs, or lasted more than 2 weeks, please see a doctor or physiotherapist.`,
@@ -4056,6 +4149,7 @@ function generateCoachReply(query){
     },{passive:false});
   });
   const saved=localStorage.getItem('forge_current_user');
+  applyTranslations();
   if(saved){
     const accs=getAccounts();
     if(accs[saved]){
@@ -4069,6 +4163,7 @@ function generateCoachReply(query){
       buildQuickStart();
       updateTimerUI();
       applySettings();
+      applyTranslations();
       if(accs[saved].hash){
         startLiveSync(saved,accs[saved].hash);
         setTimeout(()=>syncAccountToCloud(saved),2000);
