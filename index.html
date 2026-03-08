@@ -20,45 +20,48 @@ if(typeof mqtt==='undefined'){
 </head>
 <body class="auth-visible">
 
-<!-- ══════════ AUTH SCREEN (rebuilt) ══════════ -->
+<!-- ══════════ AUTH SCREEN ══════════ -->
 <div id="auth-screen">
   <div class="auth-box">
     <div class="auth-logo">FORGE</div>
     <div class="auth-sub">Your fitness data is saved to the cloud.<br>Log in with your username and password on any device.</div>
     <div class="auth-tabs">
-      <a href="javascript:authTab('login')" class="auth-tab active" id="auth-tab-login" data-i18n="auth.login" role="button">Log In</a>
-      <a href="javascript:authTab('signup')" class="auth-tab" id="auth-tab-signup" data-i18n="auth.createAccount" role="button">Create Account</a>
+      <button type="button" class="auth-tab active" id="auth-tab-login" data-auth="tab-login" data-i18n="auth.login">Log In</button>
+      <button type="button" class="auth-tab" id="auth-tab-signup" data-auth="tab-signup" data-i18n="auth.createAccount">Create Account</button>
     </div>
-    <div class="auth-form active" id="auth-login">
+    <form id="auth-login" class="auth-form active" onsubmit="event.preventDefault();if(typeof doLogin==='function')doLogin();">
       <div class="auth-err" id="login-err"></div>
       <label class="field-label">Username</label>
-      <input class="field-input" id="login-user" type="text" placeholder="Your username" autocomplete="off">
+      <input class="field-input" id="login-user" type="text" placeholder="Your username" autocomplete="username">
       <label class="field-label" style="margin-top:12px;">Password</label>
-      <input class="field-input" id="login-pass" type="password" placeholder="Your password" autocomplete="off">
-      <a href="javascript:doLogin()" class="auth-btn" id="btn-login" data-i18n="auth.logIn" role="button">Log In</a>
+      <input class="field-input" id="login-pass" type="password" placeholder="Your password" autocomplete="current-password">
+      <button type="submit" class="auth-btn" id="btn-login" data-auth="login" data-i18n="auth.logIn">Log In</button>
       <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.5;">☁️ Accounts sync to the cloud.</p>
-      <a href="javascript:void(0)" id="skip-auth-link" style="color:var(--accent);text-decoration:underline;cursor:pointer;display:block;text-align:center;padding:12px;font-size:13px;">Continue without account</a>
+      <button type="button" id="skip-auth-link" data-auth="skip" style="background:none;border:none;color:var(--accent);text-decoration:underline;cursor:pointer;display:block;width:100%;padding:12px;font-size:13px;font-family:inherit;">Continue without account</button>
       <div class="auth-divider">or restore from backup code</div>
-      <a href="javascript:void(0)" class="auth-btn secondary" id="transfer-toggle-btn" style="margin-bottom:0;font-size:11px;display:block;text-align:center;text-decoration:none;" role="button">I have a backup code</a>
+      <button type="button" class="auth-btn secondary" id="transfer-toggle-btn" data-auth="transfer" style="margin-bottom:0;font-size:11px;">I have a backup code</button>
       <div id="transfer-panel" style="display:none;margin-top:14px;">
         <textarea class="auth-import-area" id="import-code" placeholder="Paste backup code here…"></textarea>
-        <a href="javascript:void(0)" class="auth-btn secondary" style="margin-top:8px;display:block;text-align:center;text-decoration:none;" role="button" id="restore-code-btn">Restore From Code</a>
+        <button type="button" class="auth-btn secondary" style="margin-top:8px;" id="restore-code-btn" data-auth="restore">Restore From Code</button>
       </div>
-    </div>
-    <div class="auth-form" id="auth-signup">
+    </form>
+    <form id="auth-signup" class="auth-form" onsubmit="event.preventDefault();if(typeof doSignup==='function')doSignup();">
       <div class="auth-err" id="signup-err"></div>
       <div class="auth-ok" id="signup-ok"></div>
       <label class="field-label">Choose a Username</label>
-      <input class="field-input" id="signup-user" type="text" placeholder="e.g. alex_lifts" autocomplete="off">
+      <input class="field-input" id="signup-user" type="text" placeholder="e.g. alex_lifts" autocomplete="username">
       <label class="field-label" style="margin-top:12px;">Create Password</label>
-      <input class="field-input" id="signup-pass" type="password" placeholder="At least 6 characters" autocomplete="off">
+      <input class="field-input" id="signup-pass" type="password" placeholder="At least 6 characters" autocomplete="new-password">
       <label class="field-label" style="margin-top:12px;">Confirm Password</label>
-      <input class="field-input" id="signup-pass2" type="password" placeholder="Type password again" autocomplete="off">
-      <a href="javascript:void(0)" class="auth-btn" id="btn-signup" data-i18n="auth.createAccount" role="button">Create Account</a>
-    </div>
+      <input class="field-input" id="signup-pass2" type="password" placeholder="Type password again" autocomplete="new-password">
+      <button type="submit" class="auth-btn" id="btn-signup" data-auth="signup" data-i18n="auth.createAccount">Create Account</button>
+    </form>
     <div class="auth-accounts" id="auth-accounts-list"></div>
   </div>
 </div>
+<script>
+(function(){var as=document.getElementById('auth-screen');if(!as)return;function h(e){var t=e.target.closest('[data-auth]');if(!t)return;e.preventDefault();e.stopPropagation();var a=t.getAttribute('data-auth');if(a==='login'&&typeof doLogin==='function')doLogin();else if(a==='signup'&&typeof doSignup==='function')doSignup();else if(a==='tab-login'&&typeof authTab==='function')authTab('login');else if(a==='tab-signup'&&typeof authTab==='function')authTab('signup');else if(a==='skip'&&typeof skipAuth==='function')skipAuth();else if(a==='transfer'&&typeof toggleTransferPanel==='function')toggleTransferPanel();else if(a==='restore'&&typeof importBackup==='function')importBackup();}as.addEventListener('pointerdown',h,{capture:true,passive:false});as.addEventListener('click',h,{capture:true,passive:false});})();
+</script>
 
 <!-- ══════════ SETUP SCREEN ══════════ -->
 <div id="setup-screen" class="hidden">
