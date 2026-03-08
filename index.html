@@ -360,6 +360,14 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 .profile-avatar-wrap{position:relative;flex-shrink:0;}
 .profile-avatar{width:80px;height:80px;border-radius:50%;background:var(--surface2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:34px;color:var(--accent);overflow:hidden;cursor:pointer;transition:border-color 0.2s;}
 .profile-avatar img{width:100%;height:100%;object-fit:cover;}
+.avatar-source-sheet{position:fixed;inset:0;z-index:9999;display:flex;align-items:flex-end;justify-content:center;animation:avatarSheetIn 0.25s ease;}
+@keyframes avatarSheetIn{from{opacity:0;}to{opacity:1;}}
+.avatar-source-backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.5);}
+.avatar-source-actions{position:relative;background:var(--surface);border-radius:16px 16px 0 0;padding:16px;padding-bottom:max(16px,env(safe-area-inset-bottom));width:100%;max-width:400px;display:flex;flex-direction:column;gap:8px;box-shadow:0 -4px 20px rgba(0,0,0,0.3);animation:avatarActionsSlide 0.3s ease;}
+@keyframes avatarActionsSlide{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.avatar-source-btn{background:var(--surface2);border:1px solid var(--border);border-radius:12px;color:var(--text);padding:14px 20px;font-size:16px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:all 0.2s;text-align:center;}
+.avatar-source-btn:active{background:var(--accent);color:#000;border-color:var(--accent);}
+.avatar-source-cancel{background:transparent;color:var(--muted);}
 .profile-avatar-edit{position:absolute;bottom:-2px;right:-2px;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#000;border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:transform 0.15s;}
 @media(hover:hover){.profile-avatar:hover{border-color:var(--accent);}.profile-avatar-edit:hover{transform:scale(1.12);}}
 @media(pointer:coarse){.profile-avatar:active{border-color:var(--accent);}.profile-avatar-edit:active{transform:scale(0.92);}}
@@ -974,11 +982,20 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
     <div class="page" id="page-profile">
       <div class="profile-wrap">
         <div class="profile-header">
-          <label for="avatar-input" class="profile-avatar-wrap" style="cursor:pointer;display:block;-webkit-tap-highlight-color:transparent;">
+          <div class="profile-avatar-wrap" style="cursor:pointer;-webkit-tap-highlight-color:transparent;" onclick="showAvatarSourceSheet()">
             <div class="profile-avatar" id="profile-avatar"></div>
             <div class="profile-avatar-edit" aria-hidden="true">&#9998;</div>
-            <input type="file" id="avatar-input" accept="image/*" onchange="handleAvatarPick(event)" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-          </label>
+          </div>
+          <input type="file" id="avatar-input" accept="image/*" onchange="handleAvatarPick(event)" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
+          <input type="file" id="avatar-camera-input" accept="image/*" capture="user" onchange="handleAvatarPick(event)" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
+          <div id="avatar-source-sheet" class="avatar-source-sheet" style="display:none;">
+            <div class="avatar-source-backdrop" onclick="hideAvatarSourceSheet()"></div>
+            <div class="avatar-source-actions">
+              <button type="button" class="avatar-source-btn" onclick="document.getElementById('avatar-camera-input').click();hideAvatarSourceSheet();">📷 Take Photo</button>
+              <button type="button" class="avatar-source-btn" onclick="document.getElementById('avatar-input').click();hideAvatarSourceSheet();">🖼️ Choose from Gallery</button>
+              <button type="button" class="avatar-source-btn avatar-source-cancel" onclick="hideAvatarSourceSheet()">Cancel</button>
+            </div>
+          </div>
           <div class="profile-name-block"><h2 id="profile-page-name">—</h2><p id="profile-page-goal">—</p><p style="font-size:12px;margin-top:4px;" id="profile-level-text"></p></div>
         </div>
 
@@ -2063,7 +2080,15 @@ let S = {};
 // ═══════════════════════════════════════════════════
 //  PHOTO HANDLING (removed)
 // ═══════════════════════════════════════════════════
-function pickAvatar(){document.getElementById('avatar-input').click();} // kept for backward compat
+function showAvatarSourceSheet(){
+  const sheet=document.getElementById('avatar-source-sheet');
+  if(sheet){sheet.style.display='flex';sheet.style.pointerEvents='auto';}
+}
+function hideAvatarSourceSheet(){
+  const sheet=document.getElementById('avatar-source-sheet');
+  if(sheet){sheet.style.display='none';}
+}
+function pickAvatar(){showAvatarSourceSheet();}
 function handleAvatarPick(ev){
   const file=ev.target.files[0];if(!file)return;
   const reader=new FileReader();
@@ -2739,42 +2764,41 @@ function _pad(ctx,m,bt,freqs,dur,vol,attack){
 }
 
 const MUSIC_TRACKS=[
-  {id:'hype',name:'Beast Mode',desc:'Hard-hitting trap with 808 bass',emoji:'🔥',bpm:140,
+  {id:'hype',name:'Neon Pulse',desc:'Synthwave retro workout vibes',emoji:'🌃',bpm:128,
     pattern(ctx,master,t){
-      const d=60/140,bars=8,notes=[36.71,36.71,41.20,36.71,32.70,36.71,41.20,43.65];
+      const d=60/128,bars=8;
+      const bass=[55,55,49,55,41.2,49,55,55];
+      const synths=[261.63,293.66,329.63,261.63,220,246.94,261.63,293.66];
       for(let bar=0;bar<bars;bar++){
         const bb=t+bar*d*8;
         for(let i=0;i<8;i++){
           const bt=bb+i*d;
-          if(i===0||i===3||i===6)_kick(ctx,master,bt,150,0.2,0.7);
-          if(i===4)_snare(ctx,master,bt,0.5,0.14);
-          if(i===2&&bar%2===1)_snare(ctx,master,bt,0.25,0.06);
-          _hat(ctx,master,bt+d*0.5,i%2===0?0.1:0.16,i===6);
+          if(i===0||i===4)_kick(ctx,master,bt,120,0.18,0.6);
+          if(i===4)_snare(ctx,master,bt,0.45,0.12);
+          _hat(ctx,master,bt+d*0.5,0.1,false);
+          if(i===0)_hat(ctx,master,bt,0.06,true);
         }
-        _bass(ctx,master,bb,notes[bar],d*7.5,0.3,'sine');
-        if(bar>=4){
-          const lf=[293.66,329.63,349.23,293.66][bar-4]||293.66;
-          _synth(ctx,master,bb,lf,d*4,0.06,'sawtooth',2000);
-        }
+        _bass(ctx,master,bb,bass[bar],d*7.5,0.2,'sawtooth');
+        if(bar>=2)_synth(ctx,master,bb,synths[bar],d*4,0.05,'square',2200);
       }
       return t+bars*d*8;
     }},
 
-  {id:'steady',name:'Power Grind',desc:'Heavy grinding workout rhythm',emoji:'💪',bpm:118,
+  {id:'steady',name:'Heavy Hitter',desc:'Chunky hip-hop beat for lifting',emoji:'🏋️',bpm:95,
     pattern(ctx,master,t){
-      const d=60/118,bars=8,notes=[55,55,49,55,41.2,41.2,49,55];
+      const d=60/95,bars=8;
+      const notes=[36.71,36.71,41.20,36.71,32.70,36.71,41.20,36.71];
       for(let bar=0;bar<bars;bar++){
         const bb=t+bar*d*8;
         for(let i=0;i<8;i++){
           const bt=bb+i*d;
-          if(i%2===0)_kick(ctx,master,bt,110,0.22,0.65);
-          if(i===4)_snare(ctx,master,bt,0.5,0.15);
-          _hat(ctx,master,bt+d*0.5,0.12,false);
-          if(i%4===0)_hat(ctx,master,bt,0.08,true);
-          if(bar>=4&&i===7)_snare(ctx,master,bt,0.2,0.05);
+          if(i===0||i===4)_kick(ctx,master,bt,100,0.25,0.65);
+          if(i===4)_snare(ctx,master,bt,0.5,0.16);
+          if(i===2&&bar%2===1)_snare(ctx,master,bt,0.2,0.05);
+          _hat(ctx,master,bt+d*0.5,0.09,false);
         }
-        _bass(ctx,master,bb,notes[bar],d*7.5,0.22,'sawtooth');
-        if(bar%2===0)_synth(ctx,master,bb,notes[bar]*2,d*2,0.04,'sawtooth',1500);
+        _bass(ctx,master,bb,notes[bar],d*7.5,0.25,'sine');
+        if(bar>=4)_synth(ctx,master,bb,notes[bar]*4,d*2,0.04,'triangle',1200);
       }
       return t+bars*d*8;
     }},
@@ -2811,55 +2835,53 @@ const MUSIC_TRACKS=[
       return t+bars*d*8;
     }},
 
-  {id:'focus',name:'Deep Focus',desc:'Calm ambient for stretching',emoji:'🧘',bpm:72,
+  {id:'focus',name:'Zen Flow',desc:'Peaceful ambient for cool-down',emoji:'🌊',bpm:60,
     pattern(ctx,master,t){
-      const d=60/72,bars=8;
+      const d=60/60,bars=8;
       const prog=[[82.41,123.47,164.81],[87.31,130.81,174.61],[73.42,110,146.83],[82.41,123.47,164.81],
-                   [92.50,138.59,185.00],[87.31,130.81,174.61],[73.42,110,146.83],[82.41,123.47,164.81]];
+                   [92.50,138.59,185.00],[87.31,130.81,174.61],[98,146.83,196],[82.41,123.47,164.81]];
       for(let bar=0;bar<bars;bar++){
         const bb=t+bar*d*4;const ch=prog[bar];
-        _pad(ctx,master,bb,ch,d*4,0.1,d*1.5);
-        const arp=[ch[2],ch[1],ch[2]*1.5,ch[0]*2];
-        for(let i=0;i<4;i++){
-          const abt=bb+i*d;const af=arp[i%4];
+        _pad(ctx,master,bb,ch,d*4,0.08,d*2);
+        if(bar%2===0)_bass(ctx,master,bb,ch[0]*0.5,d*4,0.06,'sine');
+        for(let i=0;i<2;i++){
+          const abt=bb+i*d*2;
           const o=ctx.createOscillator(),g=ctx.createGain();
-          o.type='sine';o.frequency.value=af;
-          g.gain.setValueAtTime(0.001,abt);g.gain.linearRampToValueAtTime(0.05,abt+0.02);g.gain.linearRampToValueAtTime(0.001,abt+d*0.85);
-          o.connect(g);g.connect(master);o.start(abt);o.stop(abt+d+0.05);musicNodes.push(o);
+          o.type='sine';o.frequency.value=ch[1]+i*20;
+          g.gain.setValueAtTime(0.001,abt);g.gain.linearRampToValueAtTime(0.04,abt+0.1);g.gain.linearRampToValueAtTime(0.001,abt+d*1.8);
+          o.connect(g);g.connect(master);o.start(abt);o.stop(abt+d*2+0.05);musicNodes.push(o);
         }
-        if(bar%2===0)_bass(ctx,master,bb,ch[0]*0.5,d*4,0.08,'sine');
       }
       return t+bars*d*4;
     }},
 
-  {id:'warrior',name:'Iron Will',desc:'Epic cinematic war drums',emoji:'⚔️',bpm:128,
+  {id:'warrior',name:'Victory Lap',desc:'Uplifting anthem for finishing strong',emoji:'🏆',bpm:132,
     pattern(ctx,master,t){
-      const d=60/128,bars=8;
-      const epic=[[82.41,123.47,164.81],[73.42,110,164.81],[65.41,98,130.81],[73.42,110,146.83],
-                   [82.41,123.47,164.81],[87.31,130.81,174.61],[73.42,110,164.81],[82.41,110,146.83]];
+      const d=60/132,bars=8;
+      const chords=[[130.81,164.81,196],[146.83,174.61,220],[164.81,196,261.63],[146.83,174.61,220],
+                    [130.81,164.81,196],[174.61,220,261.63],[196,261.63,329.63],[174.61,220,261.63]];
       for(let bar=0;bar<bars;bar++){
-        const bb=t+bar*d*8;const ch=epic[bar];
+        const bb=t+bar*d*8;const ch=chords[bar];
         for(let i=0;i<8;i++){
           const bt=bb+i*d;
-          if(i===0)_kick(ctx,master,bt,90,0.3,0.7);
-          if(i===4){_kick(ctx,master,bt,90,0.3,0.7);_snare(ctx,master,bt,0.5,0.18);}
-          if(bar>=4&&i%2===0)_kick(ctx,master,bt,70,0.2,0.35);
-          if(i===0||i===4)_hat(ctx,master,bt,0.07,true);
-          if(bar>=4)_hat(ctx,master,bt+d*0.5,0.08,false);
+          if(i===0||i===4)_kick(ctx,master,bt,95,0.2,0.7);
+          if(i===4)_snare(ctx,master,bt,0.5,0.14);
+          if(bar>=4&&i%2===0)_hat(ctx,master,bt+d*0.5,0.09,false);
+          if(i===0)_hat(ctx,master,bt,0.06,true);
         }
-        _pad(ctx,master,bb,ch,d*8,0.08,d*2);
-        _bass(ctx,master,bb,ch[0]*0.5,d*7.5,0.18,'sine');
+        _pad(ctx,master,bb,ch,d*8,0.06,d*1.5);
+        _bass(ctx,master,bb,ch[0]*0.5,d*7.5,0.2,'sine');
         if(bar>=2){
-          const mel=[329.63,392,440,392,349.23,329.63,293.66,329.63];
+          const mel=[329.63,392,440,392,349.23,329.63,293.66,261.63];
           for(let i=0;i<4;i++){
-            const mf=mel[(bar*4+i)%8];
-            _synth(ctx,master,bb+i*d*2,mf,d*1.8,bar>=6?0.06:0.04,'sawtooth',1800);
+            const mf=mel[(bar*2+i)%8];
+            _synth(ctx,master,bb+i*d*2,mf,d*1.8,0.05,'sawtooth',2000);
           }
         }
         if(bar===7){
           for(let r=0;r<8;r++){
             const rt=bb+d*4+r*(d*4/8);
-            _snare(ctx,master,rt,0.08+r*0.04,0.04);
+            _snare(ctx,master,rt,0.06+r*0.03,0.04);
           }
         }
       }
@@ -3476,7 +3498,7 @@ function generateCoachReply(query){
   const name=profile.name||'there';
   const allCats=['Push','Pull','Legs','Core','Cardio','Stretch'];
   const now=Date.now();
-  const recentLog=log.filter(l=>now-new Date(l.date).getTime()<7*86400000);
+  const recentLog=log.filter(l=>now-new Date(l.ts||l.date).getTime()<7*86400000);
   const recentCats={};
   recentLog.forEach(l=>{const e=EX[l.key];if(e)recentCats[e.cat]=(recentCats[e.cat]||0)+1;});
   const neglectedCats=allCats.filter(c=>!recentCats[c]||recentCats[c]<2);
@@ -3519,12 +3541,12 @@ function generateCoachReply(query){
   }
 
   function detectTopic(q){
-    if(/\b(thank|thanks|thx|cheers|appreciate)\b/.test(q))return'thanks';
-    if(/\b(hi|hey|hello|sup|yo|what'?s up|howdy|greetings|morning|afternoon|evening)\b/.test(q)&&q.length<40)return'greeting';
-    if(/\b(bye|goodbye|see you|later|cya|gotta go|goodnight|good night|night)\b/.test(q))return'bye';
-    if(/\b(how are you|how'?s it going|what'?s new|how do you do)\b/.test(q))return'howareyou';
-    if(/\b(who are you|what are you|your name|about you|what can you do)\b/.test(q))return'help';
-    if(/\b(back (hurt|pain|ache|sore|stiff|tight|kill)|hurt.{0,15}back|my back|lower back|upper back.{0,10}(hurt|pain|ache|sore))\b/.test(q))return'pain_back';
+    if(/\b(thank|thanks|thx|cheers|appreciate|grateful)\b/.test(q))return'thanks';
+    if(/\b(hi|hey|hello|sup|yo|what'?s up|howdy|greetings|morning|afternoon|evening|good morning|good afternoon|good evening)\b/.test(q)&&q.length<50)return'greeting';
+    if(/\b(bye|goodbye|see you|later|cya|gotta go|goodnight|good night|night|take care)\b/.test(q))return'bye';
+    if(/\b(how are you|how'?s it going|what'?s new|how do you do|you good)\b/.test(q))return'howareyou';
+    if(/\b(who are you|what are you|your name|about you|what can you do|what do you know)\b/.test(q))return'help';
+    if(/\b(back (hurt|pain|ache|sore|stiff|tight|kill|injured)|hurt.{0,15}back|my back (hurt|pain|ache)|lower back|upper back.{0,10}(hurt|pain|ache|sore))\b/.test(q))return'pain_back';
     if(/\b(knee (hurt|pain|ache|sore|crack|pop)|hurt.{0,15}knee|my knee|knee.{0,10}(hurt|pain|sore))\b/.test(q))return'pain_knee';
     if(/\b(shoulder (hurt|pain|ache|sore|impinge)|hurt.{0,15}shoulder|my shoulder|shoulder.{0,10}(hurt|pain|sore))\b/.test(q))return'pain_shoulder';
     if(/\b(wrist (hurt|pain|ache|sore)|hurt.{0,15}wrist|my wrist|wrist.{0,10}(hurt|pain|sore))\b/.test(q))return'pain_wrist';
@@ -3533,8 +3555,16 @@ function generateCoachReply(query){
     if(/\b(elbow (hurt|pain|ache|sore)|hurt.{0,15}elbow|my elbow|tennis elbow|golfer.?s elbow)\b/.test(q))return'pain_elbow';
     if(/\b(ankle (hurt|pain|ache|sore|sprain)|hurt.{0,15}ankle|my ankle)\b/.test(q))return'pain_ankle';
     if(/\b(hurt|pain|ache|sore|stiff|tight|cramp|pull|strain|injur|torn|broke|swollen|tender|twinge|pinch)\b/.test(q))return'pain_general';
-    if(/\b(how do (i|you) do|how to do|how to perform|show me how|teach me|steps for|technique for|explain how to|way to do|proper way)\b/.test(q)&&findExerciseInQuery(q))return'howto_exercise';
+    if(/\b(how do (i|you) do|how to do|how to perform|show me how|teach me|steps for|technique for|explain how to|way to do|proper way|correct form|do (a |an )?\w+ (properly|correctly|right))\b/.test(q)&&findExerciseInQuery(q))return'howto_exercise';
     if(/\b(what is|what'?s) (a |an )?\w/.test(q)&&findExerciseInQuery(q))return'whatis_exercise';
+    if(/\b(best (exercise|workout|move) for|exercise for|workout for|train my|build my|work my)\b/.test(q)){
+      if(/\b(chest|pec|bench)\b/.test(q))return'chest';
+      if(/\b(back|lat|spine)\b/.test(q))return'back';
+      if(/\b(leg|quad|glute|hamstring|thigh|calf|calves)\b/.test(q))return'legs';
+      if(/\b(shoulder|delt)\b/.test(q))return'shoulders';
+      if(/\b(arm|bicep|tricep)\b/.test(q))return'arms';
+      if(/\b(core|abs|stomach|belly)\b/.test(q))return'core';
+    }
     if(/\b(warm.?up|warming up|before work|pre.?workout|before (train|gym|exercise|lift))\b/.test(q))return'warmup';
     if(/\b(cool.?down|after work|post.?workout|after (train|gym|exercise|lift))\b/.test(q))return'cooldown';
     if(/\b(water|hydrat|drink|thirst|dehydrat)\b/.test(q))return'hydration';
@@ -3542,6 +3572,7 @@ function generateCoachReply(query){
     if(/\b(breath|breathing|out of breath|winded|panting|oxygen)\b/.test(q))return'breathing';
     if(/\b(creatine|supplement|whey|pre.?workout|bcaa|vitamin|omega|fish oil|caffeine)\b/.test(q))return'supplements';
     if(/\b(how old|age|too old|too young|kid|child|teen|senior|elderly|older)\b/.test(q))return'age';
+    if(/\b(don'?t want (to use )?(any )?weights?|no weight|without weights?|bodyweight only|bodyweight exercises?|exercises? (that )?(don'?t|do not) (use|need) weight|(what |which )?exercises? can i do (without|with no) (weight|equipment)|only bodyweight)\b/.test(q))return'home_workout';
     if(/\b(home|no gym|no equipment|at home|apartment|body.?weight.{0,10}(work|train|exercise)|without (weight|equipment|gym))\b/.test(q))return'home_workout';
     if(/\b(today|what should|what do i|what can i|recommend|suggest|next workout)\b/.test(q))return'today';
     if(/\b(strength|stronger|power|heavy|max|1rm|one rep)\b/.test(q))return'strength';
@@ -3571,6 +3602,13 @@ function generateCoachReply(query){
     if(/\b(no|nah|nope|not really)\b/.test(q)&&q.length<30)return'no';
     if(/\b(yes|yeah|yep|sure|ok|okay|yea|ya)\b/.test(q)&&q.length<30)return'yes';
     if(/\b(why|explain|reason|how come|what does|what is|mean)\b/.test(q))return'explain';
+    if(/\b(should i|can i|is it (ok|safe|good)|is (it )?ok to|okay to|safe to)\b/.test(q)){
+      if(/\b(skip|rest|take (a )?day off|not (work|train)|miss)\b/.test(q))return'recovery';
+      if(/\b(eat|drink|take|supplement)\b/.test(q))return'nutrition';
+      if(/\b(stretch|warm|cool)\b/.test(q))return'stretch';
+      if(/\b(pain|hurt|sore|injured)\b/.test(q))return'pain_general';
+    }
+    if(/\b(what (about|if)|how about)\b/.test(q)&&coachHistory.length>=2)return'more';
     if(findExerciseInQuery(q))return'howto_exercise';
     return'unknown';
   }
@@ -3600,7 +3638,10 @@ function generateCoachReply(query){
     ],
     howto_exercise:function(){
       const key=findExerciseInQuery(q);
-      if(!key||!EX[key])return null;
+      if(!key||!EX[key]){
+        const suggested=['squat','bench','deadlift','pushups','pullup','plank','lunges','row'];
+        return`I'd love to explain an exercise, ${name}! Which one do you mean? Try asking about any of these:<br><br>${suggested.slice(0,6).map(k=>EX[k]?`"How do I do ${EX[k].name}?"`:'').filter(Boolean).join('<br>')}<br><br>Or tap any exercise card in the app to see the full step-by-step guide!`;
+      }
       const e=EX[key];
       const steps=e.steps||[];
       const stepsHtml=steps.map((s,i)=>`<strong>${i+1}.</strong> ${s}`).join('<br>');
@@ -3613,7 +3654,9 @@ function generateCoachReply(query){
     },
     whatis_exercise:function(){
       const key=findExerciseInQuery(q);
-      if(!key||!EX[key])return null;
+      if(!key||!EX[key]){
+        return`Which exercise do you want to know about, ${name}? Try asking "What is a [squat / bench press / deadlift / push-up / plank]?" — or tap any exercise in the app for the full guide!`;
+      }
       const e=EX[key];
       return pick([
         `<strong>${e.name}</strong> is a <strong>${e.cat}</strong> exercise that targets your <strong>${e.muscle}</strong>.<br><br>It's typically done with ${e.equip.toLowerCase()} and a good rep scheme is ${e.sets}. ${e.diff>=4?'It\'s on the harder side — great for experienced lifters.':e.diff<=2?'It\'s beginner-friendly and great for everyone.':'It\'s a solid exercise for intermediate trainees.'}<br><br>Want me to explain how to do it? Or tap ${exLink(key)} for the step-by-step guide!`,
@@ -3921,8 +3964,10 @@ function generateCoachReply(query){
     },
     home_workout:function(){
       return pick([
+        `No weights? No problem, ${name}! Here are <strong>bodyweight-only exercises</strong> you can do anywhere:<br><br><strong>Upper Body:</strong><br>• ${exLink('pushups')} — chest & triceps<br>• ${exLink('dips')} — use two chairs<br>• ${exLink('pullup')} — if you have a bar (or use a sturdy doorframe)<br><br><strong>Lower Body:</strong><br>• Bodyweight squats — 3×20<br>• ${exLink('lunges')} — 3×12 each leg<br>• ${exLink('calf')} raises — 4×20<br><br><strong>Core:</strong><br>• ${exLink('plank')} — 3×45s<br>• ${exLink('mountain')} — 3×30s<br>• ${exLink('dead_bug')} — 3×10 each side<br><br><strong>Cardio:</strong><br>• ${exLink('burpees')} — 3×10<br>• ${exLink('jumprope')} — or jumping jacks<br><br>Tap any exercise for the full guide. You can get a great workout with zero equipment! 💪`,
+        `Don't want to use weights? You've got plenty of options, ${name}! Here's a full <strong>bodyweight workout</strong>:<br><br><strong>Push:</strong> ${exLink('pushups')} ${exLink('dips')}<br><strong>Pull:</strong> ${exLink('pullup')} (bar) or inverted rows under a table<br><strong>Legs:</strong> Bodyweight squats ${exLink('lunges')} ${exLink('calf')}<br><strong>Core:</strong> ${exLink('plank')} ${exLink('twist')} ${exLink('legraise')} ${exLink('dead_bug')}<br><strong>Cardio:</strong> ${exLink('burpees')} ${exLink('mountain')} ${exLink('jumprope')}<br><br>Do 3-4 sets of each, 3-4x per week. Add a backpack with books for extra resistance when you're ready!`,
         `No gym? No problem, ${name}! Here's a full <strong>home workout</strong> using just your bodyweight:<br><br><strong>Upper Body:</strong><br>• ${exLink('pushups')} — 3×15-20 (chest, triceps)<br>• ${exLink('dips')} — 3×12 (use two chairs)<br><br><strong>Lower Body:</strong><br>• Bodyweight squats — 3×20<br>• ${exLink('lunges')} — 3×12 each leg (no dumbbells needed)<br><br><strong>Core:</strong><br>• ${exLink('plank')} — 3×45s<br>• ${exLink('mountain')} — 3×30s<br>• ${exLink('dead_bug')} — 3×10 each side<br><br><strong>Cardio:</strong><br>• ${exLink('burpees')} — 3×10<br>• ${exLink('jumprope')} — 10 min (or jumping jacks if no rope)<br><br>Do this 3-4x per week and you'll build serious strength and endurance! Add a backpack with books for extra resistance. 💪`,
-        `Home workouts can be just as effective, ${name}! Here's a 4-day plan:<br><br><strong>Day 1 — Push:</strong> ${exLink('pushups')} × 4 sets, ${exLink('dips')} × 3 sets (use chairs), pike push-ups × 3 sets<br><br><strong>Day 2 — Legs:</strong> Bodyweight squats × 4 sets, ${exLink('lunges')} × 3 sets, wall sit × 3×45s, ${exLink('calf')} raises × 4×20<br><br><strong>Day 3 — Pull + Core:</strong> ${exLink('pullup')} (doorframe bar) × 4 sets, ${exLink('plank')} + ${exLink('twist')} + ${exLink('legraise')}<br><br><strong>Day 4 — HIIT:</strong> ${exLink('burpees')} + ${exLink('mountain')} + ${exLink('jumprope')} — 30s work / 30s rest × 8 rounds<br><br>Invest in a <strong>pull-up bar</strong> and <strong>resistance bands</strong> — they open up a ton more exercises!`
+        `Home workouts can be just as effective, ${name}! Here's a 4-day plan with <strong>no weights</strong>:<br><br><strong>Day 1 — Push:</strong> ${exLink('pushups')} × 4 sets, ${exLink('dips')} × 3 sets (use chairs), pike push-ups × 3 sets<br><br><strong>Day 2 — Legs:</strong> Bodyweight squats × 4 sets, ${exLink('lunges')} × 3 sets, wall sit × 3×45s, ${exLink('calf')} raises × 4×20<br><br><strong>Day 3 — Pull + Core:</strong> ${exLink('pullup')} (doorframe bar) × 4 sets, ${exLink('plank')} + ${exLink('twist')} + ${exLink('legraise')}<br><br><strong>Day 4 — HIIT:</strong> ${exLink('burpees')} + ${exLink('mountain')} + ${exLink('jumprope')} — 30s work / 30s rest × 8 rounds<br><br>Invest in a <strong>pull-up bar</strong> and <strong>resistance bands</strong> — they open up a ton more exercises!`
       ]);
     },
     explain:function(){
@@ -3946,11 +3991,39 @@ function generateCoachReply(query){
     else return pick(handler);
   }
 
+  function extractFitnessIntent(q){
+    const ql=q.toLowerCase();
+    const fitnessTerms={chest:['chest','pec','bench','push'],back:['back','lat','row','pull'],legs:['leg','squat','lunge','glute','quad','hamstring','calf'],shoulders:['shoulder','delt','ohp','press'],arms:['arm','bicep','tricep','curl'],core:['core','abs','plank','stomach'],cardio:['cardio','run','bike','hiit','endurance'],nutrition:['eat','food','protein','diet','calorie','meal'],recovery:['rest','sleep','stretch','recover','sore'],pain_general:['hurt','pain','ache','sore','injured'],home_workout:['bodyweight','no weight','without weight','no equipment','no gym','home workout']};
+    for(const[cat,terms]of Object.entries(fitnessTerms)){
+      if(terms.some(t=>ql.includes(t)))return cat;
+    }
+    return null;
+  }
+
+  const intent=extractFitnessIntent(q);
+  if(intent&&R[intent]){
+    const fn=R[intent];
+    const result=typeof fn==='function'?fn():pick(fn);
+    if(result)return result;
+  }
+
+  if(coachHistory.length>=2){
+    const lastUser=coachHistory.filter(h=>h.role==='user').pop();
+    if(lastUser&&lastUser.text.length>10){
+      const followUpIntent=extractFitnessIntent(lastUser.text);
+      if(followUpIntent&&R[followUpIntent]){
+        const fn=R[followUpIntent];
+        const result=typeof fn==='function'?fn():pick(fn);
+        if(result)return result;
+      }
+    }
+  }
+
   const fallbacks=[
-    `Interesting question, ${name}! While I'm best at exercise and workout advice, here's what I can tell you:<br><br>${weekSummary()}<br><br>${neglectedCats.length?`You could focus on <strong>${neglectedCats[0]}</strong> — try: ${pickEx(neglectedCats[0],3)}`:'Your training is well-balanced this week!'}<br><br>Try asking me about specific exercises, workout plans, or nutrition!`,
-    `I'm not 100% sure I understood that, ${name}, but here's what I can help with:<br><br>• "What should I train today?"<br>• "Give me a workout plan"<br>• "Best exercises for [muscle group]"<br>• "How do I get stronger/lose fat/build muscle?"<br>• "What should I eat?"<br><br>${weekSummary()} Want me to suggest today's workout?`,
-    `Hmm, let me redirect, ${name}! I'm specialized in fitness advice. Try asking:<br><br>• About a <strong>specific muscle</strong>: chest, back, legs, arms, shoulders, core<br>• For a <strong>workout plan</strong> or routine<br>• About <strong>nutrition</strong> or recovery<br>• What you should <strong>train today</strong><br><br>I'll use your workout history and <strong>${goal}</strong> goal to personalize everything!`,
-    `That's a bit outside my expertise, but here's what I know, ${name}!<br><br>${recentLog.length?weekSummary()+'<br><br>':''}Based on your <strong>${goal}</strong> goal, ${pick(['here are some exercises to try: '+pickMixed(allCats,4),'you should make sure you\'re hitting all major muscle groups each week.','focus on compound movements for the best results: '+exLink('squat')+' '+exLink('bench')+' '+exLink('deadlift')])}<br><br>Ask me something more specific and I can give better advice!`
+    `I want to give you a helpful answer, ${name}! I'm best at:<br><br>• <strong>Exercise how-tos</strong> — "How do I do a deadlift?"<br>• <strong>Workout plans</strong> — "Give me a plan" or "What should I train today?"<br>• <strong>Muscle groups</strong> — "Best chest exercises?" or "How do I build my back?"<br>• <strong>Pain & recovery</strong> — "My knee hurts" or "How should I recover?"<br>• <strong>Nutrition</strong> — "How much protein?" or "What should I eat?"<br><br>${weekSummary()}<br><br>Try rephrasing your question, or ask one of the above — I'll personalize it to your <strong>${goal}</strong> goal!`,
+    `I'm not quite sure I caught that, ${name}. Let me help! Try asking something like:<br><br>• "What should I train today?"<br>• "How do I do a squat?"<br>• "My back hurts — what should I do?"<br>• "Best exercises for legs?"<br>• "I want to get stronger"<br><br>${recentLog.length?weekSummary()+'<br><br>':''}I use your workout history to personalize everything. What would you like to know?`,
+    `I want to make sure I help you properly, ${name}! Could you ask in a different way? For example:<br><br>• <strong>Workouts:</strong> "What should I do today?" or "Give me a routine"<br>• <strong>Exercises:</strong> "How do I do [exercise name]?" or "Best exercises for [muscle]?"<br>• <strong>Goals:</strong> "How do I lose fat?" or "How do I build muscle?"<br>• <strong>Problems:</strong> "My [body part] hurts" or "I'm not motivated"<br><br>${neglectedCats.length?`By the way — you could add more <strong>${neglectedCats[0]}</strong> this week: ${pickEx(neglectedCats[0],2)}`:'Your training looks balanced!'}`,
+    `That's a bit outside what I'm trained on, ${name}, but I'm here for your fitness!<br><br>${recentLog.length?weekSummary()+'<br><br>':''}Based on your <strong>${goal}</strong> goal, here are some ideas:<br><br>${pick(['Try these compound moves: '+exLink('squat')+' '+exLink('bench')+' '+exLink('deadlift')+' '+exLink('row'),'Focus on hitting each muscle group 2x per week.','Ask me "what should I train today?" and I\'ll personalize a workout!'])}<br><br>What specific fitness question can I help with?`
   ];
   return pick(fallbacks);
 }
