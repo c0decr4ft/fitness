@@ -1,9 +1,31 @@
 // ═══════════════════════════════════════════════════
 //  CONTROLS — Touch, buttons, boot, event handlers
 // ═══════════════════════════════════════════════════
+
+// Global delegated click handler — works when inline onclick is blocked (e.g. Cursor Simple Browser)
+function handleDelegatedClick(e){
+  var el=e.target.closest('[data-action]');
+  if(el){
+    var action=el.getAttribute('data-action');
+    var page=el.getAttribute('data-page');
+    if(action==='saveProfile'&&typeof saveProfile==='function'){e.preventDefault();e.stopPropagation();saveProfile();return;}
+    if(action==='showPage'&&page&&typeof showPage==='function'){e.preventDefault();e.stopPropagation();showPage(page,el);return;}
+    if(action==='toggleMoreMenu'&&typeof toggleMoreMenu==='function'){e.preventDefault();e.stopPropagation();toggleMoreMenu(el);return;}
+    if(action==='moreNav'&&page&&typeof moreNav==='function'){e.preventDefault();e.stopPropagation();moreNav(page,el);return;}
+    if(action==='closeMoreMenu'&&typeof closeMoreMenu==='function'){e.preventDefault();e.stopPropagation();closeMoreMenu();return;}
+    if(action==='showSyncStatus'&&typeof showSyncStatus==='function'){e.preventDefault();e.stopPropagation();showSyncStatus();return;}
+    if(action==='toggleMusicPanel'&&typeof toggleMusicPanel==='function'){e.preventDefault();e.stopPropagation();toggleMusicPanel();return;}
+  }
+  // Fallback: invoke onclick for buttons/links when inline handlers are blocked
+  var clickable=e.target.closest('button, a, [role=button], [onclick]');
+  if(clickable&&clickable.onclick&&typeof clickable.onclick==='function'){
+    e.preventDefault();e.stopPropagation();clickable.onclick.call(clickable,e);return;
+  }
+}
+document.addEventListener('click',handleDelegatedClick,true);
+document.addEventListener('pointerdown',handleDelegatedClick,true);
+
 function boot(){
-  var setup=document.getElementById('btn-setup');
-  if(setup)setup.onclick=saveProfile;
   var mSheet=document.getElementById('more-sheet');
   if(mSheet){
     var mTouchY=0;

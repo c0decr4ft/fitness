@@ -44,7 +44,7 @@ if(typeof mqtt==='undefined'){
         </select>
       </div>
     </div>
-    <button class="setup-btn" id="btn-setup" data-i18n="auth.startTraining" onclick="saveProfile();return false;">Start Training</button>
+    <button class="setup-btn" id="btn-setup" data-i18n="auth.startTraining" data-action="saveProfile">Start Training</button>
   </div>
 </div>
 
@@ -52,58 +52,58 @@ if(typeof mqtt==='undefined'){
 <div class="app">
   <nav class="sidebar">
     <div class="logo">FRG</div>
-    <button class="nav-btn active" onclick="showPage('dashboard',this)" title="Dashboard">
+    <button class="nav-btn active" data-action="showPage" data-page="dashboard" title="Dashboard">
       <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
     </button>
-    <button class="nav-btn" onclick="showPage('exercises',this)" title="Exercises">
+    <button class="nav-btn" data-action="showPage" data-page="exercises" title="Exercises">
       <svg viewBox="0 0 24 24"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/></svg>
     </button>
-    <button class="nav-btn" onclick="showPage('programs',this)" title="Programs">
+    <button class="nav-btn" data-action="showPage" data-page="programs" title="Programs">
       <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9h-4v4h-2v-4H9V9h4V5h2v4h4v2z"/></svg>
     </button>
-    <button class="nav-btn" onclick="showPage('progress',this)" title="Progress">
+    <button class="nav-btn" data-action="showPage" data-page="progress" title="Progress">
       <svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
     </button>
-    <button class="nav-btn" onclick="showPage('improvement',this)" title="Improvement">
+    <button class="nav-btn" data-action="showPage" data-page="improvement" title="Improvement">
       <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
     </button>
-    <button class="nav-btn" onclick="showPage('timer',this)" title="Timer">
+    <button class="nav-btn" data-action="showPage" data-page="timer" title="Timer">
       <svg viewBox="0 0 24 24"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42A7.93 7.93 0 0012 4c-4.42 0-8 3.58-8 8s3.57 8 8 8 8-3.58 8-8c0-1.85-.63-3.55-1.67-4.91zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
     </button>
-    <button class="nav-btn" onclick="showPage('log',this)" title="Log">
+    <button class="nav-btn" data-action="showPage" data-page="log" title="Log">
       <svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
     </button>
-    <button class="nav-btn" onclick="showPage('coach',this)" title="AI Coach" style="margin-top:auto;">
+    <button class="nav-btn" data-action="showPage" data-page="coach" title="AI Coach" style="margin-top:auto;">
       <svg viewBox="0 0 24 24"><path d="M21 10.5h-1V8c0-1.1-.9-2-2-2h-3V4.5C15 3.12 13.88 2 12.5 2h-1C10.12 2 9 3.12 9 4.5V6H6c-1.1 0-2 .9-2 2v2.5H3c-.55 0-1 .45-1 1v3c0 .55.45 1 1 1h1V20c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-3.5h1c.55 0 1-.45 1-1v-3c0-.55-.45-1-1-1zM9.5 13.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm5 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM8 18l1.5-3h5L16 18H8z"/></svg>
     </button>
-    <button class="nav-btn" onclick="showPage('profile',this)" title="Profile">
+    <button class="nav-btn" data-action="showPage" data-page="profile" title="Profile">
       <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4-1.3 4-4S14.7 4 12 4 8 5.3 8 8s1.3 4 4 4zm0 2c-2.7 0-8 1.4-8 4v2h16v-2c0-2.6-5.3-4-8-4z"/></svg>
     </button>
-    <button class="nav-btn" onclick="showPage('settings',this)" title="Settings">
+    <button class="nav-btn" data-action="showPage" data-page="settings" title="Settings">
       <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1115.6 12 3.6 3.6 0 0112 15.6z"/></svg>
     </button>
   </nav>
 
   <!-- MOBILE BOTTOM NAV -->
   <nav class="bottom-nav">
-    <button class="nav-btn active" onclick="showPage('dashboard',this)"><svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg><span class="nav-label" data-i18n="nav.home">Home</span></button>
-    <button class="nav-btn" onclick="showPage('exercises',this)"><svg viewBox="0 0 24 24"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/></svg><span class="nav-label" data-i18n="nav.exercises">Exercises</span></button>
-    <button class="nav-btn" onclick="showPage('timer',this)"><svg viewBox="0 0 24 24"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42A7.93 7.93 0 0012 4c-4.42 0-8 3.58-8 8s3.57 8 8 8 8-3.58 8-8c0-1.85-.63-3.55-1.67-4.91zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg><span class="nav-label" data-i18n="nav.timer">Timer</span></button>
-    <button class="nav-btn" onclick="showPage('coach',this)"><svg viewBox="0 0 24 24"><path d="M21 10.5h-1V8c0-1.1-.9-2-2-2h-3V4.5C15 3.12 13.88 2 12.5 2h-1C10.12 2 9 3.12 9 4.5V6H6c-1.1 0-2 .9-2 2v2.5H3c-.55 0-1 .45-1 1v3c0 .55.45 1 1 1h1V20c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-3.5h1c.55 0 1-.45 1-1v-3c0-.55-.45-1-1-1zM9.5 13.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm5 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM8 18l1.5-3h5L16 18H8z"/></svg><span class="nav-label" data-i18n="nav.coach">Coach</span></button>
-    <button class="nav-btn" onclick="toggleMoreMenu(this)"><svg viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg><span class="nav-label" data-i18n="nav.more">More</span></button>
+    <button class="nav-btn active" data-action="showPage" data-page="dashboard"><svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg><span class="nav-label" data-i18n="nav.home">Home</span></button>
+    <button class="nav-btn" data-action="showPage" data-page="exercises"><svg viewBox="0 0 24 24"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/></svg><span class="nav-label" data-i18n="nav.exercises">Exercises</span></button>
+    <button class="nav-btn" data-action="showPage" data-page="timer"><svg viewBox="0 0 24 24"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42A7.93 7.93 0 0012 4c-4.42 0-8 3.58-8 8s3.57 8 8 8 8-3.58 8-8c0-1.85-.63-3.55-1.67-4.91zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg><span class="nav-label" data-i18n="nav.timer">Timer</span></button>
+    <button class="nav-btn" data-action="showPage" data-page="coach"><svg viewBox="0 0 24 24"><path d="M21 10.5h-1V8c0-1.1-.9-2-2-2h-3V4.5C15 3.12 13.88 2 12.5 2h-1C10.12 2 9 3.12 9 4.5V6H6c-1.1 0-2 .9-2 2v2.5H3c-.55 0-1 .45-1 1v3c0 .55.45 1 1 1h1V20c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-3.5h1c.55 0 1-.45 1-1v-3c0-.55-.45-1-1-1zM9.5 13.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm5 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM8 18l1.5-3h5L16 18H8z"/></svg><span class="nav-label" data-i18n="nav.coach">Coach</span></button>
+    <button class="nav-btn" data-action="toggleMoreMenu"><svg viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg><span class="nav-label" data-i18n="nav.more">More</span></button>
   </nav>
   <div class="more-sheet" id="more-sheet">
     <div class="more-sheet-handle"></div>
     <div class="more-sheet-grid">
-      <button class="more-sheet-item" onclick="moreNav('programs',this)"><svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9h-4v4h-2v-4H9V9h4V5h2v4h4v2z"/></svg><span data-i18n="nav.programs">Programs</span></button>
-      <button class="more-sheet-item" onclick="moreNav('progress',this)"><svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg><span data-i18n="nav.progress">Progress</span></button>
-      <button class="more-sheet-item" onclick="moreNav('improvement',this)"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><span data-i18n="nav.improvement">Improvement</span></button>
-      <button class="more-sheet-item" onclick="moreNav('log',this)"><svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg><span data-i18n="nav.log">Log</span></button>
-      <button class="more-sheet-item" onclick="moreNav('profile',this)"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4-1.3 4-4S14.7 4 12 4 8 5.3 8 8s1.3 4 4 4zm0 2c-2.7 0-8 1.4-8 4v2h16v-2c0-2.6-5.3-4-8-4z"/></svg><span data-i18n="nav.profile">Profile</span></button>
-      <button class="more-sheet-item" onclick="moreNav('settings',this)"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1115.6 12 3.6 3.6 0 0112 15.6z"/></svg><span data-i18n="nav.settings">Settings</span></button>
+      <button class="more-sheet-item" data-action="moreNav" data-page="programs"><svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9h-4v4h-2v-4H9V9h4V5h2v4h4v2z"/></svg><span data-i18n="nav.programs">Programs</span></button>
+      <button class="more-sheet-item" data-action="moreNav" data-page="progress"><svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg><span data-i18n="nav.progress">Progress</span></button>
+      <button class="more-sheet-item" data-action="moreNav" data-page="improvement"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><span data-i18n="nav.improvement">Improvement</span></button>
+      <button class="more-sheet-item" data-action="moreNav" data-page="log"><svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg><span data-i18n="nav.log">Log</span></button>
+      <button class="more-sheet-item" data-action="moreNav" data-page="profile"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4-1.3 4-4S14.7 4 12 4 8 5.3 8 8s1.3 4 4 4zm0 2c-2.7 0-8 1.4-8 4v2h16v-2c0-2.6-5.3-4-8-4z"/></svg><span data-i18n="nav.profile">Profile</span></button>
+      <button class="more-sheet-item" data-action="moreNav" data-page="settings"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1115.6 12 3.6 3.6 0 0112 15.6z"/></svg><span data-i18n="nav.settings">Settings</span></button>
     </div>
   </div>
-  <div class="more-sheet-backdrop" id="more-backdrop" onclick="closeMoreMenu()"></div>
+  <div class="more-sheet-backdrop" id="more-backdrop" data-action="closeMoreMenu"></div>
 
   <main class="main">
     <!-- DASHBOARD -->
@@ -117,7 +117,7 @@ if(typeof mqtt==='undefined'){
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <div class="sync-badge sync-off" id="sync-badge" title="Sync offline" onclick="showSyncStatus()" style="cursor:pointer;"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0020 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 004 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg></div>
+          <div class="sync-badge sync-off" id="sync-badge" title="Sync offline" data-action="showSyncStatus" style="cursor:pointer;"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0020 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 004 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg></div>
           <div class="streak-pill">&#x1F525; <span id="streak-count">0</span>-day streak</div>
         </div>
       </div>
@@ -568,7 +568,7 @@ if(typeof mqtt==='undefined'){
 </div>
 
 <!-- MUSIC PLAYER FAB + PANEL -->
-<button class="music-fab" id="music-fab" onclick="toggleMusicPanel()" title="Music">
+<button class="music-fab" id="music-fab" data-action="toggleMusicPanel" title="Music">
   <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
 </button>
 <div class="music-panel" id="music-panel">
