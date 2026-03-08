@@ -649,7 +649,6 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
       <label class="field-label" style="margin-top:12px;">Password</label>
       <input class="field-input" id="login-pass" type="password" placeholder="Your password" autocomplete="off">
       <button class="auth-btn" onclick="doLogin()" data-i18n="auth.logIn">Log In</button>
-      <button class="auth-btn secondary" onclick="tryDemo()" style="margin-top:10px;">Try Demo — explore the app</button>
       <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.5;">☁️ Accounts sync to the cloud. Just enter your username and password — it works on any device!</p>
       <div class="auth-divider">or restore from backup code</div>
       <button class="auth-btn secondary" onclick="toggleTransferPanel()" id="transfer-toggle-btn" style="margin-bottom:0;font-size:11px;">I have a backup code</button>
@@ -1884,20 +1883,6 @@ async function doSignup(){
   document.getElementById('login-pass').value='';
   renderAccountsList();
   setTimeout(()=>authTab('login'),2000);
-}
-
-async function tryDemo(){
-  const u='demo';
-  const p='demo123';
-  let accs=getAccounts();
-  if(!accs[u]){
-    const h=await hashPw(p);
-    accs[u]={hash:h,data:{profile:{name:'Demo',weight:75,height:178,age:28,goal:'Build Muscle'},log:[{key:'bench',name:'Bench Press',cat:'Push',muscle:'Chest, Triceps',sets:3,volume:2400,maxWeight:80,ts:Date.now()-86400000,details:[{wt:80,rp:10},{wt:80,rp:8},{wt:75,rp:10}]},{key:'squat',name:'Barbell Squat',cat:'Legs',muscle:'Quads, Glutes',sets:3,volume:3000,maxWeight:100,ts:Date.now()-2*86400000,details:[{wt:100,rp:5},{wt:95,rp:6},{wt:90,rp:8}]}],prs:{bench:{weight:80,reps:10},squat:{weight:100,reps:5}},hrLog:[],settings:{}},created:Date.now()};
-    saveAccounts(accs);
-  }
-  document.getElementById('login-user').value=u;
-  document.getElementById('login-pass').value=p;
-  doLogin();
 }
 
 async function doLogin(){
