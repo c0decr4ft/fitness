@@ -20,32 +20,32 @@ if(typeof mqtt==='undefined'){
 </head>
 <body class="auth-visible">
 
-<!-- ══════════ AUTH SCREEN ══════════ -->
+<!-- ══════════ AUTH SCREEN (rebuilt) ══════════ -->
 <div id="auth-screen">
   <div class="auth-box">
     <div class="auth-logo">FORGE</div>
     <div class="auth-sub">Your fitness data is saved to the cloud.<br>Log in with your username and password on any device.</div>
     <div class="auth-tabs">
-      <button class="auth-tab active" id="auth-tab-login" data-i18n="auth.login">Log In</button>
-      <button class="auth-tab" id="auth-tab-signup" data-i18n="auth.createAccount">Create Account</button>
+      <a href="javascript:authTab('login')" class="auth-tab active" id="auth-tab-login" data-i18n="auth.login" role="button">Log In</a>
+      <a href="javascript:authTab('signup')" class="auth-tab" id="auth-tab-signup" data-i18n="auth.createAccount" role="button">Create Account</a>
     </div>
-    <form class="auth-form active" id="auth-login" onsubmit="doLogin();return false;">
+    <div class="auth-form active" id="auth-login">
       <div class="auth-err" id="login-err"></div>
       <label class="field-label">Username</label>
       <input class="field-input" id="login-user" type="text" placeholder="Your username" autocomplete="off">
       <label class="field-label" style="margin-top:12px;">Password</label>
       <input class="field-input" id="login-pass" type="password" placeholder="Your password" autocomplete="off">
-      <button type="submit" class="auth-btn" id="btn-login" data-i18n="auth.logIn" onclick="doLogin();return false;">Log In</button>
-      <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.5;">☁️ Accounts sync to the cloud. Just enter your username and password — it works on any device!</p>
-      <p style="font-size:12px;text-align:center;margin-top:12px;"><a href="#" id="skip-auth-link" style="color:var(--accent);text-decoration:underline;cursor:pointer;display:inline-block;padding:8px;min-height:44px;line-height:28px;" onclick="skipAuth();return false;">Continue without account</a></p>
+      <a href="javascript:doLogin()" class="auth-btn" id="btn-login" data-i18n="auth.logIn" role="button">Log In</a>
+      <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.5;">☁️ Accounts sync to the cloud.</p>
+      <a href="javascript:void(0)" id="skip-auth-link" style="color:var(--accent);text-decoration:underline;cursor:pointer;display:block;text-align:center;padding:12px;font-size:13px;">Continue without account</a>
       <div class="auth-divider">or restore from backup code</div>
-      <button class="auth-btn secondary" id="transfer-toggle-btn" style="margin-bottom:0;font-size:11px;">I have a backup code</button>
+      <a href="javascript:void(0)" class="auth-btn secondary" id="transfer-toggle-btn" style="margin-bottom:0;font-size:11px;display:block;text-align:center;text-decoration:none;" role="button">I have a backup code</a>
       <div id="transfer-panel" style="display:none;margin-top:14px;">
         <textarea class="auth-import-area" id="import-code" placeholder="Paste backup code here…"></textarea>
-        <button class="auth-btn secondary" style="margin-top:8px;">Restore From Code</button>
+        <a href="javascript:void(0)" class="auth-btn secondary" style="margin-top:8px;display:block;text-align:center;text-decoration:none;" role="button" id="restore-code-btn">Restore From Code</a>
       </div>
-    </form>
-    <form class="auth-form" id="auth-signup" onsubmit="doSignup();return false;">
+    </div>
+    <div class="auth-form" id="auth-signup">
       <div class="auth-err" id="signup-err"></div>
       <div class="auth-ok" id="signup-ok"></div>
       <label class="field-label">Choose a Username</label>
@@ -54,8 +54,8 @@ if(typeof mqtt==='undefined'){
       <input class="field-input" id="signup-pass" type="password" placeholder="At least 6 characters" autocomplete="off">
       <label class="field-label" style="margin-top:12px;">Confirm Password</label>
       <input class="field-input" id="signup-pass2" type="password" placeholder="Type password again" autocomplete="off">
-      <button type="submit" class="auth-btn" id="btn-signup" data-i18n="auth.createAccount" onclick="doSignup();return false;">Create Account</button>
-    </form>
+      <a href="javascript:void(0)" class="auth-btn" id="btn-signup" data-i18n="auth.createAccount" role="button">Create Account</a>
+    </div>
     <div class="auth-accounts" id="auth-accounts-list"></div>
   </div>
 </div>

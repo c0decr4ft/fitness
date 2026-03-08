@@ -14,7 +14,7 @@ function boot(){
   if(tb)tb.onclick=toggleTransferPanel;
   var skipLink=document.getElementById('skip-auth-link');
   if(skipLink){skipLink.onclick=function(e){e.preventDefault();skipAuth();return false;};}
-  var ib=document.querySelector('#transfer-panel button');
+  var ib=document.getElementById('restore-code-btn')||document.querySelector('#transfer-panel button');
   if(ib)ib.onclick=importBackup;
   renderAccountsList();
   setTimeout(function(){if(currentUser)syncAccountToCloud(currentUser);},3000);
@@ -73,7 +73,7 @@ function handleAuthPointer(e){
   if(!as||!ss)return;
   var inAuth=as.contains(e.target),inSetup=ss.contains(e.target);
   if(!inAuth&&!inSetup)return;
-  var t=e.target.closest('a#skip-auth-link,button#btn-login,button#btn-signup,button#btn-setup,button#auth-tab-login,button#auth-tab-signup,button#transfer-toggle-btn,button');
+  var t=e.target.closest('a#skip-auth-link,a#btn-login,a#btn-signup,a#auth-tab-login,a#auth-tab-signup,a#transfer-toggle-btn,#restore-code-btn,button#btn-setup,button#btn-login,button#btn-signup,button#auth-tab-login,button#auth-tab-signup,button#transfer-toggle-btn,button');
   if(!t)return;
   e.preventDefault();
   e.stopPropagation();
@@ -84,7 +84,7 @@ function handleAuthPointer(e){
   if(t.id==='auth-tab-login'){authTab('login');return;}
   if(t.id==='auth-tab-signup'){authTab('signup');return;}
   if(t.id==='transfer-toggle-btn'){toggleTransferPanel();return;}
-  if(t.closest('#transfer-panel')){importBackup();return;}
+  if(t&&(t.id==='restore-code-btn'||t.closest('#transfer-panel'))){importBackup();return;}
 }
 function attachAuthHandlers(){
   var asEl=document.getElementById('auth-screen'),ssEl=document.getElementById('setup-screen');
@@ -96,22 +96,21 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 document.addEventListener('click',function(e){
   var as=document.getElementById('auth-screen'),ss=document.getElementById('setup-screen');
   if((!as||!as.contains(e.target))&&(!ss||!ss.contains(e.target)))return;
-  var t=e.target.closest('a[id="skip-auth-link"]');
-  if(t){e.preventDefault();e.stopPropagation();skipAuth();return;}
-  var b=e.target.closest('button');
-  if(!b)return;
-  if(b.id==='btn-login'){e.preventDefault();e.stopPropagation();doLogin();}
-  else if(b.id==='btn-signup'){e.preventDefault();e.stopPropagation();doSignup();}
-  else if(b.id==='btn-setup'){e.preventDefault();e.stopPropagation();saveProfile();}
-  else if(b.id==='auth-tab-login'){e.preventDefault();e.stopPropagation();authTab('login');}
-  else if(b.id==='auth-tab-signup'){e.preventDefault();e.stopPropagation();authTab('signup');}
-  else if(b.id==='transfer-toggle-btn'){e.preventDefault();e.stopPropagation();toggleTransferPanel();}
-  else if(b.closest('#transfer-panel')){e.preventDefault();e.stopPropagation();importBackup();}
+  var t=e.target.closest('a,button');
+  if(!t)return;
+  if(t.id==='skip-auth-link'){e.preventDefault();e.stopPropagation();skipAuth();return;}
+  if(t.id==='btn-login'){e.preventDefault();e.stopPropagation();doLogin();return;}
+  if(t.id==='btn-signup'){e.preventDefault();e.stopPropagation();doSignup();return;}
+  if(t.id==='btn-setup'){e.preventDefault();e.stopPropagation();saveProfile();return;}
+  if(t.id==='auth-tab-login'){e.preventDefault();e.stopPropagation();authTab('login');return;}
+  if(t.id==='auth-tab-signup'){e.preventDefault();e.stopPropagation();authTab('signup');return;}
+  if(t.id==='transfer-toggle-btn'){e.preventDefault();e.stopPropagation();toggleTransferPanel();return;}
+  if(t.id==='restore-code-btn'||t.closest('#transfer-panel')){e.preventDefault();e.stopPropagation();importBackup();return;}
 },true);
 document.addEventListener('touchend',function(e){
   var as=document.getElementById('auth-screen'),ss=document.getElementById('setup-screen');
   if((!as||!as.contains(e.target))&&(!ss||!ss.contains(e.target)))return;
-  var t=e.target.closest('a[id="skip-auth-link"],#btn-login,#btn-signup,#btn-setup,#auth-tab-login,#auth-tab-signup');
+  var t=e.target.closest('a[id="skip-auth-link"],a#btn-login,a#btn-signup,a#auth-tab-login,a#auth-tab-signup,a#transfer-toggle-btn,#restore-code-btn,button#btn-setup,button#btn-login,button#btn-signup,button#auth-tab-login,button#auth-tab-signup,button#transfer-toggle-btn');
   if(!t)return;
   e.preventDefault();
   if(t.id==='skip-auth-link')skipAuth();
@@ -120,4 +119,6 @@ document.addEventListener('touchend',function(e){
   else if(t.id==='btn-setup')saveProfile();
   else if(t.id==='auth-tab-login')authTab('login');
   else if(t.id==='auth-tab-signup')authTab('signup');
+  else if(t.id==='transfer-toggle-btn')toggleTransferPanel();
+  else if(t.id==='restore-code-btn'||t.closest('#transfer-panel'))importBackup();
 },{passive:false,capture:true});
