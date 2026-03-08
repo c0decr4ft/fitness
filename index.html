@@ -18,50 +18,7 @@ if(typeof mqtt==='undefined'){
 </script>
 <link href="css/styles.css" rel="stylesheet">
 </head>
-<body class="auth-visible">
-
-<!-- ══════════ AUTH SCREEN ══════════ -->
-<div id="auth-screen">
-  <div class="auth-box">
-    <div class="auth-logo">FORGE</div>
-    <div class="auth-sub">Your fitness data is saved to the cloud.<br>Log in with your username and password on any device.</div>
-    <div class="auth-tabs">
-      <button type="button" class="auth-tab active" id="auth-tab-login" data-auth="tab-login" data-i18n="auth.login">Log In</button>
-      <button type="button" class="auth-tab" id="auth-tab-signup" data-auth="tab-signup" data-i18n="auth.createAccount">Create Account</button>
-    </div>
-    <form id="auth-login" class="auth-form active" onsubmit="event.preventDefault();if(typeof doLogin==='function')doLogin();">
-      <div class="auth-err" id="login-err"></div>
-      <label class="field-label">Username</label>
-      <input class="field-input" id="login-user" type="text" placeholder="Your username" autocomplete="username">
-      <label class="field-label" style="margin-top:12px;">Password</label>
-      <input class="field-input" id="login-pass" type="password" placeholder="Your password" autocomplete="current-password">
-      <button type="submit" class="auth-btn" id="btn-login" data-auth="login" data-i18n="auth.logIn">Log In</button>
-      <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.5;">☁️ Accounts sync to the cloud.</p>
-      <button type="button" id="skip-auth-link" data-auth="skip" style="background:none;border:none;color:var(--accent);text-decoration:underline;cursor:pointer;display:block;width:100%;padding:12px;font-size:13px;font-family:inherit;">Continue without account</button>
-      <div class="auth-divider">or restore from backup code</div>
-      <button type="button" class="auth-btn secondary" id="transfer-toggle-btn" data-auth="transfer" style="margin-bottom:0;font-size:11px;">I have a backup code</button>
-      <div id="transfer-panel" style="display:none;margin-top:14px;">
-        <textarea class="auth-import-area" id="import-code" placeholder="Paste backup code here…"></textarea>
-        <button type="button" class="auth-btn secondary" style="margin-top:8px;" id="restore-code-btn" data-auth="restore">Restore From Code</button>
-      </div>
-    </form>
-    <form id="auth-signup" class="auth-form" onsubmit="event.preventDefault();if(typeof doSignup==='function')doSignup();">
-      <div class="auth-err" id="signup-err"></div>
-      <div class="auth-ok" id="signup-ok"></div>
-      <label class="field-label">Choose a Username</label>
-      <input class="field-input" id="signup-user" type="text" placeholder="e.g. alex_lifts" autocomplete="username">
-      <label class="field-label" style="margin-top:12px;">Create Password</label>
-      <input class="field-input" id="signup-pass" type="password" placeholder="At least 6 characters" autocomplete="new-password">
-      <label class="field-label" style="margin-top:12px;">Confirm Password</label>
-      <input class="field-input" id="signup-pass2" type="password" placeholder="Type password again" autocomplete="new-password">
-      <button type="submit" class="auth-btn" id="btn-signup" data-auth="signup" data-i18n="auth.createAccount">Create Account</button>
-    </form>
-    <div class="auth-accounts" id="auth-accounts-list"></div>
-  </div>
-</div>
-<script>
-(function(){var as=document.getElementById('auth-screen');if(!as)return;function h(e){var t=e.target.closest('[data-auth]');if(!t)return;e.preventDefault();e.stopPropagation();var a=t.getAttribute('data-auth');if(a==='login'&&typeof doLogin==='function')doLogin();else if(a==='signup'&&typeof doSignup==='function')doSignup();else if(a==='tab-login'&&typeof authTab==='function')authTab('login');else if(a==='tab-signup'&&typeof authTab==='function')authTab('signup');else if(a==='skip'&&typeof skipAuth==='function')skipAuth();else if(a==='transfer'&&typeof toggleTransferPanel==='function')toggleTransferPanel();else if(a==='restore'&&typeof importBackup==='function')importBackup();}as.addEventListener('pointerdown',h,{capture:true,passive:false});as.addEventListener('click',h,{capture:true,passive:false});})();
-</script>
+<body>
 
 <!-- ══════════ SETUP SCREEN ══════════ -->
 <div id="setup-screen" class="hidden">
@@ -527,44 +484,15 @@ if(typeof mqtt==='undefined'){
         </div>
 
         <div class="profile-card">
-          <h3>Account</h3>
-          <div class="profile-row"><span class="profile-row-label">Username</span><span class="profile-row-val" id="profile-username">—</span></div>
-
-          <div class="profile-row" style="flex-direction:column;align-items:stretch;">
-            <span class="profile-row-label" style="margin-bottom:8px;">Change Username</span>
-            <input class="auth-input" id="new-username" placeholder="New username" autocomplete="off" style="margin-bottom:10px;">
-            <div id="change-user-msg" style="display:none;font-size:12px;margin-bottom:8px;line-height:1.5;"></div>
-            <button class="save-profile-btn" onclick="doChangeUsername()">Update Username</button>
-          </div>
-
-          <div class="profile-row" style="flex-direction:column;align-items:stretch;">
-            <span class="profile-row-label" style="margin-bottom:8px;">Change Password</span>
-            <input class="auth-input" id="old-password" type="password" placeholder="Current password" autocomplete="off" style="margin-bottom:8px;">
-            <input class="auth-input" id="new-password" type="password" placeholder="New password" autocomplete="off" style="margin-bottom:8px;">
-            <input class="auth-input" id="confirm-new-password" type="password" placeholder="Confirm new password" autocomplete="off" style="margin-bottom:10px;">
-            <div id="change-pw-msg" style="display:none;font-size:12px;margin-bottom:8px;line-height:1.5;"></div>
-            <button class="save-profile-btn" onclick="doChangePassword()">Update Password</button>
-          </div>
-
-          <div class="profile-row" style="flex-direction:column;align-items:stretch;">
-            <span class="profile-row-label" style="margin-bottom:8px;">Cloud Sync</span>
-            <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5;">Your account is automatically synced to the cloud. On another device, just enter your <strong>username and password</strong> to log in — no codes needed!</p>
-            <button class="save-profile-btn" onclick="generateBackupCode()">Sync Account to Cloud</button>
-            <textarea class="auth-import-area" id="backup-code-output" readonly style="display:none;margin-top:8px;font-size:10px;" onclick="this.select();try{navigator.clipboard.writeText(this.value);}catch(e){}"></textarea>
-            <div id="backup-copied-msg" style="display:none;font-size:12px;text-align:center;margin-top:8px;line-height:1.5;"></div>
-          </div>
+          <h3>Data</h3>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5;">Your fitness data is stored locally on this device.</p>
           <button class="save-profile-btn" onclick="exportData()" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);">Export Data as JSON File</button>
-        </div>
-
-        <div class="profile-card">
-          <h3>Session</h3>
-          <button class="save-profile-btn" onclick="doLogout()" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);">Log Out</button>
         </div>
 
         <div class="danger-zone">
           <h3>Danger Zone</h3>
           <button class="danger-btn" onclick="confirmDeleteLog()">Delete workout log — this cannot be undone</button>
-          <button class="danger-btn" onclick="confirmDeleteAccount()">Delete account permanently — all data will be lost</button>
+          <button class="danger-btn" onclick="confirmDeleteAccount()">Delete all data — reset app</button>
         </div>
       </div>
     </div>
@@ -1345,8 +1273,6 @@ function loginAs(u){
   let hidden=JSON.parse(localStorage.getItem('forge_hidden_accounts')||'[]');
   hidden=hidden.filter(x=>x!==u);
   localStorage.setItem('forge_hidden_accounts',JSON.stringify(hidden));
-  document.getElementById('auth-screen').classList.add('hidden');
-  document.body.classList.remove('auth-visible');
   S=getAccounts()[u].data||{};
   if(S.profile){
     document.getElementById('setup-screen').classList.add('hidden');
@@ -1372,19 +1298,21 @@ function doLogout(){
   currentUser=null;
   localStorage.removeItem('forge_current_user');
   S={};
-  document.getElementById('auth-screen').classList.remove('hidden');
-  document.body.classList.add('auth-visible');
-  document.getElementById('setup-screen').classList.add('hidden');
-  document.getElementById('login-user').value='';
-  document.getElementById('login-pass').value='';
-  renderAccountsList();
+  document.getElementById('setup-screen').classList.remove('hidden');
 }
 
 function confirmDeleteAccount(){
-  showConfirm('💀','Delete Account?','This will permanently delete your account, all workout data, and profile. This cannot be undone.','Delete My Account',()=>{
+  showConfirm('💀','Delete All Data?','This will permanently delete all your workout data and profile. This cannot be undone.','Delete All Data',()=>{
     const accs=getAccounts();
     if(currentUser&&accs[currentUser]){delete accs[currentUser];saveAccounts(accs);}
-    doLogout();
+    var u='local';
+    if(!accs[u]){accs[u]={hash:'',data:{},created:Date.now()};saveAccounts(accs);}
+    currentUser=u;
+    localStorage.setItem('forge_current_user',u);
+    S={};
+    stopLiveSync();
+    document.getElementById('setup-screen').classList.remove('hidden');
+    applyExFilters();buildLog();buildQuickStart();updateTimerUI();applySettings();
   });
 }
 
