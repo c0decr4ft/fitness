@@ -9,7 +9,7 @@ function handleDelegatedClick(e){
     var action=el.getAttribute('data-action');
     var page=el.getAttribute('data-page');
     if(action==='saveProfile'&&typeof saveProfile==='function'){e.preventDefault();e.stopPropagation();saveProfile();return;}
-    if(action==='showPage'&&page&&typeof showPage==='function'){e.preventDefault();e.stopPropagation();showPage(page,el);return;}
+    if(action==='showPage'&&page&&typeof showPage==='function'){e.preventDefault();showPage(page,el);return;}
     if(action==='toggleMoreMenu'&&typeof toggleMoreMenu==='function'){e.preventDefault();e.stopPropagation();toggleMoreMenu(el);return;}
     if(action==='moreNav'&&page&&typeof moreNav==='function'){e.preventDefault();e.stopPropagation();moreNav(page,el);return;}
     if(action==='closeMoreMenu'&&typeof closeMoreMenu==='function'){e.preventDefault();e.stopPropagation();closeMoreMenu();return;}
@@ -26,6 +26,48 @@ document.addEventListener('click',handleDelegatedClick,true);
 document.addEventListener('pointerdown',handleDelegatedClick,true);
 
 function boot(){
+  // Direct nav handlers — ensures side/bottom nav works when delegated handler doesn't
+  var _lastNav=0;
+  function bindNav(btn){
+    if(!btn)return;
+    var page=btn.getAttribute('data-page');
+    if(!page)return;
+    function go(){if(typeof showPage!=='function')return;var now=Date.now();if(now-_lastNav<200)return;_lastNav=now;showPage(page,btn);}
+    btn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();go();});
+    btn.addEventListener('touchend',function(e){e.preventDefault();go();},{passive:false});
+  }
+  document.querySelectorAll('[data-action="showPage"][data-page]').forEach(bindNav);
+
+  // Direct more-menu handlers
+  document.querySelectorAll('[data-action="toggleMoreMenu"]').forEach(function(btn){
+    if(!btn)return;
+    function go(){if(typeof toggleMoreMenu==='function')toggleMoreMenu(btn);}
+    btn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();go();},true);
+    btn.addEventListener('touchend',function(e){e.preventDefault();go();},{passive:false,capture:true});
+  });
+  document.querySelectorAll('[data-action="moreNav"][data-page]').forEach(function(btn){
+    if(!btn)return;
+    var page=btn.getAttribute('data-page');
+    if(!page)return;
+    function go(){if(typeof moreNav==='function')moreNav(page,btn);}
+    btn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();go();},true);
+    btn.addEventListener('touchend',function(e){e.preventDefault();go();},{passive:false,capture:true});
+  });
+  var backdrop=document.getElementById('more-backdrop');
+  if(backdrop){
+    function close(){if(typeof closeMoreMenu==='function')closeMoreMenu();}
+    backdrop.addEventListener('click',function(e){e.preventDefault();close();},true);
+    backdrop.addEventListener('touchend',function(e){e.preventDefault();close();},{passive:false,capture:true});
+  }
+
+  // Setup button
+  var setupBtn=document.getElementById('btn-setup');
+  if(setupBtn){
+    function save(){if(typeof saveProfile==='function')saveProfile();}
+    setupBtn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();save();},true);
+    setupBtn.addEventListener('touchend',function(e){e.preventDefault();save();},{passive:false,capture:true});
+  }
+
   var mSheet=document.getElementById('more-sheet');
   if(mSheet){
     var mTouchY=0;
