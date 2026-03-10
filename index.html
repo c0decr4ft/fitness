@@ -1115,7 +1115,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
           <div class="profile-row"><span class="profile-row-label">Username</span><span class="profile-row-val" id="profile-username">—</span></div>
           <div style="background:rgba(200,255,0,0.08);border:1px solid rgba(200,255,0,0.2);border-radius:12px;padding:16px;margin:12px 0;">
             <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);margin-bottom:6px;">☁️ Cloud Sync</div>
-            <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5;">Your account is automatically synced to the cloud. On another device, just enter your <strong>username and password</strong> to log in — no codes needed!</p>
+            <p id="cloud-desc" style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5;">Your account is automatically synced to the cloud. On another device, just enter your <strong>username and password</strong> to log in — no codes needed!</p>
             <button class="save-profile-btn" onclick="generateBackupCode()" style="background:var(--accent);color:#000;margin-bottom:8px;width:100%;">Sync Account to Cloud</button>
             <textarea class="auth-import-area" id="backup-code-output" readonly style="display:none;margin-bottom:8px;font-size:10px;" onclick="this.select();try{navigator.clipboard.writeText(this.value);}catch(e){}"></textarea>
             <div id="backup-copied-msg" style="display:none;font-size:12px;text-align:center;margin-bottom:8px;line-height:1.5;"></div>
@@ -1475,6 +1475,11 @@ const LANG={
     timer_reset:'Reset',timer_start:'Start',checkin_save:'Save Today\'s Check-In',measure_save:'Save Measurements',
     weekly_vol:'Weekly Volume',workout_freq:'Workout Frequency',cat_breakdown:'Category Breakdown',achievements:'🏆 Achievements',
     daily_checkin:'Daily Check-In',weight_hist:'Weight History',trends:'7-Day Trends',body_meas:'Body Measurements',checkin_hist:'Check-In History',
+    stat_week:'This Week',stat_volume:'Total Volume',stat_sets:'Sets Logged',stat_prs:'Personal Records',stat_sessions:'sessions',all_time:'all time',start_logging:'start logging',keep_pushing:'keep pushing',
+    quick_start:'Quick Start',this_week:'This Week',log_title:'Workout Log',log_sub:'Your saved training history',clear_log:'Clear Log',
+    music_title:'Workout Music',music_vol:'Volume',total_workouts:'Total Workouts',total_volume:'Total Volume (kg)',workouts:'Workouts',volume_kg:'Volume (kg)',
+    streak_day:'-day streak',level:'Level',your_bmi:'Your BMI',pr_title:'🏆 Personal Records',log_imp_note:'Log today\'s stats to track your improvement over time',
+    ex_count:'exercises',ex_count_1:'exercise',ex_count_n:'exercises',save_to_log:'Save to Log',log_this:'Log This Exercise',notes_ph:'Notes…',workout_note:'Workout Note (optional)',stat_week_count:'+{n} this week',
   },
   es:{
     auth_sub:'Tus datos de fitness se guardan en la nube.<br>Inicia sesión con tu usuario y contraseña en cualquier dispositivo.',
@@ -1507,6 +1512,11 @@ const LANG={
     timer_reset:'Reiniciar',timer_start:'Iniciar',checkin_save:'Guardar registro de hoy',measure_save:'Guardar medidas',
     weekly_vol:'Volumen semanal',workout_freq:'Frecuencia',cat_breakdown:'Por categoría',achievements:'🏆 Logros',
     daily_checkin:'Registro diario',weight_hist:'Historial de peso',trends:'Tendencias 7 días',body_meas:'Medidas corporales',checkin_hist:'Historial',
+    stat_week:'Esta semana',stat_volume:'Volumen total',stat_sets:'Series registradas',stat_prs:'Récords personales',stat_sessions:'sesiones',all_time:'total',start_logging:'empieza a registrar',keep_pushing:'sigue así',
+    quick_start:'Inicio rápido',this_week:'Esta semana',log_title:'Registro de entrenamientos',log_sub:'Tu historial de entrenamiento',clear_log:'Borrar registro',
+    music_title:'Música para entrenar',music_vol:'Volumen',total_workouts:'Entrenamientos totales',total_volume:'Volumen total (kg)',workouts:'Entrenamientos',volume_kg:'Volumen (kg)',
+    streak_day:' días seguidos',level:'Nivel',your_bmi:'Tu IMC',pr_title:'🏆 Récords personales',log_imp_note:'Registra las estadísticas de hoy para seguir tu mejora',
+    ex_count:'ejercicios',ex_count_1:'ejercicio',ex_count_n:'ejercicios',save_to_log:'Guardar en registro',log_this:'Registrar este ejercicio',notes_ph:'Notas…',workout_note:'Nota del entrenamiento (opcional)',stat_week_count:'+{n} esta semana',
   },
   fr:{
     auth_sub:'Vos données fitness sont sauvegardées dans le cloud.<br>Connectez-vous avec votre identifiant et mot de passe sur n\'importe quel appareil.',
@@ -1539,6 +1549,11 @@ const LANG={
     timer_reset:'Réinitialiser',timer_start:'Démarrer',checkin_save:'Enregistrer le suivi',measure_save:'Enregistrer les mesures',
     weekly_vol:'Volume hebdo',workout_freq:'Fréquence',cat_breakdown:'Par catégorie',achievements:'🏆 Réalisations',
     daily_checkin:'Suivi quotidien',weight_hist:'Historique poids',trends:'Tendances 7j',body_meas:'Mensurations',checkin_hist:'Historique',
+    stat_week:'Cette semaine',stat_volume:'Volume total',stat_sets:'Séries enregistrées',stat_prs:'Records personnels',stat_sessions:'séances',all_time:'total',start_logging:'commence à enregistrer',keep_pushing:'continue',
+    quick_start:'Démarrage rapide',this_week:'Cette semaine',log_title:'Journal d\'entraînement',log_sub:'Ton historique d\'entraînement',clear_log:'Effacer le journal',
+    music_title:'Musique d\'entraînement',music_vol:'Volume',total_workouts:'Entraînements totaux',total_volume:'Volume total (kg)',workouts:'Entraînements',volume_kg:'Volume (kg)',
+    streak_day:' jours d\'affilée',level:'Niveau',your_bmi:'Ton IMC',pr_title:'🏆 Records personnels',log_imp_note:'Enregistre les stats du jour pour suivre tes progrès',
+    ex_count:'exercices',ex_count_1:'exercice',ex_count_n:'exercices',save_to_log:'Enregistrer',log_this:'Enregistrer cet exercice',notes_ph:'Notes…',workout_note:'Note d\'entraînement (optionnel)',stat_week_count:'+{n} cette semaine',
   },
   de:{
     auth_sub:'Deine Fitness-Daten werden in der Cloud gespeichert.<br>Melde dich mit Benutzername und Passwort auf jedem Gerät an.',
@@ -1571,6 +1586,11 @@ const LANG={
     timer_reset:'Zurücksetzen',timer_start:'Start',checkin_save:'Heutigen Check-in speichern',measure_save:'Maße speichern',
     weekly_vol:'Wochenvolumen',workout_freq:'Häufigkeit',cat_breakdown:'Nach Kategorie',achievements:'🏆 Erfolge',
     daily_checkin:'Täglicher Check-in',weight_hist:'Gewichtsverlauf',trends:'7-Tage-Trends',body_meas:'Körpermaße',checkin_hist:'Verlauf',
+    stat_week:'Diese Woche',stat_volume:'Gesamtvolumen',stat_sets:'Protokollierte Sätze',stat_prs:'Persönliche Rekorde',stat_sessions:'Einheiten',all_time:'insgesamt',start_logging:'Protokoll starten',keep_pushing:'weiter so',
+    quick_start:'Schnellstart',this_week:'Diese Woche',log_title:'Trainingsprotokoll',log_sub:'Dein Trainingsverlauf',clear_log:'Protokoll löschen',
+    music_title:'Workout-Musik',music_vol:'Lautstärke',total_workouts:'Gesamte Workouts',total_volume:'Gesamtvolumen (kg)',workouts:'Workouts',volume_kg:'Volumen (kg)',
+    streak_day:'-Tage-Serie',level:'Level',your_bmi:'Dein BMI',pr_title:'🏆 Persönliche Rekorde',log_imp_note:'Trage die heutigen Stats ein, um deine Fortschritte zu verfolgen',
+    ex_count:'Übungen',ex_count_1:'Übung',ex_count_n:'Übungen',save_to_log:'Speichern',log_this:'Diese Übung protokollieren',notes_ph:'Notizen…',workout_note:'Workout-Notiz (optional)',stat_week_count:'+{n} diese Woche',
   },
   it:{
     auth_sub:'I tuoi dati fitness sono salvati nel cloud.<br>Accedi con username e password su qualsiasi dispositivo.',
@@ -1603,6 +1623,11 @@ const LANG={
     timer_reset:'Reimposta',timer_start:'Avvia',checkin_save:'Salva check-in di oggi',measure_save:'Salva misure',
     weekly_vol:'Volume settimanale',workout_freq:'Frequenza',cat_breakdown:'Per categoria',achievements:'🏆 Risultati',
     daily_checkin:'Check-in giornaliero',weight_hist:'Storia peso',trends:'Trend 7 giorni',body_meas:'Misure corporee',checkin_hist:'Storico',
+    stat_week:'Questa settimana',stat_volume:'Volume totale',stat_sets:'Serie registrate',stat_prs:'Record personali',stat_sessions:'sessioni',all_time:'totale',start_logging:'inizia a registrare',keep_pushing:'continua così',
+    quick_start:'Avvio rapido',this_week:'Questa settimana',log_title:'Registro allenamenti',log_sub:'La tua cronologia allenamenti',clear_log:'Cancella registro',
+    music_title:'Musica per allenamento',music_vol:'Volume',total_workouts:'Allenamenti totali',total_volume:'Volume totale (kg)',workouts:'Allenamenti',volume_kg:'Volume (kg)',
+    streak_day:' giorni di fila',level:'Livello',your_bmi:'Il tuo BMI',pr_title:'🏆 Record personali',log_imp_note:'Registra le statistiche di oggi per seguire i tuoi progressi',
+    ex_count:'esercizi',ex_count_1:'esercizio',ex_count_n:'esercizi',save_to_log:'Salva nel registro',log_this:'Registra questo esercizio',notes_ph:'Note…',workout_note:'Nota allenamento (opzionale)',stat_week_count:'+{n} questa settimana',
   }
 };
 const COACH_LANG={
@@ -1684,6 +1709,7 @@ function setLang(lang){
   localStorage.setItem('forge_lang',lang);
   if(currentUser)save(S);
   applyI18n();
+  if(currentUser&&S.profile){updateDashStats();buildLog();buildQuickStart();applyExFilters();}
 }
 function applyI18n(){
   const lang=getLang();
@@ -1738,13 +1764,33 @@ function applyI18n(){
   const syncBtn=document.querySelector('[onclick="generateBackupCode()"]');if(syncBtn)syncBtn.textContent=T('sync_btn');
   const exportBtn=document.querySelector('[onclick="exportData()"]');if(exportBtn)exportBtn.textContent=T('export_btn');
   const cloudTitle=document.querySelector('#page-settings [style*="Bebas"]');if(cloudTitle)cloudTitle.textContent=T('cloud_sync');
-  const cloudDesc=document.querySelector('#page-settings .profile-card p');if(cloudDesc)cloudDesc.innerHTML=T('cloud_desc');
+  const cloudDesc=document.getElementById('cloud-desc');if(cloudDesc)cloudDesc.innerHTML=T('cloud_desc');
   const unitRow=document.querySelector('#unit-weight-toggle');if(unitRow){const r=unitRow.closest('.profile-row');if(r)r.querySelector('.profile-row-label').textContent=T('settings_weight_unit');}
   const hRow=document.querySelector('#unit-height-toggle');if(hRow){const r=hRow.closest('.profile-row');if(r)r.querySelector('.profile-row-label').textContent=T('settings_height_unit');}
   const restEl=document.getElementById('setting-rest-timer');if(restEl){const pc=restEl.closest('.profile-card');if(pc){const rl=pc.querySelectorAll('.profile-row-label');if(rl[0])rl[0].textContent=T('settings_duration');if(rl[1])rl[1].textContent=T('settings_sound');}}
   const themeEl=document.getElementById('theme-toggle');if(themeEl){const tr=themeEl.closest('.profile-row');if(tr){const tl=tr.querySelector('.profile-row-label');if(tl)tl.textContent=T('settings_theme_label');}}
   const langRow=document.querySelector('#setting-lang');if(langRow){const lr=langRow.closest('.profile-row');if(lr){const ll=lr.querySelector('.profile-row-label');if(ll)ll.textContent=T('settings_lang_label');}}
   const langDesc=document.getElementById('lang-desc');if(langDesc)langDesc.textContent=T('settings_lang_desc');
+  document.querySelectorAll('.stat-card .stat-label').forEach((el,i)=>{const k=['stat_week','stat_volume','stat_sets','stat_prs'][i];if(k)el.textContent=T(k);});
+  document.querySelectorAll('.stat-card .stat-delta').forEach((el,i)=>{if(i===0){const d1=document.getElementById('stat-d1');if(d1)d1.textContent=T('start_logging');}else if(i===3){const d4=document.getElementById('stat-d4');if(d4)d4.textContent=T('keep_pushing');}else if(el.id!=='stat-d1'&&el.id!=='stat-d4')el.textContent=T('all_time');});
+  const qsTitle=document.querySelector('.plan-section .sec-title');if(qsTitle)qsTitle.textContent=T('quick_start');
+  const twTitle=document.querySelector('.week-section .sec-title');if(twTitle)twTitle.textContent=T('this_week');
+  const prTitle=document.querySelector('.pr-section .sec-title');if(prTitle)prTitle.textContent=T('pr_title');
+  const logTitle=document.querySelector('#page-log .page-title');if(logTitle)logTitle.textContent=T('log_title');
+  const logSub=document.querySelector('#page-log .page-sub');if(logSub)logSub.textContent=T('log_sub');
+  const clearLogBtn=document.querySelector('.delete-log-btn');if(clearLogBtn)clearLogBtn.textContent=T('clear_log');
+  const musicTitle=document.querySelector('.music-panel-title');if(musicTitle)musicTitle.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="var(--accent)"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg> '+T('music_title');
+  const musicVolLabel=document.querySelector('.music-vol-row label');if(musicVolLabel)musicVolLabel.textContent=T('music_vol');
+  document.querySelectorAll('.mini-stat-label').forEach((el,i)=>{const k=['total_workouts','total_volume','stat_prs'][i];if(k)el.textContent=T(k);});
+  document.querySelectorAll('.p-stat-mini-label').forEach((el,i)=>{const k=['workouts','volume_kg'][i];if(k)el.textContent=T(k);});
+  document.querySelectorAll('.chart-card h3').forEach((el,i)=>{const k=['weekly_vol','workout_freq','cat_breakdown','achievements'][i];if(k)el.textContent=T(k);});
+  const streakPill=document.querySelector('.streak-pill');if(streakPill)streakPill.innerHTML='&#x1F525; <span id="streak-count">0</span>'+T('streak_day');
+  const bmiLabel=document.querySelector('.bmi-label');if(bmiLabel)bmiLabel.textContent=T('your_bmi');
+  const checkinCard=document.getElementById('checkin-card');if(checkinCard){const p=checkinCard.querySelector('p');if(p)p.textContent=T('log_imp_note');}
+  const setsNote=document.getElementById('sets-note-input');if(setsNote)setsNote.placeholder=T('notes_ph');
+  const demoNote=document.getElementById('demo-note-input');if(demoNote)demoNote.placeholder=T('workout_note');
+  const logBtn=document.querySelector('.btn-log');if(logBtn)logBtn.textContent=T('save_to_log');
+  const logExBtn=document.querySelector('.demo-log-btn');if(logExBtn)logExBtn.textContent=T('log_this');
   document.querySelectorAll('#unit-weight-toggle .toggle-opt').forEach((b,i)=>{b.textContent=b.textContent==='kg'?'kg':'lbs';});
   document.querySelectorAll('#unit-height-toggle .toggle-opt').forEach((b,i)=>{b.textContent=b.textContent==='cm'?'cm':'ft/in';});
   document.querySelectorAll('#sound-toggle .toggle-opt').forEach((b,i)=>{b.textContent=T(i===0?'sound_on':'sound_off');});
@@ -2454,7 +2500,7 @@ function applyExFilters(){
     card.innerHTML=`<div class="ex-top">${exImg(key,e.cat)}<button class="fav-btn${isFav?' faved':''}" onclick="event.stopPropagation();toggleFav('${key}',this)">${isFav?'★':'☆'}</button><div class="ex-diff">${diffDots}</div><div class="ex-equip">${e.equip}</div></div><div class="ex-body"><div class="ex-name">${e.name}</div><div class="ex-muscle">${e.muscle}</div><div class="ex-footer"><span class="plan-tag ${TAGS[e.cat]}">${e.cat}</span>${pr?`<span class="ex-pr">PR: ${pr.weight}kg</span>`:`<span class="ex-sets">${e.sets}</span>`}</div></div>`;
     grid.appendChild(card);
   });
-  document.getElementById('ex-count').textContent=`${entries.length} exercise${entries.length!==1?'s':''}`;
+  document.getElementById('ex-count').textContent=`${entries.length} ${entries.length===1?t('ex_count_1'):t('ex_count_n')}`;
 }
 
 // Quick start on dashboard
@@ -2658,7 +2704,7 @@ function updateDashStats(){
   document.getElementById('stat-sets').textContent=totalSets;
   document.getElementById('stat-prs').textContent=prCount;
   document.getElementById('streak-count').textContent=calcStreak(log);
-  if(week.length>0)document.getElementById('stat-d1').textContent=`+${week.length} this week`;
+  if(week.length>0){const d1=document.getElementById('stat-d1');if(d1)d1.textContent=(t('stat_week_count')||'+{n} this week').replace('{n}',week.length);}
 }
 
 // ═══════════════════════════════════════════════════
@@ -2852,33 +2898,21 @@ const MUSIC_TRACKS=[
         const bb=t+bar*d*8;
         for(let i=0;i<8;i++){
           const bt=bb+i*d;
-          const absI=bar*8+i;
-          if(i===0||i===3||i===6){_kick(ctx,master,bt,160,0.22,0.8);}
-          if(i===4){_snare(ctx,master,bt,0.55,0.15);}
-          if(i===2&&bar%2===1){_snare(ctx,master,bt,0.35,0.08);}
-          _hat(ctx,master,bt+d*0.5,i%2===0?0.14:0.22,i===6);
-          if(i%2===0){_hat(ctx,master,bt,0.08,false);}
-          if(bar>=2&&i%4===0){
-            const rolls=[bt+d*0.25,bt+d*0.5,bt+d*0.75];
-            if(bar%2===1&&i===4)rolls.forEach((rt,ri)=>_hat(ctx,master,rt,0.12+ri*0.04,false));
-          }
+          if(i===0||i===3||i===6){_kick(ctx,master,bt,160,0.2,0.65);}
+          if(i===4){_snare(ctx,master,bt,0.45,0.12);}
+          _hat(ctx,master,bt+d*0.5,i%2===0?0.12:0.18,i===6);
         }
         const o=ctx.createOscillator(),g=ctx.createGain();
         o.type='sine';o.frequency.value=bassNotes[bar];
         const sub=ctx.createOscillator();sub.type='sine';sub.frequency.value=bassNotes[bar]*0.5;
-        const distG=ctx.createGain();distG.gain.value=3;
-        const clip=ctx.createWaveShaper();const curve=new Float32Array(256);
-        for(let i=0;i<256;i++){const x=i/128-1;curve[i]=x<0?-Math.pow(-x,0.6):Math.pow(x,0.6);}
-        clip.curve=curve;
-        g.gain.setValueAtTime(0.35,bb);g.gain.setValueAtTime(0.35,bb+d*6);g.gain.exponentialRampToValueAtTime(0.01,bb+d*7.8);
-        const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=250;
-        o.connect(distG);sub.connect(distG);distG.connect(clip);clip.connect(lp);lp.connect(g);g.connect(master);
+        g.gain.setValueAtTime(0.001,bb);g.gain.linearRampToValueAtTime(0.28,bb+0.02);g.gain.setValueAtTime(0.28,bb+d*6);g.gain.linearRampToValueAtTime(0.001,bb+d*7.5);
+        const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=200;lp.Q.value=0.5;
+        o.connect(lp);sub.connect(lp);lp.connect(g);g.connect(master);
         o.start(bb);o.stop(bb+d*8+0.01);sub.start(bb);sub.stop(bb+d*8+0.01);musicNodes.push(o,sub);
         if(bar>=4){
-          const lead=[293.66,329.63,349.23,293.66,261.63,293.66,349.23,392.00];
-          const lf=lead[bar-4+(bar<6?0:4)]||293.66;
-          _synth(ctx,master,bb,lf,d*4,0.08,'sawtooth',2500);
-          if(bar%2===0)_synth(ctx,master,bb+d*4,lf*1.335,d*3,0.06,'square',1800);
+          const lead=[293.66,329.63,349.23,293.66];
+          const lf=lead[bar-4]||293.66;
+          _synth(ctx,master,bb,lf,d*4,0.06,'triangle',1800);
         }
       }
       return t+bars*d*8;
@@ -2892,35 +2926,23 @@ const MUSIC_TRACKS=[
         const bb=t+bar*d*8;
         for(let i=0;i<8;i++){
           const bt=bb+i*d;
-          if(i%2===0){_kick(ctx,master,bt,120,0.25,0.75);}
-          if(i===4){_snare(ctx,master,bt,0.6,0.18);}
-          _hat(ctx,master,bt+d*0.5,0.15,false);
-          if(i%4===0)_hat(ctx,master,bt,0.1,true);
-          if(bar>=4&&i===7){_snare(ctx,master,bt,0.3,0.06);}
+          if(i%2===0){_kick(ctx,master,bt,120,0.22,0.6);}
+          if(i===4){_snare(ctx,master,bt,0.5,0.14);}
+          _hat(ctx,master,bt+d*0.5,0.12,false);
+          if(i%4===0)_hat(ctx,master,bt,0.08,true);
         }
         const bf=bassSeq[bar];
-        for(let s=0;s<2;s++){
-          const sbt=bb+s*d*4;
-          const o1=ctx.createOscillator(),o2=ctx.createOscillator(),o3=ctx.createOscillator(),g=ctx.createGain();
-          o1.type='sawtooth';o1.frequency.value=bf;
-          o2.type='square';o2.frequency.value=bf*1.002;
-          o3.type='sawtooth';o3.frequency.value=bf*0.998;
-          g.gain.setValueAtTime(0.18,sbt);g.gain.setValueAtTime(0.18,sbt+d*3);g.gain.exponentialRampToValueAtTime(0.01,sbt+d*3.8);
-          const lp=ctx.createBiquadFilter();lp.type='lowpass';
-          lp.frequency.setValueAtTime(400,sbt);lp.frequency.linearRampToValueAtTime(s===1?600:200,sbt+d*4);
-          lp.Q.value=4;
-          o1.connect(lp);o2.connect(lp);o3.connect(lp);lp.connect(g);g.connect(master);
-          o1.start(sbt);o1.stop(sbt+d*4+0.01);o2.start(sbt);o2.stop(sbt+d*4+0.01);o3.start(sbt);o3.stop(sbt+d*4+0.01);
-          musicNodes.push(o1,o2,o3);
-        }
+        const o=ctx.createOscillator(),g=ctx.createGain();
+        o.type='sine';o.frequency.value=bf;
+        g.gain.setValueAtTime(0.001,bb);g.gain.linearRampToValueAtTime(0.2,bb+0.03);g.gain.setValueAtTime(0.2,bb+d*7);g.gain.linearRampToValueAtTime(0.001,bb+d*7.5);
+        const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=180;lp.Q.value=0.5;
+        o.connect(lp);lp.connect(g);g.connect(master);
+        o.start(bb);o.stop(bb+d*8+0.01);musicNodes.push(o);
         if(bar%2===0){
-          const stab=[bf*2,bf*3,bf*4];
-          stab.forEach(f=>{
-            const o=ctx.createOscillator(),g=ctx.createGain();o.type='sawtooth';o.frequency.value=f;
-            g.gain.setValueAtTime(0.04,bb);g.gain.exponentialRampToValueAtTime(0.001,bb+d*2);
-            const fl=ctx.createBiquadFilter();fl.type='lowpass';fl.frequency.setValueAtTime(3000,bb);fl.frequency.exponentialRampToValueAtTime(200,bb+d*2);
-            o.connect(fl);fl.connect(g);g.connect(master);o.start(bb);o.stop(bb+d*2+0.01);musicNodes.push(o);
-          });
+          const o2=ctx.createOscillator(),g2=ctx.createGain();o2.type='triangle';o2.frequency.value=bf*2;
+          g2.gain.setValueAtTime(0.001,bb);g2.gain.linearRampToValueAtTime(0.04,bb+0.05);g2.gain.linearRampToValueAtTime(0.001,bb+d*2);
+          const fl=ctx.createBiquadFilter();fl.type='lowpass';fl.frequency.value=800;fl.Q.value=0.5;
+          o2.connect(fl);fl.connect(g2);g2.connect(master);o2.start(bb);o2.stop(bb+d*2+0.01);musicNodes.push(o2);
         }
       }
       return t+bars*d*8;
@@ -2987,30 +3009,21 @@ const MUSIC_TRACKS=[
                           [92.50,138.59,185.00],[87.31,130.81,174.61],[73.42,110,146.83],[82.41,123.47,164.81]];
       for(let bar=0;bar<bars;bar++){
         const bb=t+bar*d*4;const ch=progression[bar];
-        _pad(ctx,master,bb,ch,d*4.2,0.13,d*1.5);
-        _pad(ctx,master,bb,[ch[0]*2,ch[1]*2],d*4.2,0.04,d*2);
-        const arp=[ch[2],ch[1],ch[2]*1.5,ch[1],ch[0]*2,ch[1],ch[2],ch[2]*0.75];
+        _pad(ctx,master,bb,ch,d*4.2,0.1,d*1.2);
+        const arp=[ch[2],ch[1],ch[2]*1.5,ch[1]];
         for(let i=0;i<4;i++){
-          const abt=bb+i*d;const af=arp[(bar*4+i)%8];
+          const abt=bb+i*d;const af=arp[i%4];
           const o=ctx.createOscillator(),g=ctx.createGain();
           o.type='sine';o.frequency.value=af;
-          g.gain.setValueAtTime(0.001,abt);g.gain.linearRampToValueAtTime(0.06,abt+0.05);g.gain.exponentialRampToValueAtTime(0.001,abt+d*0.9);
-          const dl=ctx.createDelay();dl.delayTime.value=d*0.75;
-          const dlG=ctx.createGain();dlG.gain.value=0.3;
-          o.connect(g);g.connect(master);g.connect(dl);dl.connect(dlG);dlG.connect(master);
+          g.gain.setValueAtTime(0.001,abt);g.gain.linearRampToValueAtTime(0.05,abt+0.08);g.gain.linearRampToValueAtTime(0.001,abt+d*0.85);
+          o.connect(g);g.connect(master);
           o.start(abt);o.stop(abt+d+0.01);musicNodes.push(o);
         }
         if(bar%2===0){
           const sub=ctx.createOscillator(),sg=ctx.createGain();
           sub.type='sine';sub.frequency.value=ch[0]*0.5;
-          sg.gain.setValueAtTime(0.001,bb);sg.gain.linearRampToValueAtTime(0.12,bb+d);sg.gain.linearRampToValueAtTime(0.001,bb+d*4);
+          sg.gain.setValueAtTime(0.001,bb);sg.gain.linearRampToValueAtTime(0.1,bb+d*0.5);sg.gain.linearRampToValueAtTime(0.001,bb+d*4);
           sub.connect(sg);sg.connect(master);sub.start(bb);sub.stop(bb+d*4+0.01);musicNodes.push(sub);
-        }
-        if(bar%4===0){
-          const swpBuf=_noise(ctx,d*4);const swpSrc=ctx.createBufferSource();swpSrc.buffer=swpBuf;
-          const swpG=ctx.createGain();swpG.gain.setValueAtTime(0.001,bb);swpG.gain.linearRampToValueAtTime(0.015,bb+d*2);swpG.gain.linearRampToValueAtTime(0.001,bb+d*4);
-          const bp=ctx.createBiquadFilter();bp.type='bandpass';bp.frequency.setValueAtTime(200,bb);bp.frequency.linearRampToValueAtTime(4000,bb+d*2);bp.frequency.linearRampToValueAtTime(200,bb+d*4);bp.Q.value=0.5;
-          swpSrc.connect(bp);bp.connect(swpG);swpG.connect(master);swpSrc.start(bb);musicNodes.push(swpSrc);
         }
       }
       return t+bars*d*4;
@@ -3025,56 +3038,40 @@ const MUSIC_TRACKS=[
         const bb=t+bar*d*8;const ch=epic[bar];
         for(let i=0;i<8;i++){
           const bt=bb+i*d;
-          if(i===0){_kick(ctx,master,bt,100,0.35,0.85);}
-          if(i===4){_kick(ctx,master,bt,100,0.35,0.85);_snare(ctx,master,bt,0.6,0.2);}
-          if(bar>=4&&(i===0||i===2||i===4||i===6)){
-            _kick(ctx,master,bt,80,0.28,0.5);
-          }
-          if(bar>=2&&i===7){_snare(ctx,master,bt+d*0.5,0.25,0.06);}
-          if(i===0||i===4)_hat(ctx,master,bt,0.1,true);
-          if(bar>=4){_hat(ctx,master,bt+d*0.5,0.12,false);}
+          if(i===0){_kick(ctx,master,bt,100,0.28,0.7);}
+          if(i===4){_kick(ctx,master,bt,100,0.28,0.7);_snare(ctx,master,bt,0.5,0.15);}
+          if(i===0||i===4)_hat(ctx,master,bt,0.08,true);
         }
         if(bar<4||bar>=6){
           const timpFreq=ch[0]*0.5;
-          const patterns=[[0,0,3,0,4,0,6,0],[0,2,3,0,4,6,7,0],[0,0,0,3,4,0,0,6],[0,2,0,4,0,6,7,0]];
-          const pat=patterns[bar%4];
+          const pat=[0,0,3,0,4,0,6,0];
           pat.forEach((hit,i)=>{
             if(hit===0&&i>0)return;
             const bt=bb+i*d;
             const to=ctx.createOscillator(),tg=ctx.createGain();
-            to.type='sine';to.frequency.setValueAtTime(timpFreq*1.5,bt);to.frequency.exponentialRampToValueAtTime(timpFreq,bt+0.05);
-            tg.gain.setValueAtTime(0.25,bt);tg.gain.exponentialRampToValueAtTime(0.001,bt+0.4);
-            to.connect(tg);tg.connect(master);to.start(bt);to.stop(bt+0.45);musicNodes.push(to);
+            to.type='sine';to.frequency.setValueAtTime(timpFreq*1.2,bt);to.frequency.linearRampToValueAtTime(timpFreq,bt+0.08);
+            tg.gain.setValueAtTime(0.001,bt);tg.gain.linearRampToValueAtTime(0.2,bt+0.02);tg.gain.linearRampToValueAtTime(0.001,bt+0.35);
+            to.connect(tg);tg.connect(master);to.start(bt);to.stop(bt+0.4);musicNodes.push(to);
           });
         }
-        _pad(ctx,master,bb,[ch[0],ch[1],ch[2]],d*8.2,0.1,d*2);
+        _pad(ctx,master,bb,[ch[0],ch[1],ch[2]],d*8.2,0.08,d*1.5);
         if(bar>=2){
-          const melody=[329.63,392,440,392,349.23,329.63,293.66,329.63,
-                        349.23,392,440,523.25,440,392,349.23,293.66];
+          const melody=[329.63,392,440,392];
           for(let i=0;i<4;i++){
-            const mf=melody[(bar*4+i)%16];
+            const mf=melody[i];
             const mbt=bb+i*d*2;
-            const o=ctx.createOscillator(),o2=ctx.createOscillator(),g=ctx.createGain();
-            o.type='sawtooth';o.frequency.value=mf;
-            o2.type='square';o2.frequency.value=mf*1.003;
-            g.gain.setValueAtTime(0.001,mbt);g.gain.linearRampToValueAtTime(bar>=6?0.08:0.05,mbt+0.05);
-            g.gain.setValueAtTime(bar>=6?0.08:0.05,mbt+d*1.5);g.gain.exponentialRampToValueAtTime(0.001,mbt+d*2);
-            const fl=ctx.createBiquadFilter();fl.type='lowpass';fl.frequency.value=2200;fl.Q.value=1;
-            o.connect(fl);o2.connect(fl);fl.connect(g);g.connect(master);
-            o.start(mbt);o.stop(mbt+d*2+0.01);o2.start(mbt);o2.stop(mbt+d*2+0.01);musicNodes.push(o,o2);
+            const o=ctx.createOscillator(),g=ctx.createGain();
+            o.type='triangle';o.frequency.value=mf;
+            g.gain.setValueAtTime(0.001,mbt);g.gain.linearRampToValueAtTime(0.04,mbt+0.08);g.gain.linearRampToValueAtTime(0.001,mbt+d*1.8);
+            const fl=ctx.createBiquadFilter();fl.type='lowpass';fl.frequency.value=1500;fl.Q.value=0.5;
+            o.connect(fl);fl.connect(g);g.connect(master);
+            o.start(mbt);o.stop(mbt+d*2+0.01);musicNodes.push(o);
           }
         }
         const sub=ctx.createOscillator(),sg=ctx.createGain();
         sub.type='sine';sub.frequency.value=ch[0]*0.5;
-        sg.gain.setValueAtTime(0.2,bb);sg.gain.exponentialRampToValueAtTime(0.01,bb+d*7.5);
+        sg.gain.setValueAtTime(0.001,bb);sg.gain.linearRampToValueAtTime(0.15,bb+0.1);sg.gain.linearRampToValueAtTime(0.01,bb+d*7.5);
         sub.connect(sg);sg.connect(master);sub.start(bb);sub.stop(bb+d*8+0.01);musicNodes.push(sub);
-        if(bar===7){
-          for(let r=0;r<32;r++){
-            const rt=bb+d*4+r*(d*4/32);
-            if(r%2===0)_kick(ctx,master,rt,90,0.12,0.3+r*0.015);
-            _snare(ctx,master,rt,0.1+r*0.015,0.04);
-          }
-        }
       }
       return t+bars*d*8;
     }}
