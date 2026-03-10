@@ -66,8 +66,9 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 .field-input:focus{outline:none;border-color:var(--accent);}
 .pw-input-wrap{position:relative;margin-bottom:16px;}
 .pw-input-wrap .field-input{padding-right:42px;margin-bottom:0;}
-.pw-toggle-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:28px;height:28px;border:none;background:none;color:var(--muted);cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;transition:color 0.2s;}
+.pw-toggle-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:28px;height:28px;border:none;background:none;color:var(--muted);cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:color 0.2s;}
 .pw-toggle-btn:hover{color:var(--text);}
+.pw-toggle-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
 #bmi-hint{font-size:12px;color:var(--muted);padding:10px 14px;background:var(--surface2);border-radius:8px;border-left:2px solid var(--accent);margin-bottom:16px;display:none;line-height:1.6;}
@@ -631,7 +632,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
       <label class="field-label" style="margin-top:12px;">Password</label>
       <div class="pw-input-wrap">
         <input class="field-input" id="login-pass" type="password" placeholder="Your password" autocomplete="off">
-        <button type="button" class="pw-toggle-btn" onclick="togglePassword('login-pass',this)" title="Show password" aria-label="Show password">👁</button>
+        <button type="button" class="pw-toggle-btn" onclick="togglePassword('login-pass',this)" title="Show password" aria-label="Show password"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
       </div>
       <button class="auth-btn" onclick="doLogin()">Log In</button>
       <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.5;">☁️ Accounts sync to the cloud. Just enter your username and password — it works on any device!</p>
@@ -650,12 +651,12 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
       <label class="field-label" style="margin-top:12px;">Create Password</label>
       <div class="pw-input-wrap">
         <input class="field-input" id="signup-pass" type="password" placeholder="At least 6 characters" autocomplete="off">
-        <button type="button" class="pw-toggle-btn" onclick="togglePassword('signup-pass',this)" title="Show password" aria-label="Show password">👁</button>
+        <button type="button" class="pw-toggle-btn" onclick="togglePassword('signup-pass',this)" title="Show password" aria-label="Show password"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
       </div>
       <label class="field-label" style="margin-top:12px;">Confirm Password</label>
       <div class="pw-input-wrap">
         <input class="field-input" id="signup-pass2" type="password" placeholder="Type password again" autocomplete="off">
-        <button type="button" class="pw-toggle-btn" onclick="togglePassword('signup-pass2',this)" title="Show password" aria-label="Show password">👁</button>
+        <button type="button" class="pw-toggle-btn" onclick="togglePassword('signup-pass2',this)" title="Show password" aria-label="Show password"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
       </div>
       <button class="auth-btn" onclick="doSignup()">Create Account</button>
     </div>
@@ -1771,6 +1772,7 @@ const MQTT_PREFIX='forge-fit/a/';
 const DEVICE_ID='forge_'+Math.random().toString(36).slice(2,12);
 let _liveClient=null;
 let _liveUser=null;
+let _periodicSyncInt=null;
 
 async function _syncKey(pwHash){
   const enc=new TextEncoder();
@@ -1812,7 +1814,7 @@ function _mqttConnect(){
 async function syncAccountToCloud(username){
   try{
     const accs=getAccounts();const acc=accs[username];if(!acc)return false;
-    const d={...acc.data,_syncTs:acc.data&&acc.data._syncTs?acc.data._syncTs:Date.now()};
+    const d={...acc.data,_syncTs:Date.now()};
     const payload={u:username,h:acc.hash,d,c:acc.created,ts:Date.now(),dev:DEVICE_ID};
     const encrypted=await _syncEncrypt(payload,acc.hash);
     if(encrypted.length>120000){console.warn('Account data too large for cloud sync');return false;}
@@ -1833,6 +1835,7 @@ function _refreshFullUI(){
 
 function startLiveSync(username,pwHash){
   if(_liveClient){try{_liveClient.end();}catch(e){}}_liveClient=null;_liveUser=null;
+  clearInterval(_periodicSyncInt);_periodicSyncInt=null;
   if(typeof mqtt==='undefined')return;
   const accs=getAccounts();const acc=accs[username];if(!acc||!acc.hash)return;
   _liveUser=username;
@@ -1865,10 +1868,12 @@ function startLiveSync(username,pwHash){
       if(_liveUser&&currentUser===_liveUser){setTimeout(()=>startLiveSync(_liveUser,pwHash),5000);}
     });
     client.on('error',()=>{_liveClient=null;});
+    _periodicSyncInt=setInterval(()=>{if(currentUser===username)syncAccountToCloud(username);},15000);
   }).catch(e=>{console.warn('Live sync connect err:',e);});
 }
 
 function stopLiveSync(){
+  clearInterval(_periodicSyncInt);_periodicSyncInt=null;
   if(_liveClient){try{_liveClient.end();}catch(e){}}
   _liveClient=null;_liveUser=null;
 }
@@ -1901,12 +1906,14 @@ async function cloudSearchByUsername(username,password){
   });
 }
 
+const PW_ICON_EYE='<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+const PW_ICON_EYE_SLASH='<svg viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
 function togglePassword(inputId,btn){
   const inp=document.getElementById(inputId);
   if(!inp)return;
   const show=inp.type==='password';
   inp.type=show?'text':'password';
-  btn.textContent=show?'🙈':'👁';
+  btn.innerHTML=show?PW_ICON_EYE_SLASH:PW_ICON_EYE;
   btn.title=show?'Hide password':'Show password';
   btn.setAttribute('aria-label',show?'Hide password':'Show password');
 }
@@ -2146,16 +2153,17 @@ function load(){
   return(accs[currentUser]&&accs[currentUser].data)||{};
 }
 let _cloudSyncTimer=null;
-function save(s){
+function save(s,opts){
   if(!currentUser)return;
   const accs=getAccounts();
   if(!accs[currentUser])return;
-  if(!s._syncTs)s._syncTs=Date.now();
+  s._syncTs=Date.now();
   accs[currentUser].data=s;
   saveAccounts(accs);
   clearTimeout(_cloudSyncTimer);
   const u=currentUser;
-  _cloudSyncTimer=setTimeout(()=>syncAccountToCloud(u),2000);
+  if(opts&&opts.immediateSync){syncAccountToCloud(u);}
+  else{_cloudSyncTimer=setTimeout(()=>syncAccountToCloud(u),1000);}
 }
 let S = {};
 
@@ -2626,7 +2634,7 @@ function saveLog(){
   const isTimed=isTimedExercise(e);
   const isBW=(e.equip==='Bodyweight'||e.equip==='None');
   S.log.unshift({key:currentKey,name:e.name,cat:e.cat,muscle:e.muscle,sets:done,volume:vol,maxWeight:maxWt,ts:Date.now(),note:note||undefined,isPR,details,isTimed:isTimed||undefined,isBW:isBW||undefined});
-  save(S);closeSets();updateDashStats();buildWeekGrid();buildLog();renderPRs();
+  save(S,{immediateSync:true});closeSets();updateDashStats();buildWeekGrid();buildLog();renderPRs();
 }
 
 // ═══════════════════════════════════════════════════
