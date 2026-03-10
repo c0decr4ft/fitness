@@ -545,7 +545,6 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 .checkin-hist-pill{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:2px 8px;font-size:10px;color:var(--text);}
 
 /* ── MUSIC PLAYER ── */
-#sync-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--accent);border-radius:12px;padding:10px 18px;font-size:13px;color:var(--text);z-index:7000;opacity:0;transition:opacity 0.3s;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,0.4);}
 .music-fab{position:fixed;bottom:24px;right:24px;z-index:900;width:48px;height:48px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,0.4);transition:transform 0.2s,box-shadow 0.2s;}
 .music-fab:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(0,0,0,0.5);}
 .music-fab svg{width:22px;height:22px;fill:#000;}
@@ -1162,7 +1161,6 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
     </div>
   </main>
 </div>
-<div id="sync-toast"></div>
 
 <!-- DEMO MODAL -->
 <div class="overlay" id="demo-overlay">
@@ -1859,8 +1857,6 @@ function startLiveSync(username,pwHash){
         saveAccounts(accs2);
         S=accs2[username].data;
         _refreshFullUI();
-        const toast=document.getElementById('sync-toast');
-        if(toast){toast.textContent='⚡ Synced from another device';toast.style.opacity='1';setTimeout(()=>{toast.style.opacity='0';},2500);}
       }catch(e){console.warn('Live sync message err:',e);}
     });
     client.on('close',()=>{
