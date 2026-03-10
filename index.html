@@ -64,6 +64,10 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 .field-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:7px;display:block;}
 .field-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:12px 15px;font-family:'DM Sans',sans-serif;font-size:15px;margin-bottom:16px;transition:border-color 0.2s;}
 .field-input:focus{outline:none;border-color:var(--accent);}
+.pw-input-wrap{position:relative;margin-bottom:16px;}
+.pw-input-wrap .field-input{padding-right:42px;margin-bottom:0;}
+.pw-toggle-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:28px;height:28px;border:none;background:none;color:var(--muted);cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;transition:color 0.2s;}
+.pw-toggle-btn:hover{color:var(--text);}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
 #bmi-hint{font-size:12px;color:var(--muted);padding:10px 14px;background:var(--surface2);border-radius:8px;border-left:2px solid var(--accent);margin-bottom:16px;display:none;line-height:1.6;}
@@ -540,6 +544,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 .checkin-hist-pill{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:2px 8px;font-size:10px;color:var(--text);}
 
 /* ── MUSIC PLAYER ── */
+#sync-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--accent);border-radius:12px;padding:10px 18px;font-size:13px;color:var(--text);z-index:7000;opacity:0;transition:opacity 0.3s;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,0.4);}
 .music-fab{position:fixed;bottom:24px;right:24px;z-index:900;width:48px;height:48px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,0.4);transition:transform 0.2s,box-shadow 0.2s;}
 .music-fab:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(0,0,0,0.5);}
 .music-fab svg{width:22px;height:22px;fill:#000;}
@@ -624,7 +629,10 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
       <label class="field-label">Username</label>
       <input class="field-input" id="login-user" type="text" placeholder="Your username" autocomplete="off">
       <label class="field-label" style="margin-top:12px;">Password</label>
-      <input class="field-input" id="login-pass" type="password" placeholder="Your password" autocomplete="off">
+      <div class="pw-input-wrap">
+        <input class="field-input" id="login-pass" type="password" placeholder="Your password" autocomplete="off">
+        <button type="button" class="pw-toggle-btn" onclick="togglePassword('login-pass',this)" title="Show password" aria-label="Show password">👁</button>
+      </div>
       <button class="auth-btn" onclick="doLogin()">Log In</button>
       <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.5;">☁️ Accounts sync to the cloud. Just enter your username and password — it works on any device!</p>
       <div class="auth-divider">or restore from backup code</div>
@@ -640,9 +648,15 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
       <label class="field-label">Choose a Username</label>
       <input class="field-input" id="signup-user" type="text" placeholder="e.g. alex_lifts" autocomplete="off">
       <label class="field-label" style="margin-top:12px;">Create Password</label>
-      <input class="field-input" id="signup-pass" type="password" placeholder="At least 6 characters" autocomplete="off">
+      <div class="pw-input-wrap">
+        <input class="field-input" id="signup-pass" type="password" placeholder="At least 6 characters" autocomplete="off">
+        <button type="button" class="pw-toggle-btn" onclick="togglePassword('signup-pass',this)" title="Show password" aria-label="Show password">👁</button>
+      </div>
       <label class="field-label" style="margin-top:12px;">Confirm Password</label>
-      <input class="field-input" id="signup-pass2" type="password" placeholder="Type password again" autocomplete="off">
+      <div class="pw-input-wrap">
+        <input class="field-input" id="signup-pass2" type="password" placeholder="Type password again" autocomplete="off">
+        <button type="button" class="pw-toggle-btn" onclick="togglePassword('signup-pass2',this)" title="Show password" aria-label="Show password">👁</button>
+      </div>
       <button class="auth-btn" onclick="doSignup()">Create Account</button>
     </div>
     <div class="auth-accounts" id="auth-accounts-list"></div>
@@ -1031,6 +1045,21 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
         <div class="page-header" style="border:none;padding:0 0 22px;"><div class="page-title">Settings</div><div class="page-sub">Customize your experience</div></div>
 
         <div class="profile-card">
+          <h3>Language</h3>
+          <div class="profile-row">
+            <span class="profile-row-label">App language</span>
+            <select class="edit-field-input" id="setting-lang" onchange="setLang(this.value)" style="width:auto;min-width:140px;">
+              <option value="en">English</option>
+              <option value="es">Español</option>
+              <option value="fr">Français</option>
+              <option value="de">Deutsch</option>
+              <option value="it">Italiano</option>
+            </select>
+          </div>
+          <p style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5;" id="lang-desc"></p>
+        </div>
+
+        <div class="profile-card">
           <h3>Units</h3>
           <div class="profile-row">
             <span class="profile-row-label">Weight Unit</span>
@@ -1132,6 +1161,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
     </div>
   </main>
 </div>
+<div id="sync-toast"></div>
 
 <!-- DEMO MODAL -->
 <div class="overlay" id="demo-overlay">
@@ -1412,6 +1442,317 @@ const ACHIEVEMENTS = [
 ];
 
 // ═══════════════════════════════════════════════════
+//  I18N / LANGUAGE
+// ═══════════════════════════════════════════════════
+const LANG={
+  en:{
+    auth_sub:'Your fitness data is saved to the cloud.<br>Log in with your username and password on any device.',
+    auth_login:'Log In',auth_signup:'Create Account',auth_username:'Username',auth_password:'Password',
+    ph_user:'Your username',ph_pass:'Your password',ph_signup_user:'e.g. alex_lifts',ph_signup_pass:'At least 6 characters',ph_signup_pass2:'Type password again',
+    auth_cloud_note:'☁️ Accounts sync to the cloud. Just enter your username and password — it works on any device!',
+    auth_backup_divider:'or restore from backup code',auth_has_backup:'I have a backup code',ph_import:'Paste backup code here…',auth_restore:'Restore From Code',
+    auth_choose_user:'Choose a Username',auth_create_pass:'Create Password',auth_confirm_pass:'Confirm Password',
+    setup_tagline:'Enter your details once. Everything saves automatically to this device.',
+    setup_name:'Your Name',setup_weight:'Weight (kg)',setup_height:'Height (cm)',setup_age:'Age',setup_goal:'Training Goal',
+    ph_name:'e.g. Alex',ph_weight:'75',ph_height:'178',ph_age:'25',setup_start:'Start Training',
+    goal_build:'Build Muscle',goal_lose:'Lose Fat',goal_endurance:'Improve Endurance',goal_active:'Stay Active',
+    nav_dashboard:'Dashboard',nav_exercises:'Exercises',nav_programs:'Programs',nav_progress:'Progress',nav_improvement:'Improvement',
+    nav_timer:'Timer',nav_log:'Log',nav_coach:'AI Coach',nav_profile:'Profile',nav_settings:'Settings',nav_home:'Home',nav_more:'More',
+    page_exercises:'Exercises',page_ex_sub:'Tap any exercise to see the guide, then log your sets',
+    page_programs:'Programs',page_prog_sub:'Pre-built workout splits — tap a program to expand, tap an exercise to view it',
+    page_progress:'Progress',page_prog_sub2:'Track your volume, personal records, and achievements',
+    page_improvement:'Improvement',page_imp_sub:'Track your daily progress and see how you\'re improving',
+    page_timer:'Rest Timer',ph_search:'Search exercises…',filter_all:'All',filter_favs:'★ Favs',
+    settings_title:'Settings',settings_sub:'Customize your experience',settings_units:'Units',settings_weight_unit:'Weight Unit',settings_height_unit:'Height Unit',
+    settings_rest:'Rest Timer',settings_duration:'Default Duration',settings_sound:'Sound Alert',settings_theme:'Appearance',settings_theme_label:'Theme',
+    settings_lang:'Language',settings_lang_label:'App language',settings_lang_desc:'Changes the entire app including AI coach responses.',settings_account:'Account',settings_session:'Session',settings_danger:'Danger Zone',
+    theme_dark:'Dark',theme_light:'Light',sound_on:'On',sound_off:'Off',
+    cloud_sync:'☁️ Cloud Sync',cloud_desc:'Your account is automatically synced to the cloud. On another device, just enter your <strong>username and password</strong> to log in — no codes needed!',
+    sync_btn:'Sync Account to Cloud',export_btn:'Export Data as JSON File',logout_btn:'Log Out',
+    danger_delete_log:'Delete workout log — this cannot be undone',danger_delete_account:'Delete account permanently — all data will be lost',
+    coach_title:'AI COACH',coach_sub:'Ask your personal fitness AI for workout recommendations',
+    coach_placeholder:'Ask your AI coach…',coach_intro:'Hey! I\'m your AI fitness coach. Ask me anything — how to do specific exercises, what you should work on, workout plans, nutrition tips, or just say hello! I\'ll use your profile and workout history to give you personalised advice.',
+    coach_q1:'What should I train today?',coach_q2:'How do I do a squat?',coach_q3:'Full workout plan',coach_q4:'Neglected muscles?',coach_q5:'Improve my strength',coach_q6:'Nutrition tips',
+    timer_reset:'Reset',timer_start:'Start',checkin_save:'Save Today\'s Check-In',measure_save:'Save Measurements',
+    weekly_vol:'Weekly Volume',workout_freq:'Workout Frequency',cat_breakdown:'Category Breakdown',achievements:'🏆 Achievements',
+    daily_checkin:'Daily Check-In',weight_hist:'Weight History',trends:'7-Day Trends',body_meas:'Body Measurements',checkin_hist:'Check-In History',
+  },
+  es:{
+    auth_sub:'Tus datos de fitness se guardan en la nube.<br>Inicia sesión con tu usuario y contraseña en cualquier dispositivo.',
+    auth_login:'Iniciar sesión',auth_signup:'Crear cuenta',auth_username:'Usuario',auth_password:'Contraseña',
+    ph_user:'Tu usuario',ph_pass:'Tu contraseña',ph_signup_user:'ej. alex_entrena',ph_signup_pass:'Al menos 6 caracteres',ph_signup_pass2:'Escribe la contraseña de nuevo',
+    auth_cloud_note:'☁️ Las cuentas se sincronizan en la nube. ¡Solo introduce tu usuario y contraseña — funciona en cualquier dispositivo!',
+    auth_backup_divider:'o restaurar desde código de respaldo',auth_has_backup:'Tengo un código de respaldo',ph_import:'Pega el código aquí…',auth_restore:'Restaurar',
+    auth_choose_user:'Elige un usuario',auth_create_pass:'Crear contraseña',auth_confirm_pass:'Confirmar contraseña',
+    setup_tagline:'Introduce tus datos una vez. Todo se guarda automáticamente en este dispositivo.',
+    setup_name:'Tu nombre',setup_weight:'Peso (kg)',setup_height:'Altura (cm)',setup_age:'Edad',setup_goal:'Objetivo de entrenamiento',
+    ph_name:'ej. Alex',ph_weight:'75',ph_height:'178',ph_age:'25',setup_start:'Empezar a entrenar',
+    goal_build:'Ganar músculo',goal_lose:'Perder grasa',goal_endurance:'Mejorar resistencia',goal_active:'Mantenerse activo',
+    nav_dashboard:'Inicio',nav_exercises:'Ejercicios',nav_programs:'Programas',nav_progress:'Progreso',nav_improvement:'Mejora',
+    nav_timer:'Temporizador',nav_log:'Registro',nav_coach:'Coach IA',nav_profile:'Perfil',nav_settings:'Ajustes',nav_home:'Inicio',nav_more:'Más',
+    page_exercises:'Ejercicios',page_ex_sub:'Toca cualquier ejercicio para ver la guía y registrar tus series',
+    page_programs:'Programas',page_prog_sub:'Rutinas predefinidas — toca un programa para expandir, toca un ejercicio para verlo',
+    page_progress:'Progreso',page_prog_sub2:'Sigue tu volumen, récords personales y logros',
+    page_improvement:'Mejora',page_imp_sub:'Sigue tu progreso diario y cómo mejoras',
+    page_timer:'Temporizador',ph_search:'Buscar ejercicios…',filter_all:'Todos',filter_favs:'★ Favs',
+    settings_title:'Ajustes',settings_sub:'Personaliza tu experiencia',settings_units:'Unidades',settings_weight_unit:'Unidad de peso',settings_height_unit:'Unidad de altura',
+    settings_rest:'Temporizador',settings_duration:'Duración por defecto',settings_sound:'Alerta sonora',settings_theme:'Apariencia',settings_theme_label:'Tema',
+    settings_lang:'Idioma',settings_lang_label:'Idioma de la app',settings_lang_desc:'Cambia toda la app incluyendo las respuestas del coach IA.',settings_account:'Cuenta',settings_session:'Sesión',settings_danger:'Zona de peligro',
+    theme_dark:'Oscuro',theme_light:'Claro',sound_on:'On',sound_off:'Off',
+    cloud_sync:'☁️ Sincronización',cloud_desc:'Tu cuenta se sincroniza automáticamente en la nube. En otro dispositivo, introduce tu <strong>usuario y contraseña</strong> para iniciar sesión.',
+    sync_btn:'Sincronizar cuenta',export_btn:'Exportar datos',logout_btn:'Cerrar sesión',
+    danger_delete_log:'Borrar registro de entrenamientos — no se puede deshacer',danger_delete_account:'Eliminar cuenta permanentemente',
+    coach_title:'COACH IA',coach_sub:'Pregunta a tu IA de fitness por recomendaciones de entrenamiento',
+    coach_placeholder:'Pregunta a tu coach IA…',coach_intro:'¡Hola! Soy tu coach de fitness IA. Pregúntame lo que quieras — ejercicios, planes de entrenamiento, nutrición, o ¡solo di hola! Usaré tu perfil e historial para darte consejos personalizados.',
+    coach_q1:'¿Qué debería entrenar hoy?',coach_q2:'¿Cómo hago una sentadilla?',coach_q3:'Plan de entrenamiento completo',coach_q4:'¿Músculos descuidados?',coach_q5:'Mejorar mi fuerza',coach_q6:'Consejos de nutrición',
+    timer_reset:'Reiniciar',timer_start:'Iniciar',checkin_save:'Guardar registro de hoy',measure_save:'Guardar medidas',
+    weekly_vol:'Volumen semanal',workout_freq:'Frecuencia',cat_breakdown:'Por categoría',achievements:'🏆 Logros',
+    daily_checkin:'Registro diario',weight_hist:'Historial de peso',trends:'Tendencias 7 días',body_meas:'Medidas corporales',checkin_hist:'Historial',
+  },
+  fr:{
+    auth_sub:'Vos données fitness sont sauvegardées dans le cloud.<br>Connectez-vous avec votre identifiant et mot de passe sur n\'importe quel appareil.',
+    auth_login:'Connexion',auth_signup:'Créer un compte',auth_username:'Identifiant',auth_password:'Mot de passe',
+    ph_user:'Votre identifiant',ph_pass:'Votre mot de passe',ph_signup_user:'ex. alex_sport',ph_signup_pass:'Au moins 6 caractères',ph_signup_pass2:'Retapez le mot de passe',
+    auth_cloud_note:'☁️ Les comptes se synchronisent dans le cloud. Entrez votre identifiant et mot de passe — ça marche sur tous les appareils !',
+    auth_backup_divider:'ou restaurer depuis un code',auth_has_backup:'J\'ai un code de sauvegarde',ph_import:'Collez le code ici…',auth_restore:'Restaurer',
+    auth_choose_user:'Choisir un identifiant',auth_create_pass:'Créer un mot de passe',auth_confirm_pass:'Confirmer le mot de passe',
+    setup_tagline:'Entrez vos informations une fois. Tout est sauvegardé automatiquement sur cet appareil.',
+    setup_name:'Votre nom',setup_weight:'Poids (kg)',setup_height:'Taille (cm)',setup_age:'Âge',setup_goal:'Objectif d\'entraînement',
+    ph_name:'ex. Alex',ph_weight:'75',ph_height:'178',ph_age:'25',setup_start:'Commencer l\'entraînement',
+    goal_build:'Prise de muscle',goal_lose:'Perte de graisse',goal_endurance:'Endurance',goal_active:'Rester actif',
+    nav_dashboard:'Tableau de bord',nav_exercises:'Exercices',nav_programs:'Programmes',nav_progress:'Progression',nav_improvement:'Amélioration',
+    nav_timer:'Minuteur',nav_log:'Journal',nav_coach:'Coach IA',nav_profile:'Profil',nav_settings:'Paramètres',nav_home:'Accueil',nav_more:'Plus',
+    page_exercises:'Exercices',page_ex_sub:'Appuyez sur un exercice pour voir le guide et enregistrer vos séries',
+    page_programs:'Programmes',page_prog_sub:'Programmes prédéfinis — appuyez pour développer',
+    page_progress:'Progression',page_prog_sub2:'Suivez votre volume, records personnels et accomplissements',
+    page_improvement:'Amélioration',page_imp_sub:'Suivez vos progrès quotidiens',
+    page_timer:'Minuteur',ph_search:'Rechercher des exercices…',filter_all:'Tous',filter_favs:'★ Favs',
+    settings_title:'Paramètres',settings_sub:'Personnalisez votre expérience',settings_units:'Unités',settings_weight_unit:'Unité de poids',settings_height_unit:'Unité de taille',
+    settings_rest:'Minuteur',settings_duration:'Durée par défaut',settings_sound:'Alerte sonore',settings_theme:'Apparence',settings_theme_label:'Thème',
+    settings_lang:'Langue',settings_lang_label:'Langue de l\'app',settings_lang_desc:'Change toute l\'app y compris les réponses du coach IA.',settings_account:'Compte',settings_session:'Session',settings_danger:'Zone de danger',
+    theme_dark:'Sombre',theme_light:'Clair',sound_on:'On',sound_off:'Off',
+    cloud_sync:'☁️ Sync cloud',cloud_desc:'Votre compte se synchronise automatiquement. Sur un autre appareil, entrez votre <strong>identifiant et mot de passe</strong>.',
+    sync_btn:'Synchroniser le compte',export_btn:'Exporter les données',logout_btn:'Déconnexion',
+    danger_delete_log:'Supprimer le journal — irréversible',danger_delete_account:'Supprimer le compte définitivement',
+    coach_title:'COACH IA',coach_sub:'Demandez des recommandations d\'entraînement à votre IA fitness',
+    coach_placeholder:'Demandez à votre coach IA…',coach_intro:'Salut ! Je suis ton coach fitness IA. Demande-moi tout — exercices, plans d\'entraînement, nutrition, ou dis juste bonjour ! J\'utilise ton profil pour des conseils personnalisés.',
+    coach_q1:'Quoi entraîner aujourd\'hui ?',coach_q2:'Comment faire un squat ?',coach_q3:'Plan d\'entraînement complet',coach_q4:'Muscles négligés ?',coach_q5:'Améliorer ma force',coach_q6:'Conseils nutrition',
+    timer_reset:'Réinitialiser',timer_start:'Démarrer',checkin_save:'Enregistrer le suivi',measure_save:'Enregistrer les mesures',
+    weekly_vol:'Volume hebdo',workout_freq:'Fréquence',cat_breakdown:'Par catégorie',achievements:'🏆 Réalisations',
+    daily_checkin:'Suivi quotidien',weight_hist:'Historique poids',trends:'Tendances 7j',body_meas:'Mensurations',checkin_hist:'Historique',
+  },
+  de:{
+    auth_sub:'Deine Fitness-Daten werden in der Cloud gespeichert.<br>Melde dich mit Benutzername und Passwort auf jedem Gerät an.',
+    auth_login:'Anmelden',auth_signup:'Konto erstellen',auth_username:'Benutzername',auth_password:'Passwort',
+    ph_user:'Dein Benutzername',ph_pass:'Dein Passwort',ph_signup_user:'z.B. alex_training',ph_signup_pass:'Mind. 6 Zeichen',ph_signup_pass2:'Passwort wiederholen',
+    auth_cloud_note:'☁️ Konten werden in der Cloud synchronisiert. Gib einfach Benutzername und Passwort ein — funktioniert auf jedem Gerät!',
+    auth_backup_divider:'oder aus Backup-Code wiederherstellen',auth_has_backup:'Ich habe einen Backup-Code',ph_import:'Code hier einfügen…',auth_restore:'Wiederherstellen',
+    auth_choose_user:'Benutzername wählen',auth_create_pass:'Passwort erstellen',auth_confirm_pass:'Passwort bestätigen',
+    setup_tagline:'Gib deine Daten einmal ein. Alles wird automatisch auf diesem Gerät gespeichert.',
+    setup_name:'Dein Name',setup_weight:'Gewicht (kg)',setup_height:'Größe (cm)',setup_age:'Alter',setup_goal:'Trainingsziel',
+    ph_name:'z.B. Alex',ph_weight:'75',ph_height:'178',ph_age:'25',setup_start:'Training starten',
+    goal_build:'Muskelaufbau',goal_lose:'Fettabbau',goal_endurance:'Ausdauer',goal_active:'Aktiv bleiben',
+    nav_dashboard:'Übersicht',nav_exercises:'Übungen',nav_programs:'Programme',nav_progress:'Fortschritt',nav_improvement:'Verbesserung',
+    nav_timer:'Timer',nav_log:'Protokoll',nav_coach:'KI-Coach',nav_profile:'Profil',nav_settings:'Einstellungen',nav_home:'Start',nav_more:'Mehr',
+    page_exercises:'Übungen',page_ex_sub:'Tippe auf eine Übung für die Anleitung und zum Protokollieren',
+    page_programs:'Programme',page_prog_sub:'Vorgefertigte Trainingspläne — tippen zum Erweitern',
+    page_progress:'Fortschritt',page_prog_sub2:'Verfolge Volumen, persönliche Rekorde und Erfolge',
+    page_improvement:'Verbesserung',page_imp_sub:'Verfolge deinen täglichen Fortschritt',
+    page_timer:'Timer',ph_search:'Übungen suchen…',filter_all:'Alle',filter_favs:'★ Favs',
+    settings_title:'Einstellungen',settings_sub:'Passe deine Erfahrung an',settings_units:'Einheiten',settings_weight_unit:'Gewichtseinheit',settings_height_unit:'Größeneinheit',
+    settings_rest:'Timer',settings_duration:'Standarddauer',settings_sound:'Ton',settings_theme:'Darstellung',settings_theme_label:'Design',
+    settings_lang:'Sprache',settings_lang_label:'App-Sprache',settings_lang_desc:'Ändert die gesamte App inkl. KI-Coach-Antworten.',settings_account:'Konto',settings_session:'Sitzung',settings_danger:'Gefahrenzone',
+    theme_dark:'Dunkel',theme_light:'Hell',sound_on:'An',sound_off:'Aus',
+    cloud_sync:'☁️ Cloud-Sync',cloud_desc:'Dein Konto wird automatisch synchronisiert. Auf einem anderen Gerät einfach <strong>Benutzername und Passwort</strong> eingeben.',
+    sync_btn:'Konto synchronisieren',export_btn:'Daten exportieren',logout_btn:'Abmelden',
+    danger_delete_log:'Trainingsprotokoll löschen — unwiderruflich',danger_delete_account:'Konto dauerhaft löschen',
+    coach_title:'KI-COACH',coach_sub:'Frage deine Fitness-KI nach Trainingsempfehlungen',
+    coach_placeholder:'Frage deinen KI-Coach…',coach_intro:'Hey! Ich bin dein KI-Fitness-Coach. Frag mich alles — Übungen, Trainingspläne, Ernährung, oder sag einfach Hallo! Ich nutze dein Profil für persönliche Tipps.',
+    coach_q1:'Was soll ich heute trainieren?',coach_q2:'Wie mache ich eine Kniebeuge?',coach_q3:'Kompletter Trainingsplan',coach_q4:'Vernachlässigte Muskeln?',coach_q5:'Meine Kraft verbessern',coach_q6:'Ernährungstipps',
+    timer_reset:'Zurücksetzen',timer_start:'Start',checkin_save:'Heutigen Check-in speichern',measure_save:'Maße speichern',
+    weekly_vol:'Wochenvolumen',workout_freq:'Häufigkeit',cat_breakdown:'Nach Kategorie',achievements:'🏆 Erfolge',
+    daily_checkin:'Täglicher Check-in',weight_hist:'Gewichtsverlauf',trends:'7-Tage-Trends',body_meas:'Körpermaße',checkin_hist:'Verlauf',
+  },
+  it:{
+    auth_sub:'I tuoi dati fitness sono salvati nel cloud.<br>Accedi con username e password su qualsiasi dispositivo.',
+    auth_login:'Accedi',auth_signup:'Crea account',auth_username:'Username',auth_password:'Password',
+    ph_user:'Il tuo username',ph_pass:'La tua password',ph_signup_user:'es. alex_allena',ph_signup_pass:'Almeno 6 caratteri',ph_signup_pass2:'Ridigita la password',
+    auth_cloud_note:'☁️ I conti si sincronizzano nel cloud. Inserisci username e password — funziona su qualsiasi dispositivo!',
+    auth_backup_divider:'o ripristina da codice backup',auth_has_backup:'Ho un codice di backup',ph_import:'Incolla il codice qui…',auth_restore:'Ripristina',
+    auth_choose_user:'Scegli uno username',auth_create_pass:'Crea password',auth_confirm_pass:'Conferma password',
+    setup_tagline:'Inserisci i tuoi dati una volta. Tutto si salva automaticamente su questo dispositivo.',
+    setup_name:'Il tuo nome',setup_weight:'Peso (kg)',setup_height:'Altezza (cm)',setup_age:'Età',setup_goal:'Obiettivo di allenamento',
+    ph_name:'es. Alex',ph_weight:'75',ph_height:'178',ph_age:'25',setup_start:'Inizia ad allenarti',
+    goal_build:'Costruire muscoli',goal_lose:'Perdere grasso',goal_endurance:'Migliorare resistenza',goal_active:'Restare attivo',
+    nav_dashboard:'Dashboard',nav_exercises:'Esercizi',nav_programs:'Programmi',nav_progress:'Progressi',nav_improvement:'Miglioramento',
+    nav_timer:'Timer',nav_log:'Registro',nav_coach:'Coach IA',nav_profile:'Profilo',nav_settings:'Impostazioni',nav_home:'Home',nav_more:'Altro',
+    page_exercises:'Esercizi',page_ex_sub:'Tocca un esercizio per la guida e per registrare le serie',
+    page_programs:'Programmi',page_prog_sub:'Programmi predefiniti — tocca per espandere',
+    page_progress:'Progressi',page_prog_sub2:'Segui volume, record personali e risultati',
+    page_improvement:'Miglioramento',page_imp_sub:'Segui i tuoi progressi quotidiani',
+    page_timer:'Timer',ph_search:'Cerca esercizi…',filter_all:'Tutti',filter_favs:'★ Preferiti',
+    settings_title:'Impostazioni',settings_sub:'Personalizza la tua esperienza',settings_units:'Unità',settings_weight_unit:'Unità peso',settings_height_unit:'Unità altezza',
+    settings_rest:'Timer',settings_duration:'Durata predefinita',settings_sound:'Suono',settings_theme:'Aspetto',settings_theme_label:'Tema',
+    settings_lang:'Lingua',settings_lang_label:'Lingua dell\'app',settings_lang_desc:'Cambia tutta l\'app incluse le risposte del coach IA.',settings_account:'Account',settings_session:'Sessione',settings_danger:'Zona pericolo',
+    theme_dark:'Scuro',theme_light:'Chiaro',sound_on:'On',sound_off:'Off',
+    cloud_sync:'☁️ Sync cloud',cloud_desc:'Il tuo account si sincronizza automaticamente. Su un altro dispositivo inserisci <strong>username e password</strong>.',
+    sync_btn:'Sincronizza account',export_btn:'Esporta dati',logout_btn:'Esci',
+    danger_delete_log:'Elimina registro allenamenti — irreversibile',danger_delete_account:'Elimina account permanentemente',
+    coach_title:'COACH IA',coach_sub:'Chiedi alla tua IA fitness raccomandazioni di allenamento',
+    coach_placeholder:'Chiedi al tuo coach IA…',coach_intro:'Ciao! Sono il tuo coach fitness IA. Chiedimi qualsiasi cosa — esercizi, piani di allenamento, nutrizione, o salutami! Uso il tuo profilo per consigli personalizzati.',
+    coach_q1:'Cosa dovrei allenare oggi?',coach_q2:'Come faccio uno squat?',coach_q3:'Piano di allenamento completo',coach_q4:'Muscoli trascurati?',coach_q5:'Migliorare la forza',coach_q6:'Consigli nutrizione',
+    timer_reset:'Reimposta',timer_start:'Avvia',checkin_save:'Salva check-in di oggi',measure_save:'Salva misure',
+    weekly_vol:'Volume settimanale',workout_freq:'Frequenza',cat_breakdown:'Per categoria',achievements:'🏆 Risultati',
+    daily_checkin:'Check-in giornaliero',weight_hist:'Storia peso',trends:'Trend 7 giorni',body_meas:'Misure corporee',checkin_hist:'Storico',
+  }
+};
+const COACH_LANG={
+  en:{},
+  es:{
+    thanks:['De nada, ${name}! Siempre aquí para consejos de entrenamiento. 💪','¡No hay problema! Pregunta lo que quieras sobre tu entrenamiento.','¡Me alegra ayudar, ${name}! La constancia es la clave. ¡Sigue así!','¡Cuando quieras! Avísame cuando necesites tu próximo plan de entrenamiento. 🤜🤛'],
+    greeting:['¡Hola ${name}! 👋 ¿Cómo va? ¿Listo para hablar de entrenamiento? Pregúntame lo que quieras.','¿Qué tal, ${name}! Encantado de verte. Estoy aquí para consejos de entrenamiento, ejercicios o lo que necesites.','¡Hola ${name}! 😊 Pregúntame lo que quieras — ejercicios, planes, nutrición.','¡Hey! 💪 Bueno verte, ${name}. ¿En qué puedo ayudarte?'],
+    bye:['¡Hasta la próxima, ${name}! Recuerda — lo más difícil es aparecer. ¡Tú puedes! 🔥','¡Hasta luego, ${name}! No olvides estirar e hidratarte. ¡Vuelve cuando quieras!','¡Cuídate! Descansa bien y vuelve más fuerte. Estaré aquí cuando me necesites. 💪'],
+    howareyou:['¡Muy bien, ${name}! Siempre listo para hablar de entrenamiento. 💪 ¿En qué puedo ayudarte?','¡Bien, gracias! Lo más importante — ¿cómo va tu entrenamiento?','¡Todo bien! Soy una IA de fitness, pero siempre animada para ayudarte a entrenar. ¿Qué necesitas?'],
+    unknown:['Interesante pregunta, ${name}. Pregúntame sobre ejercicios, planes de entrenamiento o nutrición.','No estoy seguro de haber entendido, ${name}. Puedo ayudar con: "¿Qué entrenar hoy?", "Dame un plan", "Mejores ejercicios para [grupo muscular]".','Pregúntame sobre un músculo específico, un plan de entrenamiento o qué entrenar hoy. ¡Usaré tu historial para personalizar!'],
+    help:['¡Soy tu <strong>coach de fitness IA</strong>, ${name}! Puedo ayudar con: entrenamientos, planes, grupos musculares, nutrición, recuperación, lesiones, entrenamiento en casa. ¡Pregunta lo que quieras!','¡Hola ${name}! Soy tu coach IA. Pregúntame: "¿Qué entrenar hoy?", "Me duele la espalda", "Quiero ser más fuerte", "¿Cómo hago una sentadilla?", "No tengo gimnasio". ¡Usaré tu historial!'],
+    laugh:['¡Me alegra haberte entretenido, ${name}! 😄 ¿Quieres hablar de entrenamiento? Tengo planes, ejercicios, nutrición…','😂 ¡Intento! Pero mi talento real es el consejo fitness. ¿En qué puedo ayudarte?'],
+    yes:['¡Genial! ¿Qué te gustaría saber? Puedo ayudar con entrenamientos, ejercicios, nutrición…','¡Perfecto! Qué quieres trabajar, ${name}? 💪','¡Vamos! ¿Qué tienes en mente? ¿Plan, ejercicio, qué entrenar hoy?'],
+    no:['¡No te preocupes, ${name}! Estoy aquí cuando me necesites.','¡De acuerdo! Tómate tu tiempo. Cuando quieras hablar de entrenamiento, aquí estaré. 💪'],
+    positive:['¡Gracias, ${name}! 😊 Estoy aquí para ayudarte con tus objetivos. ¿Algo más?','¡Me alegra que te ayude! Sigue así, ${name}. ¿Qué más quieres mejorar?','¡Gracias! La constancia vence a la perfección. ¿Qué sigue? 💪'],
+    today:function(c){const {name,goal,pickEx,neglectedCats}=c;const focus=neglectedCats.length?neglectedCats[0]:'Push';return `¡Hola ${name}! Basado en tu objetivo <strong>${goal}</strong>, hoy te recomiendo enfocarte en <strong>${focus}</strong>:<br><br>${pickEx(focus,3)}<br><br>¡Toca cualquier ejercicio para ver la guía y registrar tus series!`;},
+    nutrition:function(c){const {name,profile,goal}=c;const w=profile.weight;return `<strong>Nutrición básica</strong> para ${goal}, ${name}:<br><br><strong>Proteína:</strong> 1,6-2,2g por kg de peso al día${w?` (unos ${Math.round(w*1.8)}g para ti)`:''}<br><strong>Hidratación:</strong> Al menos 2-3 litros de agua al día<br><br>${goal.includes('Muscle')?'<strong>Para ganar músculo:</strong> Come un ligero superávit calórico.':goal.includes('Fat')?'<strong>Para perder grasa:</strong> Déficit calórico moderado. ¡Mantén la proteína alta!':'<strong>Fitness general:</strong> Come en mantenimiento con proteína alta.'}<br><br>¡Pregúntame sobre ejercicios o planes de entrenamiento!`;},
+    plan:function(c){const {name,goal,exLink}=c;return `Aquí tienes un plan <strong>Push/Pull/Piernas</strong> para ${goal}:<br><br><strong>Día 1 — Push:</strong> ${exLink('bench')} ${exLink('ohp')} ${exLink('dips')} ${exLink('lat_raise')}<br><br><strong>Día 2 — Pull:</strong> ${exLink('deadlift')} ${exLink('pullup')} ${exLink('row')} ${exLink('bicep_curl')}<br><br><strong>Día 3 — Piernas:</strong> ${exLink('squat')} ${exLink('rdl')} ${exLink('leg_press')} ${exLink('calf')}<br><br>Repite el ciclo. ¿Quieres otro estilo? ¡Pregunta!`;},
+  },
+  fr:{
+    thanks:['De rien, ${name}! Toujours là pour des conseils d\'entraînement. 💪','Pas de souci! Demande-moi tout sur ton entraînement.','Content d\'avoir pu aider, ${name}! La régularité est la clé. Continue!','Quand tu veux! Dis-moi quand tu as besoin de ton prochain plan. 🤜🤛'],
+    greeting:['Salut ${name}! 👋 Ça va? Prêt à parler entraînement? Demande-moi n\'importe quoi.','Quoi de neuf, ${name}! Ravi de te voir. Je suis là pour des conseils, exercices, etc.','Coucou ${name}! 😊 Demande-moi tout — exercices, plans, nutrition.','Hey! 💪 Bon de te voir, ${name}. Comment je peux t\'aider?'],
+    bye:['À la prochaine, ${name}! Rappelle-toi — le plus dur c\'est de venir. Tu peux le faire! 🔥','À plus, ${name}! N\'oublie pas de t\'étirer et de t\'hydrater. Reviens quand tu veux!','Prends soin de toi! Repose-toi et reviens plus fort. Je serai là. 💪'],
+    howareyou:['Très bien, ${name}! Toujours prêt à parler entraînement. 💪 Comment je peux aider?','Bien, merci! Plus important — comment va ton entraînement?','Tout va bien! Je suis une IA fitness, toujours motivée pour t\'aider. De quoi as-tu besoin?'],
+    unknown:['Question intéressante, ${name}. Demande-moi des exercices, plans d\'entraînement ou nutrition.','Je ne suis pas sûr d\'avoir compris, ${name}. Je peux aider avec: "Quoi entraîner aujourd\'hui?", "Donne-moi un plan","Meilleurs exercices pour [groupe musculaire]".','Demande-moi un muscle, un plan ou quoi entraîner aujourd\'hui. J\'utiliserai ton historique!'],
+    help:['Je suis ton <strong>coach fitness IA</strong>, ${name}! Je peux aider avec: entraînement, plans, groupes musculaires, nutrition, récupération, blessures, entraînement à la maison. Demande-moi!','Salut ${name}! Je suis ton coach IA. Demande: "Quoi entraîner aujourd\'hui?", "J\'ai mal au dos", "Je veux être plus fort", "Comment faire un squat?", "Pas de salle". J\'utiliserai ton historique!'],
+    laugh:['Content de t\'avoir amusé, ${name}! 😄 Tu veux parler entraînement? J\'ai des plans, exercices, nutrition…','😂 J\'essaie! Mais mon vrai talent c\'est les conseils fitness. Comment je peux aider?'],
+    yes:['Super! Qu\'est-ce que tu veux savoir? Je peux aider avec entraînement, exercices, nutrition…','Parfait! Vas-y, ${name} — sur quoi tu veux travailler? 💪','Allons-y! Qu\'est-ce que tu as en tête? Plan, exercice, quoi entraîner aujourd\'hui…?'],
+    no:['Pas de souci, ${name}! Je suis là quand tu as besoin.','Pas de problème! Prends ton temps. Quand tu veux parler entraînement, je suis là. 💪'],
+    positive:['Merci, ${name}! 😊 Je suis là pour t\'aider. Autre chose?','Content que ça t\'aide! Continue comme ça, ${name}. Quoi d\'autre?','Merci! La régularité bat la perfection. Et quoi ensuite? 💪'],
+    today:function(c){const {name,goal,pickEx,neglectedCats}=c;const focus=neglectedCats.length?neglectedCats[0]:'Push';return `Salut ${name}! Pour ton objectif <strong>${goal}</strong>, je te recommande de te concentrer sur <strong>${focus}</strong> aujourd\'hui:<br><br>${pickEx(focus,3)}<br><br>Touche n\'importe quel exercice pour voir le guide et enregistrer tes séries!`;},
+    nutrition:function(c){const {name,profile,goal}=c;const w=profile.weight;return `<strong>Nutrition de base</strong> pour ${goal}, ${name}:<br><br><strong>Protéines:</strong> 1,6-2,2g par kg de poids par jour${w?` (environ ${Math.round(w*1.8)}g pour toi)`:''}<br><strong>Hydratation:</strong> Au moins 2-3 litres d\'eau par jour<br><br>${goal.includes('Muscle')?'<strong>Pour prendre du muscle:</strong> Légèrement en surplus calorique.':goal.includes('Fat')?'<strong>Pour perdre du gras:</strong> Déficit calorique modéré. Garde les protéines hautes!':'<strong>Fitness général:</strong> Maintien calorique avec protéines hautes.'}<br><br>Demande-moi des exercices ou des plans d\'entraînement!`;},
+    plan:function(c){const {name,goal,exLink}=c;return `Voici un plan <strong>Push/Pull/Jambes</strong> pour ${goal}:<br><br><strong>Jour 1 — Push:</strong> ${exLink('bench')} ${exLink('ohp')} ${exLink('dips')} ${exLink('lat_raise')}<br><br><strong>Jour 2 — Pull:</strong> ${exLink('deadlift')} ${exLink('pullup')} ${exLink('row')} ${exLink('bicep_curl')}<br><br><strong>Jour 3 — Jambes:</strong> ${exLink('squat')} ${exLink('rdl')} ${exLink('leg_press')} ${exLink('calf')}<br><br>Répète le cycle. Tu veux un autre style? Demande!`;},
+  },
+  de:{
+    thanks:['Gern geschehen, ${name}! Immer da für Trainingsberatung. 💪','Kein Problem! Frag mich alles über dein Training.','Freut mich, ${name}! Kontinuität ist der Schlüssel. Weiter so!','Jederzeit! Sag Bescheid, wenn du deinen nächsten Plan brauchst. 🤜🤛'],
+    greeting:['Hey ${name}! 👋 Wie geht\'s? Bereit zum Training? Frag mich alles.','Was geht, ${name}! Schön dich zu sehen. Ich bin da für Übungen, Pläne, Ernährung.','Hi ${name}! 😊 Frag mich alles — Übungen, Pläne, Ernährung.','Hey! 💪 Gut dich zu sehen, ${name}. Wobei kann ich helfen?'],
+    bye:['Bis zum nächsten Mal, ${name}! Denk dran — das Schwerste ist aufzutauchen. Du schaffst das! 🔥','Tschüss, ${name}! Vergiss nicht zu dehnen und zu trinken. Komm jederzeit zurück!','Pass auf dich auf! Ruhe dich aus und komm stärker zurück. Ich bin da. 💪'],
+    howareyou:['Mir geht\'s gut, ${name}! Immer bereit für Training. 💪 Wobei kann ich helfen?','Gut, danke! Wichtiger — wie läuft dein Training?','Alles gut! Ich bin eine Fitness-KI, immer motiviert zu helfen. Was brauchst du?'],
+    unknown:['Interessante Frage, ${name}. Frag mich nach Übungen, Trainingsplänen oder Ernährung.','Nicht ganz sicher, ${name}. Ich kann helfen mit: "Was soll ich heute trainieren?", "Gib mir einen Plan".','Frag mich nach einer Muskelgruppe, einem Plan oder was du heute trainieren sollst. Ich nutze deine Historie!'],
+    help:['Ich bin dein <strong>KI-Fitness-Coach</strong>, ${name}! Ich helfe bei: Workouts, Plänen, Muskelgruppen, Ernährung, Erholung, Verletzungen, Home-Workouts. Frag mich!','Hey ${name}! Ich bin dein KI-Coach. Frag: "Was soll ich heute trainieren?", "Mein Rücken tut weh", "Ich will stärker werden", "Wie mache ich eine Kniebeuge?", "Kein Gym". Ich nutze deine Historie!'],
+    laugh:['Freut mich, dass ich dich unterhalten konnte, ${name}! 😄 Willst du über Training reden? Ich habe Pläne, Übungen, Ernährung…','😂 Ich versuche es! Aber mein echtes Talent ist Fitness-Beratung. Wobei kann ich helfen?'],
+    yes:['Super! Was möchtest du wissen? Ich helfe bei Workouts, Übungen, Ernährung…','Klar! Los geht\'s, ${name} — woran willst du arbeiten? 💪','Lass uns! Was hast du im Kopf? Plan, Übung, was heute trainieren…?'],
+    no:['Kein Problem, ${name}! Ich bin da, wenn du mich brauchst.','Alles klar! Nimm dir Zeit. Wenn du über Training reden willst, bin ich da. 💪'],
+    positive:['Danke, ${name}! 😊 Ich bin da, um dir zu helfen. Noch etwas?','Freut mich, dass es hilft! Mach weiter so, ${name}. Was möchtest du verbessern?','Danke! Regelmäßigkeit schlägt Perfektion. Was kommt als Nächstes? 💪'],
+    today:function(c){const {name,goal,pickEx,neglectedCats}=c;const focus=neglectedCats.length?neglectedCats[0]:'Push';return `Hey ${name}! Für dein Ziel <strong>${goal}</strong> empfehle ich heute <strong>${focus}</strong>:<br><br>${pickEx(focus,3)}<br><br>Tippe auf eine Übung für die Anleitung und zum Protokollieren!`;},
+    nutrition:function(c){const {name,profile,goal}=c;const w=profile.weight;return `<strong>Grundlagen Ernährung</strong> für ${goal}, ${name}:<br><br><strong>Protein:</strong> 1,6-2,2g pro kg Körpergewicht täglich${w?` (ca. ${Math.round(w*1.8)}g für dich)`:''}<br><strong>Flüssigkeit:</strong> Mind. 2-3 Liter Wasser täglich<br><br>${goal.includes('Muscle')?'<strong>Muskelaufbau:</strong> Leichter Kalorienüberschuss.':goal.includes('Fat')?'<strong>Fettabbau:</strong> Moderates Defizit. Protein hoch halten!':'<strong>Allgemeine Fitness:</strong> Erhaltungskalorien mit viel Protein.'}<br><br>Frag mich nach Übungen oder Trainingsplänen!`;},
+    plan:function(c){const {name,goal,exLink}=c;return `Hier ein <strong>Push/Pull/Beine</strong>-Plan für ${goal}:<br><br><strong>Tag 1 — Push:</strong> ${exLink('bench')} ${exLink('ohp')} ${exLink('dips')} ${exLink('lat_raise')}<br><br><strong>Tag 2 — Pull:</strong> ${exLink('deadlift')} ${exLink('pullup')} ${exLink('row')} ${exLink('bicep_curl')}<br><br><strong>Tag 3 — Beine:</strong> ${exLink('squat')} ${exLink('rdl')} ${exLink('leg_press')} ${exLink('calf')}<br><br>Zyklus wiederholen. Anderen Stil? Frag mich!`;},
+  },
+  it:{
+    thanks:['Prego, ${name}! Sempre qui per consigli sull\'allenamento. 💪','Nessun problema! Chiedimi qualsiasi cosa sul tuo allenamento.','Felice di aiutare, ${name}! La costanza è la chiave. Continua così!','Quando vuoi! Dimmi quando ti serve il prossimo piano. 🤜🤛'],
+    greeting:['Ciao ${name}! 👋 Come va? Pronto a parlare di allenamento? Chiedimi qualsiasi cosa.','Come va, ${name}! Bello vederti. Sono qui per esercizi, piani, nutrizione.','Hey ${name}! 😊 Chiedimi tutto — esercizi, piani, nutrizione.','Ciao! 💪 Bello vederti, ${name}. Come posso aiutare?'],
+    bye:['Alla prossima, ${name}! Ricorda — la parte più difficile è presentarsi. Ce la puoi fare! 🔥','A dopo, ${name}! Non dimenticare di stretching e idratazione. Torna quando vuoi!','Stammi bene! Riposa e torna più forte. Sarò qui. 💪'],
+    howareyou:['Tutto bene, ${name}! Sempre pronto per l\'allenamento. 💪 Come posso aiutare?','Bene, grazie! Più importante — come va il tuo allenamento?','Tutto ok! Sono un\'IA fitness, sempre motivata ad aiutarti. Di cosa hai bisogno?'],
+    unknown:['Domanda interessante, ${name}. Chiedimi esercizi, piani di allenamento o nutrizione.','Non sono sicuro di aver capito, ${name}. Posso aiutare con: "Cosa allenare oggi?", "Dammi un piano".','Chiedimi un muscolo, un piano o cosa allenare oggi. Userò la tua cronologia!'],
+    help:['Sono il tuo <strong>coach fitness IA</strong>, ${name}! Posso aiutare con: allenamenti, piani, gruppi muscolari, nutrizione, recupero, infortuni, allenamento a casa. Chiedimi!','Ciao ${name}! Sono il tuo coach IA. Chiedi: "Cosa allenare oggi?", "Mi fa male la schiena", "Voglio essere più forte", "Come fare uno squat?", "Niente palestra". Userò la tua cronologia!'],
+    laugh:['Contento di averti divertito, ${name}! 😄 Vuoi parlare di allenamento? Ho piani, esercizi, nutrizione…','😂 Ci provo! Ma il mio vero talento è i consigli fitness. Come posso aiutare?'],
+    yes:['Ottimo! Cosa vorresti sapere? Posso aiutare con allenamenti, esercizi, nutrizione…','Perfetto! Dimmi pure, ${name} — su cosa vuoi lavorare? 💪','Andiamo! Cosa hai in mente? Piano, esercizio, cosa allenare oggi…?'],
+    no:['Nessun problema, ${name}! Sono qui quando mi servi.','Va bene! Prenditi il tuo tempo. Quando vuoi parlare di allenamento, sono qui. 💪'],
+    positive:['Grazie, ${name}! 😊 Sono qui per aiutarti. Altro?','Contento che ti aiuti! Continua così, ${name}. Cosa vuoi migliorare?','Grazie! La costanza batte la perfezione. Cosa vuoi fare dopo? 💪'],
+    today:function(c){const {name,goal,pickEx,neglectedCats}=c;const focus=neglectedCats.length?neglectedCats[0]:'Push';return `Ciao ${name}! Per il tuo obiettivo <strong>${goal}</strong>, oggi ti consiglio di concentrarti su <strong>${focus}</strong>:<br><br>${pickEx(focus,3)}<br><br>Tocca un esercizio per vedere la guida e registrare le serie!`;},
+    nutrition:function(c){const {name,profile,goal}=c;const w=profile.weight;return `<strong>Nutrizione base</strong> per ${goal}, ${name}:<br><br><strong>Proteine:</strong> 1,6-2,2g per kg di peso al giorno${w?` (circa ${Math.round(w*1.8)}g per te)`:''}<br><strong>Idratazione:</strong> Almeno 2-3 litri d\'acqua al giorno<br><br>${goal.includes('Muscle')?'<strong>Per costruire muscolo:</strong> Leggero surplus calorico.':goal.includes('Fat')?'<strong>Per perdere grasso:</strong> Deficit calorico moderato. Mantieni le proteine alte!':'<strong>Fitness generale:</strong> Calorie di mantenimento con proteine alte.'}<br><br>Chiedimi esercizi o piani di allenamento!`;},
+    plan:function(c){const {name,goal,exLink}=c;return `Ecco un piano <strong>Push/Pull/Gambe</strong> per ${goal}:<br><br><strong>Giorno 1 — Push:</strong> ${exLink('bench')} ${exLink('ohp')} ${exLink('dips')} ${exLink('lat_raise')}<br><br><strong>Giorno 2 — Pull:</strong> ${exLink('deadlift')} ${exLink('pullup')} ${exLink('row')} ${exLink('bicep_curl')}<br><br><strong>Giorno 3 — Gambe:</strong> ${exLink('squat')} ${exLink('rdl')} ${exLink('leg_press')} ${exLink('calf')}<br><br>Ripeti il ciclo. Vuoi un altro stile? Chiedimi!`;},
+  }
+};
+function getLang(){
+  try{
+    const u=localStorage.getItem('forge_current_user');
+    const accs=JSON.parse(localStorage.getItem('forge_accounts')||'{}');
+    const acc=u&&accs[u];
+    return(acc&&acc.data&&acc.data.settings&&acc.data.settings.lang)||localStorage.getItem('forge_lang')||'en';
+  }catch(e){return'en';}
+}
+function t(k){const lang=getLang();const v=LANG[lang]&&LANG[lang][k];return v||(LANG.en&&LANG.en[k])||k;}
+function setLang(lang){
+  if(!S)S={};
+  if(!S.settings)S.settings={};
+  S.settings.lang=lang;
+  localStorage.setItem('forge_lang',lang);
+  if(currentUser)save(S);
+  applyI18n();
+}
+function applyI18n(){
+  const lang=getLang();
+  document.documentElement.lang=lang==='en'?'en':lang==='es'?'es':lang==='fr'?'fr':lang==='de'?'de':lang==='it'?'it':'en';
+  const T=(k)=>LANG[lang]&&LANG[lang][k]||LANG.en&&LANG.en[k]||k;
+  const authSub=document.querySelector('#auth-screen .auth-sub');if(authSub)authSub.innerHTML=T('auth_sub');
+  const tabs=document.querySelectorAll('.auth-tab');if(tabs[0])tabs[0].textContent=T('auth_login');if(tabs[1])tabs[1].textContent=T('auth_signup');
+  const loginLabels=document.querySelectorAll('#auth-login .field-label');if(loginLabels[0])loginLabels[0].textContent=T('auth_username');if(loginLabels[1])loginLabels[1].textContent=T('auth_password');
+  const loginUser=document.getElementById('login-user');if(loginUser)loginUser.placeholder=T('ph_user');
+  const loginPass=document.getElementById('login-pass');if(loginPass)loginPass.placeholder=T('ph_pass');
+  const loginBtn=document.querySelector('#auth-login .auth-btn');if(loginBtn)loginBtn.textContent=T('auth_login');
+  const cloudNote=document.querySelector('#auth-login p[style]');if(cloudNote)cloudNote.innerHTML=T('auth_cloud_note');
+  const backupDiv=document.querySelector('.auth-divider');if(backupDiv)backupDiv.textContent=T('auth_backup_divider');
+  const backupBtn=document.getElementById('transfer-toggle-btn');if(backupBtn)backupBtn.textContent=T('auth_has_backup');
+  const importArea=document.getElementById('import-code');if(importArea)importArea.placeholder=T('ph_import');
+  const restoreBtn=document.querySelector('#transfer-panel .auth-btn');if(restoreBtn)restoreBtn.textContent=T('auth_restore');
+  const signupLabels=document.querySelectorAll('#auth-signup .field-label');if(signupLabels[0])signupLabels[0].textContent=T('auth_choose_user');if(signupLabels[1])signupLabels[1].textContent=T('auth_create_pass');if(signupLabels[2])signupLabels[2].textContent=T('auth_confirm_pass');
+  const signupUser=document.getElementById('signup-user');if(signupUser)signupUser.placeholder=T('ph_signup_user');
+  const signupPass=document.getElementById('signup-pass');if(signupPass)signupPass.placeholder=T('ph_signup_pass');
+  const signupPass2=document.getElementById('signup-pass2');if(signupPass2)signupPass2.placeholder=T('ph_signup_pass2');
+  const signupBtn=document.querySelector('#auth-signup .auth-btn');if(signupBtn)signupBtn.textContent=T('auth_signup');
+  const setupTag=document.querySelector('.setup-tagline');if(setupTag)setupTag.textContent=T('setup_tagline');
+  const setupLabels=document.querySelectorAll('.setup-box .field-label');if(setupLabels[0])setupLabels[0].textContent=T('setup_name');if(setupLabels[1])setupLabels[1].textContent=T('setup_weight');if(setupLabels[2])setupLabels[2].textContent=T('setup_height');if(setupLabels[3])setupLabels[3].textContent=T('setup_age');if(setupLabels[4])setupLabels[4].textContent=T('setup_goal');
+  const setupName=document.getElementById('setup-name');if(setupName)setupName.placeholder=T('ph_name');
+  const setupWeight=document.getElementById('setup-weight');if(setupWeight)setupWeight.placeholder=T('ph_weight');
+  const setupHeight=document.getElementById('setup-height');if(setupHeight)setupHeight.placeholder=T('ph_height');
+  const setupAge=document.getElementById('setup-age');if(setupAge)setupAge.placeholder=T('ph_age');
+  const setupGoal=document.getElementById('setup-goal');if(setupGoal){setupGoal.innerHTML=`<option value="Build Muscle">${T('goal_build')}</option><option value="Lose Fat">${T('goal_lose')}</option><option value="Improve Endurance">${T('goal_endurance')}</option><option value="Stay Active">${T('goal_active')}</option>`;}
+  const setupBtn=document.querySelector('.setup-btn');if(setupBtn)setupBtn.textContent=T('setup_start');
+  document.querySelectorAll('.nav-btn[title]').forEach((b,i)=>{const t=['nav_dashboard','nav_exercises','nav_programs','nav_progress','nav_improvement','nav_timer','nav_log','nav_coach','nav_profile','nav_settings'][i];if(t)b.title=T(t);});
+  document.querySelectorAll('.bottom-nav .nav-label').forEach((b,i)=>{const t=['nav_home','nav_exercises','nav_timer','nav_coach','nav_more'][i];if(t)b.textContent=T(t);});
+  document.querySelectorAll('.more-sheet-item span').forEach((b,i)=>{const t=['nav_programs','nav_progress','nav_improvement','nav_log','nav_profile','nav_settings'][i];if(t)b.textContent=T(t);});
+  const exHeader=document.querySelector('#page-exercises .page-header');if(exHeader){exHeader.querySelector('.page-title').textContent=T('page_exercises');exHeader.querySelector('.page-sub').textContent=T('page_ex_sub');}
+  const exSearch=document.getElementById('ex-search');if(exSearch)exSearch.placeholder=T('ph_search');
+  document.querySelectorAll('#page-exercises .filter-btn').forEach((b,i)=>{if(i===0)b.textContent=T('filter_all');else if(i===1)b.textContent=T('filter_favs');});
+  const progHeader=document.querySelector('#page-programs .page-header');if(progHeader){progHeader.querySelector('.page-title').textContent=T('page_programs');progHeader.querySelector('.page-sub').textContent=T('page_prog_sub');}
+  const progHeader2=document.querySelector('#page-progress .page-header');if(progHeader2){progHeader2.querySelector('.page-title').textContent=T('page_progress');progHeader2.querySelector('.page-sub').textContent=T('page_prog_sub2');}
+  const impHeader=document.querySelector('#page-improvement .page-header');if(impHeader){impHeader.querySelector('.page-title').textContent=T('page_improvement');impHeader.querySelector('.page-sub').textContent=T('page_imp_sub');}
+  const setHeader=document.querySelector('#page-settings .page-header');if(setHeader){setHeader.querySelector('.page-title').textContent=T('settings_title');setHeader.querySelector('.page-sub').textContent=T('settings_sub');}
+  const setCards=document.querySelectorAll('#page-settings .profile-card h3');if(setCards[0])setCards[0].textContent=T('settings_lang');if(setCards[1])setCards[1].textContent=T('settings_units');if(setCards[2])setCards[2].textContent=T('settings_rest');if(setCards[3])setCards[3].textContent=T('settings_theme');if(setCards[4])setCards[4].textContent=T('settings_account');if(setCards[5])setCards[5].textContent=T('settings_session');if(setCards[6])setCards[6].textContent=T('settings_danger');
+  const coachTitle=document.querySelector('#page-coach .page-title');if(coachTitle)coachTitle.textContent=T('coach_title');
+  const coachSub=document.querySelector('#page-coach .page-sub');if(coachSub)coachSub.textContent=T('coach_sub');
+  const coachIntro=document.querySelector('#page-coach .coach-bubble');if(coachIntro)coachIntro.innerHTML=T('coach_intro');
+  const coachInput=document.getElementById('coach-input');if(coachInput)coachInput.placeholder=T('coach_placeholder');
+  document.querySelectorAll('#page-coach .coach-quick-btns button').forEach((b,i)=>{const k=['coach_q1','coach_q2','coach_q3','coach_q4','coach_q5','coach_q6'][i];if(k)b.textContent=T(k);});
+  const timerReset=document.querySelector('.tbtn-sec');if(timerReset)timerReset.textContent=T('timer_reset');
+  const startBtn=document.getElementById('start-btn');if(startBtn)startBtn.textContent=T('timer_start');
+  const checkinSave=document.querySelector('[onclick="saveCheckin()"]');if(checkinSave)checkinSave.textContent=T('checkin_save');
+  const measureSave=document.querySelector('[onclick="saveMeasurements()"]');if(measureSave)measureSave.textContent=T('measure_save');
+  const dangerBtns=document.querySelectorAll('.danger-btn');if(dangerBtns[0])dangerBtns[0].textContent=T('danger_delete_log');if(dangerBtns[1])dangerBtns[1].textContent=T('danger_delete_account');
+  const logoutBtn=document.querySelector('[onclick="doLogout()"]');if(logoutBtn)logoutBtn.textContent=T('logout_btn');
+  const syncBtn=document.querySelector('[onclick="generateBackupCode()"]');if(syncBtn)syncBtn.textContent=T('sync_btn');
+  const exportBtn=document.querySelector('[onclick="exportData()"]');if(exportBtn)exportBtn.textContent=T('export_btn');
+  const cloudTitle=document.querySelector('#page-settings [style*="Bebas"]');if(cloudTitle)cloudTitle.textContent=T('cloud_sync');
+  const cloudDesc=document.querySelector('#page-settings .profile-card p');if(cloudDesc)cloudDesc.innerHTML=T('cloud_desc');
+  const unitRow=document.querySelector('#unit-weight-toggle');if(unitRow){const r=unitRow.closest('.profile-row');if(r)r.querySelector('.profile-row-label').textContent=T('settings_weight_unit');}
+  const hRow=document.querySelector('#unit-height-toggle');if(hRow){const r=hRow.closest('.profile-row');if(r)r.querySelector('.profile-row-label').textContent=T('settings_height_unit');}
+  const restEl=document.getElementById('setting-rest-timer');if(restEl){const pc=restEl.closest('.profile-card');if(pc){const rl=pc.querySelectorAll('.profile-row-label');if(rl[0])rl[0].textContent=T('settings_duration');if(rl[1])rl[1].textContent=T('settings_sound');}}
+  const themeEl=document.getElementById('theme-toggle');if(themeEl){const tr=themeEl.closest('.profile-row');if(tr){const tl=tr.querySelector('.profile-row-label');if(tl)tl.textContent=T('settings_theme_label');}}
+  const langRow=document.querySelector('#setting-lang');if(langRow){const lr=langRow.closest('.profile-row');if(lr){const ll=lr.querySelector('.profile-row-label');if(ll)ll.textContent=T('settings_lang_label');}}
+  const langDesc=document.getElementById('lang-desc');if(langDesc)langDesc.textContent=T('settings_lang_desc');
+  document.querySelectorAll('#unit-weight-toggle .toggle-opt').forEach((b,i)=>{b.textContent=b.textContent==='kg'?'kg':'lbs';});
+  document.querySelectorAll('#unit-height-toggle .toggle-opt').forEach((b,i)=>{b.textContent=b.textContent==='cm'?'cm':'ft/in';});
+  document.querySelectorAll('#sound-toggle .toggle-opt').forEach((b,i)=>{b.textContent=T(i===0?'sound_on':'sound_off');});
+  document.querySelectorAll('#theme-toggle .toggle-opt').forEach((b,i)=>{b.textContent=T(i===0?'theme_dark':'theme_light');});
+}
+
+// ═══════════════════════════════════════════════════
 //  AUTH & ACCOUNT SYSTEM
 // ═══════════════════════════════════════════════════
 let currentUser=null;
@@ -1427,6 +1768,9 @@ function saveAccounts(a){localStorage.setItem('forge_accounts',JSON.stringify(a)
 
 const MQTT_BROKERS=['wss://broker.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt'];
 const MQTT_PREFIX='forge-fit/a/';
+const DEVICE_ID='forge_'+Math.random().toString(36).slice(2,12);
+let _liveClient=null;
+let _liveUser=null;
 
 async function _syncKey(pwHash){
   const enc=new TextEncoder();
@@ -1468,7 +1812,8 @@ function _mqttConnect(){
 async function syncAccountToCloud(username){
   try{
     const accs=getAccounts();const acc=accs[username];if(!acc)return false;
-    const payload={u:username,h:acc.hash,d:acc.data,c:acc.created,ts:Date.now()};
+    const d={...acc.data,_syncTs:acc.data&&acc.data._syncTs?acc.data._syncTs:Date.now()};
+    const payload={u:username,h:acc.hash,d,c:acc.created,ts:Date.now(),dev:DEVICE_ID};
     const encrypted=await _syncEncrypt(payload,acc.hash);
     if(encrypted.length>120000){console.warn('Account data too large for cloud sync');return false;}
     const client=await _mqttConnect();
@@ -1480,6 +1825,52 @@ async function syncAccountToCloud(username){
       });
     });
   }catch(e){console.warn('Cloud sync error:',e);return false;}
+}
+
+function _refreshFullUI(){
+  applyProfile();applyExFilters();buildLog();buildQuickStart();updateTimerUI();applySettings();
+}
+
+function startLiveSync(username,pwHash){
+  if(_liveClient){try{_liveClient.end();}catch(e){}}_liveClient=null;_liveUser=null;
+  if(typeof mqtt==='undefined')return;
+  const accs=getAccounts();const acc=accs[username];if(!acc||!acc.hash)return;
+  _liveUser=username;
+  _mqttConnect().then(client=>{
+    _liveClient=client;
+    client.subscribe(MQTT_PREFIX+username,{qos:1},err=>{if(err)console.warn('Live sync subscribe err:',err);});
+    client.on('message',async(topic,msg)=>{
+      if(!currentUser||currentUser!==_liveUser)return;
+      try{
+        const b64=msg.toString();
+        const data=await _syncDecrypt(b64,pwHash);
+        if(!data||data.u!==username)return;
+        if(data.dev===DEVICE_ID)return;
+        const accs2=getAccounts();const local=accs2[username];
+        if(!local)return;
+        const localTs=(local.data&&local.data._syncTs)||0;
+        const remoteTs=(data.d&&data.d._syncTs)||data.ts||0;
+        if(remoteTs<=localTs)return;
+        accs2[username].data=data.d||{};
+        if(data.d&&data.d._syncTs)accs2[username].data._syncTs=data.d._syncTs;
+        saveAccounts(accs2);
+        S=accs2[username].data;
+        _refreshFullUI();
+        const toast=document.getElementById('sync-toast');
+        if(toast){toast.textContent='⚡ Synced from another device';toast.style.opacity='1';setTimeout(()=>{toast.style.opacity='0';},2500);}
+      }catch(e){console.warn('Live sync message err:',e);}
+    });
+    client.on('close',()=>{
+      _liveClient=null;
+      if(_liveUser&&currentUser===_liveUser){setTimeout(()=>startLiveSync(_liveUser,pwHash),5000);}
+    });
+    client.on('error',()=>{_liveClient=null;});
+  }).catch(e=>{console.warn('Live sync connect err:',e);});
+}
+
+function stopLiveSync(){
+  if(_liveClient){try{_liveClient.end();}catch(e){}}
+  _liveClient=null;_liveUser=null;
 }
 
 async function cloudSearchByUsername(username,password){
@@ -1510,6 +1901,15 @@ async function cloudSearchByUsername(username,password){
   });
 }
 
+function togglePassword(inputId,btn){
+  const inp=document.getElementById(inputId);
+  if(!inp)return;
+  const show=inp.type==='password';
+  inp.type=show?'text':'password';
+  btn.textContent=show?'🙈':'👁';
+  btn.title=show?'Hide password':'Show password';
+  btn.setAttribute('aria-label',show?'Hide password':'Show password');
+}
 function authTab(tab){
   document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('active'));
@@ -1627,11 +2027,14 @@ function loginAs(u){
     applyProfile();applyExFilters();buildLog();buildQuickStart();updateTimerUI();applySettings();
   }else{document.getElementById('setup-screen').classList.remove('hidden');}
   const un=document.getElementById('profile-username');if(un)un.textContent=u;
+  const acc=getAccounts()[u];
+  if(acc&&acc.hash)startLiveSync(u,acc.hash);
   syncAccountToCloud(u);
 }
 
 function doLogout(){
   if(currentUser&&S){save(S);}
+  stopLiveSync();
   currentUser=null;
   localStorage.removeItem('forge_current_user');
   S={};
@@ -1747,11 +2150,12 @@ function save(s){
   if(!currentUser)return;
   const accs=getAccounts();
   if(!accs[currentUser])return;
+  if(!s._syncTs)s._syncTs=Date.now();
   accs[currentUser].data=s;
   saveAccounts(accs);
   clearTimeout(_cloudSyncTimer);
   const u=currentUser;
-  _cloudSyncTimer=setTimeout(()=>syncAccountToCloud(u),5000);
+  _cloudSyncTimer=setTimeout(()=>syncAccountToCloud(u),2000);
 }
 let S = {};
 
@@ -3199,6 +3603,9 @@ function applySettings(){
     const g=document.getElementById('theme-toggle');
     if(g){g.querySelectorAll('.toggle-opt').forEach(b=>{b.classList.remove('active');if(b.textContent.toLowerCase()===s.theme)b.classList.add('active');});}
   }
+  const langEl=document.getElementById('setting-lang');
+  if(langEl)langEl.value=s.lang||getLang();
+  applyI18n();
   if(s.animSpeed){
     const el=document.getElementById('setting-anim-speed');
     if(el)el.value=s.animSpeed;
@@ -3274,12 +3681,14 @@ function exLink(key){
 
 function generateCoachReply(query){
   const q=query.toLowerCase().trim();
+  const lang=getLang();
   const log=S.log||[];
   const prs=S.prs||{};
   const profile=S.profile||{};
   const goal=profile.goal||'General Fitness';
   const name=profile.name||'there';
   const allCats=['Push','Pull','Legs','Core','Cardio','Stretch'];
+  const tr=(arr)=>Array.isArray(arr)?arr[Math.floor(Math.random()*arr.length)].replace(/\$\{name\}/g,name):'';
   const now=Date.now();
   const recentLog=log.filter(l=>now-new Date(l.date).getTime()<7*86400000);
   const recentCats={};
@@ -3745,12 +4154,22 @@ function generateCoachReply(query){
     },
   };
 
+  const coachTr=COACH_LANG[lang]&&lang!=='en';
+  const ctx={name,goal,exLink,pickEx,pickMixed,weekSummary,recentCats,neglectedCats,recentLog,allCats,prs,prKeys,totalWorkouts,profile,pick,sameAsLast,coachHistory,q,prSummary};
+  if(coachTr&&COACH_LANG[lang][topic]){
+    const h=COACH_LANG[lang][topic];
+    if(typeof h==='function'){try{const r=h(ctx);if(r)return r;}catch(e){}}
+    else{const s=tr(h);if(s)return s;}
+  }
   const handler=R[topic];
   if(handler){
     if(typeof handler==='function'){const result=handler();if(result)return result;}
     else return pick(handler);
   }
 
+  if(coachTr&&COACH_LANG[lang].unknown){
+    const s=tr(COACH_LANG[lang].unknown);if(s)return s;
+  }
   const fallbacks=[
     `Interesting question, ${name}! While I'm best at exercise and workout advice, here's what I can tell you:<br><br>${weekSummary()}<br><br>${neglectedCats.length?`You could focus on <strong>${neglectedCats[0]}</strong> — try: ${pickEx(neglectedCats[0],3)}`:'Your training is well-balanced this week!'}<br><br>Try asking me about specific exercises, workout plans, or nutrition!`,
     `I'm not 100% sure I understood that, ${name}, but here's what I can help with:<br><br>• "What should I train today?"<br>• "Give me a workout plan"<br>• "Best exercises for [muscle group]"<br>• "How do I get stronger/lose fat/build muscle?"<br>• "What should I eat?"<br><br>${weekSummary()} Want me to suggest today's workout?`,
@@ -3781,6 +4200,7 @@ function generateCoachReply(query){
       if(e.target===ov)e.preventDefault();
     },{passive:false});
   });
+  applyI18n();
   const saved=localStorage.getItem('forge_current_user');
   if(saved){
     const accs=getAccounts();
@@ -3789,6 +4209,9 @@ function generateCoachReply(query){
       S=accs[saved].data||{};
       document.getElementById('auth-screen').classList.add('hidden');
       const un=document.getElementById('profile-username');if(un)un.textContent=saved;
+      const acc=accs[saved];
+      if(acc&&acc.hash)startLiveSync(saved,acc.hash);
+      syncAccountToCloud(saved);
       checkProfile();
       applyExFilters();
       buildLog();
@@ -3799,6 +4222,7 @@ function generateCoachReply(query){
     }
   }
   document.getElementById('setup-screen').classList.add('hidden');
+  applyI18n();
 })();
 </script>
 </body>
