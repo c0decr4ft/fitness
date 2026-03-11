@@ -486,7 +486,15 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 .community-post-btn:hover{box-shadow:0 0 20px rgba(200,255,0,0.3);}
 .community-feed{display:flex;flex-direction:column;gap:12px;}
 .community-post{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 20px;}
-.community-post-user{font-weight:700;font-size:14px;color:var(--accent);margin-bottom:6px;}
+.community-post-user{font-weight:700;font-size:14px;color:var(--accent);margin-bottom:6px;cursor:pointer;transition:opacity 0.2s;}
+.community-post-user:hover{opacity:0.85;}
+.user-profile-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;width:360px;max-width:94vw;padding:28px;animation:popIn 0.2s cubic-bezier(.34,1.4,.64,1);}
+.user-profile-title{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent);margin-bottom:4px;}
+.user-profile-sub{font-size:12px;color:var(--muted);margin-bottom:20px;}
+.user-profile-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.user-profile-stat{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;}
+.user-profile-stat-val{font-size:20px;font-weight:700;color:var(--accent);}
+.user-profile-stat-lbl{font-size:11px;color:var(--muted);margin-top:4px;}
 .community-post-msg{font-size:14px;line-height:1.5;color:var(--text);}
 .community-post-time{font-size:11px;color:var(--muted);margin-top:8px;}
 .share-btn{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;cursor:pointer;transition:all 0.2s;margin-left:6px;}
@@ -1275,6 +1283,16 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
   </div>
 </div>
 
+<!-- USER PROFILE MODAL (community) -->
+<div class="overlay" id="user-profile-overlay" onclick="if(event.target===this)closeUserProfileModal()">
+  <div class="user-profile-box">
+    <div class="user-profile-title" id="user-profile-title">@username</div>
+    <div class="user-profile-sub" id="user-profile-sub">Progress & XP</div>
+    <div class="user-profile-stats" id="user-profile-stats"></div>
+    <button class="btn-keep" onclick="closeUserProfileModal()" style="width:100%;margin-top:20px;">Close</button>
+  </div>
+</div>
+
 <!-- CONFIRM MODAL -->
 <div class="overlay" id="confirm-overlay">
   <div class="confirm-box">
@@ -1905,23 +1923,51 @@ function startLiveSync(username,pwHash){
   }).catch(e=>{console.warn('Live sync connect err:',e);});
 }
 
-function getCommunityFeed(){try{return JSON.parse(localStorage.getItem('forge_community_feed')||'[]');}catch(e){return[];}}
-function saveCommunityFeed(posts){localStorage.setItem('forge_community_feed',JSON.stringify(posts));}
+function getCommunityFeed(){
+  if(!currentUser)return[];
+  if(!S.communityFeed){
+    try{const old=JSON.parse(localStorage.getItem('forge_community_feed')||'[]');if(old.length){S.communityFeed=old;save(S,{immediateSync:true});localStorage.removeItem('forge_community_feed');}else{S.communityFeed=[];}}catch(e){S.communityFeed=[];}
+  }
+  return S.communityFeed||[];
+}
+function saveCommunityFeed(posts){
+  if(!currentUser)return;
+  S.communityFeed=(posts||[]).slice(0,100);
+  save(S,{immediateSync:true});
+}
 function buildCommunityFeed(){
   const feed=document.getElementById('community-feed');
   const posts=getCommunityFeed().sort((a,b)=>b.ts-a.ts).slice(0,50);
   if(!posts.length){feed.innerHTML='<div style="color:var(--muted);text-align:center;padding:40px 0;font-size:14px;">No posts yet. Be the first to share your win! 💪</div>';return;}
-  feed.innerHTML=posts.map(p=>{
+  feed.innerHTML=posts.map((p,i)=>{
     const d=new Date(p.ts);
-    return`<div class="community-post"><div class="community-post-user">@${p.user}</div><div class="community-post-msg">${escapeHtml(p.msg)}</div><div class="community-post-time">${d.toLocaleDateString()} ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div></div>`;
+    return`<div class="community-post"><div class="community-post-user" onclick="showUserProfileModal(${i})" role="button" tabindex="0">@${escapeHtml(p.user)}</div><div class="community-post-msg">${escapeHtml(p.msg)}</div><div class="community-post-time">${d.toLocaleDateString()} ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div></div>`;
   }).join('');
+}
+function showUserProfileModal(postIndex){
+  const posts=getCommunityFeed().sort((a,b)=>b.ts-a.ts).slice(0,50);
+  const p=posts[postIndex];if(!p)return;
+  const isCurrentUser=p.user===currentUser;
+  const stats=isCurrentUser?getUserStatsFromS():p;
+  document.getElementById('user-profile-title').textContent='@'+p.user;
+  document.getElementById('user-profile-sub').textContent=stats.level?'Stats from when they posted':'Progress & XP';
+  const html=stats.level?`<div class="user-profile-stat"><div class="user-profile-stat-val">${stats.level}</div><div class="user-profile-stat-lbl">Level</div></div><div class="user-profile-stat"><div class="user-profile-stat-val">${stats.xp||0}</div><div class="user-profile-stat-lbl">XP</div></div><div class="user-profile-stat"><div class="user-profile-stat-val">${stats.totalWorkouts||0}</div><div class="user-profile-stat-lbl">Workouts</div></div><div class="user-profile-stat"><div class="user-profile-stat-val">${stats.prCount||0}</div><div class="user-profile-stat-lbl">PRs</div></div><div class="user-profile-stat"><div class="user-profile-stat-val">${stats.streak||0}</div><div class="user-profile-stat-lbl">Week Streak</div></div>`:'<div class="user-profile-stat" style="grid-column:1/-1;"><div class="user-profile-stat-val" style="font-size:14px;color:var(--muted);">No stats available</div><div class="user-profile-stat-lbl">Older posts don\'t include profile data</div></div>';
+  document.getElementById('user-profile-stats').innerHTML=html;
+  document.getElementById('user-profile-overlay').classList.add('open');
+}
+function closeUserProfileModal(){document.getElementById('user-profile-overlay').classList.remove('open');}
+function getUserStatsFromS(){
+  const log=S.log||[];
+  const xp=calcXP();const lvl=getLevel(xp);
+  return{level:lvl,xp,totalWorkouts:log.length,prCount:Object.keys(S.prs||{}).length,streak:calcStreak(log)};
 }
 function escapeHtml(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 function postToCommunity(){
   const inp=document.getElementById('community-input');
   const msg=inp.value.trim();if(!msg||!currentUser)return;
   inp.value='';
-  const post={user:currentUser,msg,ts:Date.now(),id:'c_'+Date.now()+'_'+Math.random().toString(36).slice(2,8)};
+  const stats=getUserStatsFromS();
+  const post={user:currentUser,msg,ts:Date.now(),id:'c_'+Date.now()+'_'+Math.random().toString(36).slice(2,8),...stats};
   const posts=getCommunityFeed();posts.unshift(post);saveCommunityFeed(posts);
   buildCommunityFeed();
   if(typeof mqtt!=='undefined'){
@@ -1939,10 +1985,9 @@ function startCommunityFeed(){
       try{
         const post=JSON.parse(msg.toString());
         if(!post.user||!post.msg||!post.ts)return;
-        if(post.user===currentUser)return;
+        post.id=post.id||'c_'+post.ts+'_'+post.user;
         const posts=getCommunityFeed();
         if(posts.some(p=>p.id===post.id))return;
-        post.id=post.id||'c_'+post.ts+'_'+post.user;
         posts.unshift(post);
         saveCommunityFeed(posts);
         if(document.getElementById('page-community').classList.contains('active'))buildCommunityFeed();
