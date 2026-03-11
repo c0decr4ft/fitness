@@ -480,6 +480,25 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 @keyframes typing{0%,60%,100%{opacity:0.3;transform:translateY(0);}30%{opacity:1;transform:translateY(-4px);}}
 
 /* ── COMMUNITY ── */
+.community-tabs{display:flex;gap:0;margin-bottom:20px;background:var(--surface2);border-radius:12px;padding:4px;}
+.community-tab{flex:1;padding:12px 20px;border:none;background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;border-radius:10px;transition:all 0.2s;font-family:'DM Sans',sans-serif;text-transform:uppercase;letter-spacing:1px;}
+.community-tab:hover{color:var(--text);}
+.community-tab.active{background:var(--accent);color:#000;}
+.community-chat-view,.community-feed-view{display:none;}
+.community-chat-view.active,.community-feed-view.active{display:block;}
+.community-search-wrap{display:flex;gap:10px;margin-bottom:20px;align-items:center;}
+.community-search-wrap input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:12px;color:var(--text);padding:14px 18px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;}
+.community-search-wrap input:focus{border-color:var(--accent);}
+.community-search-wrap input::placeholder{color:var(--muted);}
+.chat-list{display:flex;flex-direction:column;gap:8px;}
+.chat-list-item{display:flex;align-items:center;gap:14px;padding:14px 18px;background:var(--surface);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.2s;}
+.chat-list-item:hover{border-color:var(--accent);background:rgba(200,255,0,0.04);}
+.chat-list-item-avatar{width:44px;height:44px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);flex-shrink:0;overflow:hidden;}
+.chat-list-item-avatar img{width:100%;height:100%;object-fit:cover;}
+.chat-list-item-info{flex:1;min-width:0;}
+.chat-list-item-name{font-weight:700;font-size:14px;color:var(--accent);}
+.chat-list-item-preview{font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.chat-list-empty{color:var(--muted);text-align:center;padding:40px 20px;font-size:14px;}
 .community-wrap{padding:0 36px 40px;}
 .community-post-input{display:flex;gap:10px;margin-bottom:24px;align-items:center;}
 .community-post-input input[type="text"]{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:12px;color:var(--text);padding:14px 18px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;}
@@ -1014,16 +1033,28 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 
     <!-- COMMUNITY -->
     <div class="page" id="page-community">
-      <div class="page-header"><div class="page-title">Community</div><div class="page-sub">Share your wins and get motivated by others</div></div>
+      <div class="page-header"><div class="page-title">Community</div><div class="page-sub">Chat privately or share your wins</div></div>
       <div class="community-wrap">
-        <div class="community-post-input">
-          <input type="text" id="community-input" placeholder="Share your win… e.g. Just hit 100kg bench! 🔥" maxlength="200">
-          <input type="file" id="community-img-input" accept="image/*" style="display:none" onchange="handleCommunityImgPick(event)">
-          <button type="button" class="community-img-btn" onclick="document.getElementById('community-img-input').click()" title="Add image">📷</button>
-          <button class="community-post-btn" onclick="postToCommunity()">Post</button>
+        <div class="community-tabs">
+          <button class="community-tab active" onclick="switchCommunityTab('chat',this)">Chat</button>
+          <button class="community-tab" onclick="switchCommunityTab('community',this)">Community</button>
         </div>
-        <div id="community-img-preview" style="display:none;margin-bottom:12px;"></div>
-        <div class="community-feed" id="community-feed"></div>
+        <div class="community-chat-view active" id="community-chat-view">
+          <div class="community-search-wrap">
+            <input type="text" id="chat-search-input" placeholder="Search user… e.g. @example" maxlength="80" oninput="searchChatUser(this.value)" onkeydown="if(event.key==='Enter')searchChatUser(this.value)">
+          </div>
+          <div class="chat-list" id="chat-list"></div>
+        </div>
+        <div class="community-feed-view" id="community-feed-view">
+          <div class="community-post-input">
+            <input type="text" id="community-input" placeholder="Share your win… e.g. Just hit 100kg bench! 🔥" maxlength="200">
+            <input type="file" id="community-img-input" accept="image/*" style="display:none" onchange="handleCommunityImgPick(event)">
+            <button type="button" class="community-img-btn" onclick="document.getElementById('community-img-input').click()" title="Add image">📷</button>
+            <button class="community-post-btn" onclick="postToCommunity()">Post</button>
+          </div>
+          <div id="community-img-preview" style="display:none;margin-bottom:12px;"></div>
+          <div class="community-feed" id="community-feed"></div>
+        </div>
       </div>
     </div>
 
@@ -1983,6 +2014,65 @@ function saveCommunityFeed(posts){
   S.communityFeed=(posts||[]).slice(0,100);
   save(S,{immediateSync:true});
 }
+function switchCommunityTab(tab,btn){
+  document.querySelectorAll('.community-tab').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  document.getElementById('community-chat-view').classList.toggle('active',tab==='chat');
+  document.getElementById('community-feed-view').classList.toggle('active',tab==='community');
+  refreshCommunityPage();
+}
+function refreshCommunityPage(){
+  const chatActive=document.getElementById('community-chat-view')?.classList.contains('active');
+  if(chatActive)buildChatList();else buildCommunityFeed();
+}
+function getKnownUsers(){
+  const set=new Set();
+  const chats=S?.privateChats||{};Object.keys(chats).forEach(u=>{if(u&&u!==currentUser)set.add(u);});
+  const posts=getCommunityFeed();posts.forEach(p=>{if(p.user&&p.user!==currentUser)set.add(p.user);});
+  return Array.from(set);
+}
+function getRecentChats(){
+  const chats=S?.privateChats||{};if(!chats)return[];
+  return Object.keys(chats).filter(u=>u&&u!==currentUser).map(u=>{
+    const msgs=chats[u]||[];const last=msgs[msgs.length-1];
+    return{user:u,lastTs:last?last.ts:0,lastMsg:last?last.msg:''};
+  }).sort((a,b)=>b.lastTs-a.lastTs);
+}
+function buildChatList(){
+  const list=document.getElementById('chat-list');if(!list)return;
+  if(!currentUser){list.innerHTML='<div class="chat-list-empty">Sign in to chat with others.</div>';return;}
+  const q=(document.getElementById('chat-search-input')?.value||'').trim().replace(/^@/,'').toLowerCase();
+  if(!q){
+    const recent=getRecentChats();
+    if(!recent.length){list.innerHTML='<div class="chat-list-empty">No chats yet. Search for a user by @username to start chatting.</div>';return;}
+    list.innerHTML=recent.map(r=>{
+      const posts=getCommunityFeed();const p=posts.find(x=>x.user===r.user);
+      const av=p?.avatar||null;
+      const letter=(r.user||'?').charAt(0).toUpperCase();
+      const avHtml=av?`<img src="${escapeHtml(av)}" alt="">`:`${letter}`;
+      const preview=r.lastMsg?escapeHtml(r.lastMsg.length>40?r.lastMsg.slice(0,40)+'…':r.lastMsg):'No messages yet';
+      return`<div class="chat-list-item" data-user="${escapeHtml(r.user)}" onclick="openDMChat(this.dataset.user)"><div class="chat-list-item-avatar">${avHtml}</div><div class="chat-list-item-info"><div class="chat-list-item-name">@${escapeHtml(r.user)}</div><div class="chat-list-item-preview">${preview}</div></div></div>`;
+    }).join('');
+    return;
+  }
+  const known=getKnownUsers();
+  const matches=known.filter(u=>u.toLowerCase().includes(q));
+  const exactMatch=matches.find(u=>u.toLowerCase()===q);
+  const canStartNew=q.length>=2&&!exactMatch&&q!==(currentUser||'').toLowerCase();
+  let html='';
+  matches.forEach(u=>{
+    const posts=getCommunityFeed();const p=posts.find(x=>x.user===u);
+    const av=p?.avatar||null;const letter=(u||'?').charAt(0).toUpperCase();
+    const avHtml=av?`<img src="${escapeHtml(av)}" alt="">`:`${letter}`;
+    const msgs=S?.privateChats?.[u]||[];const last=msgs[msgs.length-1];
+    const preview=last?escapeHtml((last.msg||'').slice(0,40)):'No messages yet';
+    html+=`<div class="chat-list-item" data-user="${escapeHtml(u)}" onclick="openDMChat(this.dataset.user)"><div class="chat-list-item-avatar">${avHtml}</div><div class="chat-list-item-info"><div class="chat-list-item-name">@${escapeHtml(u)}</div><div class="chat-list-item-preview">${preview}</div></div></div>`;
+  });
+  if(canStartNew)html+=`<div class="chat-list-item" data-user="${escapeHtml(q)}" onclick="openDMChat(this.dataset.user)"><div class="chat-list-item-avatar">${(q||'?').charAt(0).toUpperCase()}</div><div class="chat-list-item-info"><div class="chat-list-item-name">@${escapeHtml(q)}</div><div class="chat-list-item-preview">Start new chat</div></div></div>`;
+  if(!html)html='<div class="chat-list-empty">No users found. Type @username to start a new chat.</div>';
+  list.innerHTML=html;
+}
+function searchChatUser(val){buildChatList();}
 function buildCommunityFeed(){
   const feed=document.getElementById('community-feed');
   const posts=getCommunityFeed().sort((a,b)=>b.ts-a.ts).slice(0,50);
@@ -2092,7 +2182,7 @@ function startCommunityFeed(){
           msgs.push(dm);saveDMWith(dm.from,msgs);
           updateDMBadge();
           if(_dmPartner===dm.from)buildDMMessages();
-          else showDMToast(dm.from);
+          else{showDMToast(dm.from);var pc=document.getElementById('page-community');if(pc&&pc.classList.contains('active')&&document.getElementById('community-chat-view')?.classList.contains('active'))buildChatList();}
           return;
         }
         var post=JSON.parse(msg.toString());
@@ -2103,7 +2193,7 @@ function startCommunityFeed(){
         posts.unshift(post);
         saveCommunityFeed(posts);
         var pc=document.getElementById('page-community');
-        if(pc&&pc.classList.contains('active'))buildCommunityFeed();
+        if(pc&&pc.classList.contains('active'))refreshCommunityPage();
       }catch(e){}
     });
     client.on('close',function(){_communityClient=null;if(currentUser)setTimeout(startCommunityFeed,5000);});
@@ -2622,7 +2712,7 @@ function moreNav(page){
   const moreBtn=document.querySelector('.bottom-nav .nav-btn:last-child');
   if(moreBtn)moreBtn.classList.add('active');
   if(page==='log')buildLog();
-  if(page==='community')buildCommunityFeed();
+  if(page==='community')refreshCommunityPage();
   if(page==='progress')renderProgress();
   if(page==='programs')buildPrograms();
   if(page==='settings')applySettings();
@@ -2641,7 +2731,7 @@ function showPage(id,btn){
     if(t.toLowerCase()===title.toLowerCase())b.classList.add('active');
   });
   if(id==='log')buildLog();
-  if(id==='community')buildCommunityFeed();
+  if(id==='community')refreshCommunityPage();
   if(id==='progress')renderProgress();
   if(id==='programs')buildPrograms();
   if(id==='settings')applySettings();
