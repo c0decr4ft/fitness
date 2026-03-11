@@ -101,7 +101,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
   .bottom-nav .nav-label{display:block;font-size:9px;text-transform:uppercase;letter-spacing:0.5px;font-family:'DM Sans',sans-serif;}
   .main{padding-bottom:70px;}
   .dash-header{padding:20px 16px 0!important;}
-  .stats-grid,.week-section,.plan-section,.filter-row,.ex-grid,.log-wrap,.profile-wrap,.prog-wrap,.programs-wrap{padding-left:16px!important;padding-right:16px!important;}
+  .stats-grid,.week-section,.plan-section,.filter-row,.ex-grid,.log-wrap,.profile-wrap,.prog-wrap,.programs-wrap,.community-wrap{padding-left:16px!important;padding-right:16px!important;}
   .stats-grid{grid-template-columns:1fr!important;padding:12px 16px!important;}
   .plan-grid{grid-template-columns:1fr!important;}
   .ex-grid{grid-template-columns:1fr!important;}
@@ -230,10 +230,11 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 .pr-list{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;}
 .pr-list::-webkit-scrollbar{height:3px;}
 .pr-list::-webkit-scrollbar-thumb{background:var(--border);}
-.pr-chip{background:linear-gradient(135deg,rgba(200,255,0,0.1),rgba(255,69,0,0.08));border:1px solid rgba(200,255,0,0.2);border-radius:12px;padding:12px 18px;min-width:160px;flex-shrink:0;}
+.pr-chip{background:linear-gradient(135deg,rgba(200,255,0,0.1),rgba(255,69,0,0.08));border:1px solid rgba(200,255,0,0.2);border-radius:12px;padding:12px 18px;min-width:160px;flex-shrink:0;position:relative;}
 .pr-chip-name{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
 .pr-chip-val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent);line-height:1.1;margin-top:2px;}
 .pr-chip-date{font-size:10px;color:var(--muted2);font-family:'Space Mono',monospace;margin-top:2px;}
+.pr-chip .share-btn{margin-top:8px;}
 
 /* ── EXERCISES ── */
 .page-header{padding:32px 36px 22px;border-bottom:1px solid var(--border);}
@@ -339,7 +340,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 .log-mo{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
 .log-div{width:1px;background:var(--border);}
 .log-info{flex:1;}
-.log-wname{font-weight:600;font-size:15px;}
+.log-wname{font-weight:600;font-size:15px;display:flex;align-items:center;flex-wrap:wrap;gap:6px;}
 .log-wmeta{font-size:12px;color:var(--muted);margin-top:3px;}
 .log-stats-row{display:flex;gap:18px;margin-top:9px;flex-wrap:wrap;align-items:center;}
 .log-s{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);}
@@ -449,9 +450,8 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 /* ── AI COACH CHAT ── */
 .coach-chat{display:flex;flex-direction:column;gap:16px;max-height:calc(100vh - 340px);overflow-y:auto;padding:8px 0;margin-bottom:12px;}
 .coach-msg{display:flex;gap:10px;align-items:flex-start;max-width:90%;animation:chatIn 0.3s ease;}
-.coach-msg.bot{align-self:flex-start;}
-.coach-msg.bot:first-child{align-self:center;width:100%;max-width:100%;flex-direction:column;align-items:center;text-align:center;}
-.coach-msg.bot:first-child .coach-bubble{max-width:520px;text-align:center;}
+.coach-msg.bot{align-self:center;width:100%;max-width:100%;flex-direction:column;align-items:center;text-align:center;}
+.coach-msg.bot .coach-bubble{max-width:520px;text-align:center;}
 .coach-msg.user{align-self:flex-end;flex-direction:row-reverse;}
 .coach-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:var(--surface2);border:1px solid var(--border);}
 .coach-msg.user .coach-avatar{background:var(--accent);color:#000;}
@@ -475,6 +475,23 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 .coach-typing span:nth-child(3){animation-delay:0.4s;}
 @keyframes chatIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 @keyframes typing{0%,60%,100%{opacity:0.3;transform:translateY(0);}30%{opacity:1;transform:translateY(-4px);}}
+
+/* ── COMMUNITY ── */
+.community-wrap{padding:0 36px 40px;}
+.community-post-input{display:flex;gap:10px;margin-bottom:24px;}
+.community-post-input input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:12px;color:var(--text);padding:14px 18px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;}
+.community-post-input input:focus{border-color:var(--accent);}
+.community-post-input input::placeholder{color:var(--muted);}
+.community-post-btn{padding:14px 24px;background:var(--accent);border:none;border-radius:12px;color:#000;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;text-transform:uppercase;letter-spacing:1px;transition:box-shadow 0.2s;}
+.community-post-btn:hover{box-shadow:0 0 20px rgba(200,255,0,0.3);}
+.community-feed{display:flex;flex-direction:column;gap:12px;}
+.community-post{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 20px;}
+.community-post-user{font-weight:700;font-size:14px;color:var(--accent);margin-bottom:6px;}
+.community-post-msg{font-size:14px;line-height:1.5;color:var(--text);}
+.community-post-time{font-size:11px;color:var(--muted);margin-top:8px;}
+.share-btn{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;cursor:pointer;transition:all 0.2s;margin-left:6px;}
+.share-btn:hover{border-color:var(--accent);color:var(--accent);}
+.share-btn svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;}
 
 /* ── MORE SHEET (MOBILE) ── */
 .more-sheet{display:none;position:fixed;bottom:-100%;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);border-radius:20px 20px 0 0;z-index:2999;padding:12px 20px calc(70px + env(safe-area-inset-bottom,6px));transition:bottom 0.3s cubic-bezier(.4,0,.2,1);box-shadow:0 -8px 40px rgba(0,0,0,0.3);}
@@ -556,20 +573,20 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 .music-panel.open{display:block;}
 @keyframes slideUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
 .music-panel-title{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
-.music-track{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;cursor:pointer;transition:background 0.15s;margin-bottom:4px;}
+.music-track{display:flex;align-items:center;gap:10px;padding:12px 10px;border-radius:10px;cursor:pointer;transition:background 0.15s;margin-bottom:4px;min-height:44px;-webkit-tap-highlight-color:transparent;}
 .music-track:hover,.music-track.active{background:var(--surface2);}
 .music-track.active{border:1px solid var(--accent);}
 .music-track-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
 .music-track-info{flex:1;min-width:0;}
 .music-track-name{font-size:13px;font-weight:600;color:var(--text);}
 .music-track-desc{font-size:10px;color:var(--muted);margin-top:2px;}
-.music-track-play{width:28px;height:28px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.music-track-play{width:36px;height:36px;min-width:36px;min-height:36px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
 .music-track-play svg{width:12px;height:12px;fill:#000;}
 .music-vol-row{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
 .music-vol-row label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
 .music-vol-slider{flex:1;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--border);outline:none;}
 .music-vol-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;}
-@media(max-width:768px){.music-fab{bottom:80px;right:16px;width:44px;height:44px;}.music-panel{bottom:134px;right:16px;width:260px;}}
+@media(max-width:768px){.music-fab{bottom:80px;right:16px;width:48px;height:48px;min-width:48px;min-height:48px;}.music-panel{bottom:134px;right:16px;width:260px;}.music-track{padding:14px 10px;min-height:48px;}}
 
 /* ── 1RM CALCULATOR ── */
 .tools-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 36px 24px;}
@@ -718,6 +735,9 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
     <button class="nav-btn" onclick="showPage('log',this)" title="Log">
       <svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
     </button>
+    <button class="nav-btn" onclick="showPage('community',this)" title="Community">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    </button>
     <button class="nav-btn" onclick="showPage('coach',this)" title="AI Coach" style="margin-top:auto;">
       <svg viewBox="0 0 24 24"><path d="M21 10.5h-1V8c0-1.1-.9-2-2-2h-3V4.5C15 3.12 13.88 2 12.5 2h-1C10.12 2 9 3.12 9 4.5V6H6c-1.1 0-2 .9-2 2v2.5H3c-.55 0-1 .45-1 1v3c0 .55.45 1 1 1h1V20c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-3.5h1c.55 0 1-.45 1-1v-3c0-.55-.45-1-1-1zM9.5 13.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm5 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM8 18l1.5-3h5L16 18H8z"/></svg>
     </button>
@@ -743,6 +763,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
       <button class="more-sheet-item" onclick="moreNav('programs',this)"><svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9h-4v4h-2v-4H9V9h4V5h2v4h4v2z"/></svg><span>Programs</span></button>
       <button class="more-sheet-item" onclick="moreNav('progress',this)"><svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg><span>Progress</span></button>
       <button class="more-sheet-item" onclick="moreNav('improvement',this)"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><span>Improvement</span></button>
+      <button class="more-sheet-item" onclick="moreNav('community',this)"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Community</span></button>
       <button class="more-sheet-item" onclick="moreNav('log',this)"><svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg><span>Log</span></button>
       <button class="more-sheet-item" onclick="moreNav('profile',this)"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4-1.3 4-4S14.7 4 12 4 8 5.3 8 8s1.3 4 4 4zm0 2c-2.7 0-8 1.4-8 4v2h16v-2c0-2.6-5.3-4-8-4z"/></svg><span>Profile</span></button>
       <button class="more-sheet-item" onclick="moreNav('settings',this)"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1115.6 12 3.6 3.6 0 0112 15.6z"/></svg><span>Settings</span></button>
@@ -951,6 +972,18 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
           <button class="preset-btn" onclick="setPreset(180,this)">3:00</button>
           <button class="preset-btn" onclick="setPreset(300,this)">5:00</button>
         </div>
+      </div>
+    </div>
+
+    <!-- COMMUNITY -->
+    <div class="page" id="page-community">
+      <div class="page-header"><div class="page-title">Community</div><div class="page-sub">Share your wins and get motivated by others</div></div>
+      <div class="community-wrap">
+        <div class="community-post-input">
+          <input type="text" id="community-input" placeholder="Share your win… e.g. Just hit 100kg bench! 🔥" maxlength="200">
+          <button class="community-post-btn" onclick="postToCommunity()">Post</button>
+        </div>
+        <div class="community-feed" id="community-feed"></div>
       </div>
     </div>
 
@@ -1458,7 +1491,7 @@ const LANG={
     ph_name:'e.g. Alex',ph_weight:'75',ph_height:'178',ph_age:'25',setup_start:'Start Training',
     goal_build:'Build Muscle',goal_lose:'Lose Fat',goal_endurance:'Improve Endurance',goal_active:'Stay Active',
     nav_dashboard:'Dashboard',nav_exercises:'Exercises',nav_programs:'Programs',nav_progress:'Progress',nav_improvement:'Improvement',
-    nav_timer:'Timer',nav_log:'Log',nav_coach:'AI Coach',nav_profile:'Profile',nav_settings:'Settings',nav_home:'Home',nav_more:'More',
+    nav_timer:'Timer',nav_log:'Log',nav_community:'Community',nav_coach:'AI Coach',nav_profile:'Profile',nav_settings:'Settings',nav_home:'Home',nav_more:'More',
     page_exercises:'Exercises',page_ex_sub:'Tap any exercise to see the guide, then log your sets',
     page_programs:'Programs',page_prog_sub:'Pre-built workout splits — tap a program to expand, tap an exercise to view it',
     page_progress:'Progress',page_prog_sub2:'Track your volume, personal records, and achievements',
@@ -1490,7 +1523,7 @@ const LANG={
     ph_name:'ej. Alex',ph_weight:'75',ph_height:'178',ph_age:'25',setup_start:'Empezar a entrenar',
     goal_build:'Ganar músculo',goal_lose:'Perder grasa',goal_endurance:'Mejorar resistencia',goal_active:'Mantenerse activo',
     nav_dashboard:'Inicio',nav_exercises:'Ejercicios',nav_programs:'Programas',nav_progress:'Progreso',nav_improvement:'Mejora',
-    nav_timer:'Temporizador',nav_log:'Registro',nav_coach:'Coach IA',nav_profile:'Perfil',nav_settings:'Ajustes',nav_home:'Inicio',nav_more:'Más',
+    nav_timer:'Temporizador',nav_log:'Registro',nav_community:'Comunidad',nav_coach:'Coach IA',nav_profile:'Perfil',nav_settings:'Ajustes',nav_home:'Inicio',nav_more:'Más',
     page_exercises:'Ejercicios',page_ex_sub:'Toca cualquier ejercicio para ver la guía y registrar tus series',
     page_programs:'Programas',page_prog_sub:'Rutinas predefinidas — toca un programa para expandir, toca un ejercicio para verlo',
     page_progress:'Progreso',page_prog_sub2:'Sigue tu volumen, récords personales y logros',
@@ -1522,7 +1555,7 @@ const LANG={
     ph_name:'ex. Alex',ph_weight:'75',ph_height:'178',ph_age:'25',setup_start:'Commencer l\'entraînement',
     goal_build:'Prise de muscle',goal_lose:'Perte de graisse',goal_endurance:'Endurance',goal_active:'Rester actif',
     nav_dashboard:'Tableau de bord',nav_exercises:'Exercices',nav_programs:'Programmes',nav_progress:'Progression',nav_improvement:'Amélioration',
-    nav_timer:'Minuteur',nav_log:'Journal',nav_coach:'Coach IA',nav_profile:'Profil',nav_settings:'Paramètres',nav_home:'Accueil',nav_more:'Plus',
+    nav_timer:'Minuteur',nav_log:'Journal',nav_community:'Communauté',nav_coach:'Coach IA',nav_profile:'Profil',nav_settings:'Paramètres',nav_home:'Accueil',nav_more:'Plus',
     page_exercises:'Exercices',page_ex_sub:'Appuyez sur un exercice pour voir le guide et enregistrer vos séries',
     page_programs:'Programmes',page_prog_sub:'Programmes prédéfinis — appuyez pour développer',
     page_progress:'Progression',page_prog_sub2:'Suivez votre volume, records personnels et accomplissements',
@@ -1554,7 +1587,7 @@ const LANG={
     ph_name:'z.B. Alex',ph_weight:'75',ph_height:'178',ph_age:'25',setup_start:'Training starten',
     goal_build:'Muskelaufbau',goal_lose:'Fettabbau',goal_endurance:'Ausdauer',goal_active:'Aktiv bleiben',
     nav_dashboard:'Übersicht',nav_exercises:'Übungen',nav_programs:'Programme',nav_progress:'Fortschritt',nav_improvement:'Verbesserung',
-    nav_timer:'Timer',nav_log:'Protokoll',nav_coach:'KI-Coach',nav_profile:'Profil',nav_settings:'Einstellungen',nav_home:'Start',nav_more:'Mehr',
+    nav_timer:'Timer',nav_log:'Protokoll',nav_community:'Community',nav_coach:'KI-Coach',nav_profile:'Profil',nav_settings:'Einstellungen',nav_home:'Start',nav_more:'Mehr',
     page_exercises:'Übungen',page_ex_sub:'Tippe auf eine Übung für die Anleitung und zum Protokollieren',
     page_programs:'Programme',page_prog_sub:'Vorgefertigte Trainingspläne — tippen zum Erweitern',
     page_progress:'Fortschritt',page_prog_sub2:'Verfolge Volumen, persönliche Rekorde und Erfolge',
@@ -1586,7 +1619,7 @@ const LANG={
     ph_name:'es. Alex',ph_weight:'75',ph_height:'178',ph_age:'25',setup_start:'Inizia ad allenarti',
     goal_build:'Costruire muscoli',goal_lose:'Perdere grasso',goal_endurance:'Migliorare resistenza',goal_active:'Restare attivo',
     nav_dashboard:'Dashboard',nav_exercises:'Esercizi',nav_programs:'Programmi',nav_progress:'Progressi',nav_improvement:'Miglioramento',
-    nav_timer:'Timer',nav_log:'Registro',nav_coach:'Coach IA',nav_profile:'Profilo',nav_settings:'Impostazioni',nav_home:'Home',nav_more:'Altro',
+    nav_timer:'Timer',nav_log:'Registro',nav_community:'Community',nav_coach:'Coach IA',nav_profile:'Profilo',nav_settings:'Impostazioni',nav_home:'Home',nav_more:'Altro',
     page_exercises:'Esercizi',page_ex_sub:'Tocca un esercizio per la guida e per registrare le serie',
     page_programs:'Programmi',page_prog_sub:'Programmi predefiniti — tocca per espandere',
     page_progress:'Progressi',page_prog_sub2:'Segui volume, record personali e risultati',
@@ -1715,9 +1748,9 @@ function applyI18n(){
   const setupAge=document.getElementById('setup-age');if(setupAge)setupAge.placeholder=T('ph_age');
   const setupGoal=document.getElementById('setup-goal');if(setupGoal){setupGoal.innerHTML=`<option value="Build Muscle">${T('goal_build')}</option><option value="Lose Fat">${T('goal_lose')}</option><option value="Improve Endurance">${T('goal_endurance')}</option><option value="Stay Active">${T('goal_active')}</option>`;}
   const setupBtn=document.querySelector('.setup-btn');if(setupBtn)setupBtn.textContent=T('setup_start');
-  document.querySelectorAll('.nav-btn[title]').forEach((b,i)=>{const t=['nav_dashboard','nav_exercises','nav_programs','nav_progress','nav_improvement','nav_timer','nav_log','nav_coach','nav_profile','nav_settings'][i];if(t)b.title=T(t);});
+  document.querySelectorAll('.nav-btn[title]').forEach((b,i)=>{const t=['nav_dashboard','nav_exercises','nav_programs','nav_progress','nav_improvement','nav_timer','nav_log','nav_community','nav_coach','nav_profile','nav_settings'][i];if(t)b.title=T(t);});
   document.querySelectorAll('.bottom-nav .nav-label').forEach((b,i)=>{const t=['nav_home','nav_exercises','nav_timer','nav_coach','nav_more'][i];if(t)b.textContent=T(t);});
-  document.querySelectorAll('.more-sheet-item span').forEach((b,i)=>{const t=['nav_programs','nav_progress','nav_improvement','nav_log','nav_profile','nav_settings'][i];if(t)b.textContent=T(t);});
+  document.querySelectorAll('.more-sheet-item span').forEach((b,i)=>{const t=['nav_programs','nav_progress','nav_improvement','nav_community','nav_log','nav_profile','nav_settings'][i];if(t)b.textContent=T(t);});
   const exHeader=document.querySelector('#page-exercises .page-header');if(exHeader){exHeader.querySelector('.page-title').textContent=T('page_exercises');exHeader.querySelector('.page-sub').textContent=T('page_ex_sub');}
   const exSearch=document.getElementById('ex-search');if(exSearch)exSearch.placeholder=T('ph_search');
   document.querySelectorAll('#page-exercises .filter-btn').forEach((b,i)=>{if(i===0)b.textContent=T('filter_all');else if(i===1)b.textContent=T('filter_favs');});
@@ -1769,6 +1802,8 @@ function saveAccounts(a){localStorage.setItem('forge_accounts',JSON.stringify(a)
 
 const MQTT_BROKERS=['wss://broker.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt'];
 const MQTT_PREFIX='forge-fit/a/';
+const MQTT_COMMUNITY='forge-fit/community';
+let _communityClient=null;
 const DEVICE_ID='forge_'+Math.random().toString(36).slice(2,12);
 let _liveClient=null;
 let _liveUser=null;
@@ -1870,6 +1905,70 @@ function startLiveSync(username,pwHash){
   }).catch(e=>{console.warn('Live sync connect err:',e);});
 }
 
+function getCommunityFeed(){try{return JSON.parse(localStorage.getItem('forge_community_feed')||'[]');}catch(e){return[];}}
+function saveCommunityFeed(posts){localStorage.setItem('forge_community_feed',JSON.stringify(posts));}
+function buildCommunityFeed(){
+  const feed=document.getElementById('community-feed');
+  const posts=getCommunityFeed().sort((a,b)=>b.ts-a.ts).slice(0,50);
+  if(!posts.length){feed.innerHTML='<div style="color:var(--muted);text-align:center;padding:40px 0;font-size:14px;">No posts yet. Be the first to share your win! 💪</div>';return;}
+  feed.innerHTML=posts.map(p=>{
+    const d=new Date(p.ts);
+    return`<div class="community-post"><div class="community-post-user">@${p.user}</div><div class="community-post-msg">${escapeHtml(p.msg)}</div><div class="community-post-time">${d.toLocaleDateString()} ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div></div>`;
+  }).join('');
+}
+function escapeHtml(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function postToCommunity(){
+  const inp=document.getElementById('community-input');
+  const msg=inp.value.trim();if(!msg||!currentUser)return;
+  inp.value='';
+  const post={user:currentUser,msg,ts:Date.now(),id:'c_'+Date.now()+'_'+Math.random().toString(36).slice(2,8)};
+  const posts=getCommunityFeed();posts.unshift(post);saveCommunityFeed(posts);
+  buildCommunityFeed();
+  if(typeof mqtt!=='undefined'){
+    _mqttConnect().then(client=>{
+      client.publish(MQTT_COMMUNITY,JSON.stringify(post),{qos:1},()=>{try{client.end();}catch(e){}});
+    }).catch(()=>{});
+  }
+}
+function startCommunityFeed(){
+  if(typeof mqtt==='undefined'||_communityClient)return;
+  _mqttConnect().then(client=>{
+    _communityClient=client;
+    client.subscribe(MQTT_COMMUNITY,{qos:1},err=>{if(err)console.warn('Community subscribe err:',err);});
+    client.on('message',(topic,msg)=>{
+      try{
+        const post=JSON.parse(msg.toString());
+        if(!post.user||!post.msg||!post.ts)return;
+        if(post.user===currentUser)return;
+        const posts=getCommunityFeed();
+        if(posts.some(p=>p.id===post.id))return;
+        post.id=post.id||'c_'+post.ts+'_'+post.user;
+        posts.unshift(post);
+        saveCommunityFeed(posts);
+        if(document.getElementById('page-community').classList.contains('active'))buildCommunityFeed();
+      }catch(e){}
+    });
+  }).catch(()=>{});
+}
+function shareWorkout(i){
+  const log=S.log||[];const e=log[i];if(!e)return;
+  const d=new Date(e.ts);
+  const vol=e.isTimed?`${Math.round(e.volume)}s`:(e.volume?Math.round(e.volume)+'kg':'');
+  const text=`Just logged ${e.name} — ${e.sets} sets${vol?' • '+vol:''} ${e.isPR?'• NEW PR! ':''}💪\n\n#FORGE #Fitness`;
+  copyAndShare(text);
+}
+function sharePR(key){
+  const p=(S.prs||{})[key];const ex=EX[key];if(!p)return;
+  const name=ex?ex.name:key;
+  const text=`New PR: ${name} — ${p.weight}kg × ${p.reps} 🔥\n\n#FORGE #Fitness`;
+  copyAndShare(text);
+}
+function copyAndShare(text){
+  if(navigator.share){navigator.share({text,title:'FORGE Fitness'}).then(()=>{}).catch(()=>{
+    if(navigator.clipboard?.writeText)navigator.clipboard.writeText(text);
+  });return;}
+  if(navigator.clipboard?.writeText)navigator.clipboard.writeText(text);
+}
 function stopLiveSync(){
   clearInterval(_periodicSyncInt);_periodicSyncInt=null;
   if(_liveClient){try{_liveClient.end();}catch(e){}}
@@ -2035,6 +2134,7 @@ function loginAs(u){
   const acc=getAccounts()[u];
   if(acc&&acc.hash)startLiveSync(u,acc.hash);
   syncAccountToCloud(u);
+  startCommunityFeed();
 }
 
 function doLogout(){
@@ -2361,6 +2461,7 @@ function moreNav(page){
   const moreBtn=document.querySelector('.bottom-nav .nav-btn:last-child');
   if(moreBtn)moreBtn.classList.add('active');
   if(page==='log')buildLog();
+  if(page==='community')buildCommunityFeed();
   if(page==='progress')renderProgress();
   if(page==='programs')buildPrograms();
   if(page==='settings')applySettings();
@@ -2379,6 +2480,7 @@ function showPage(id,btn){
     if(t.toLowerCase()===title.toLowerCase())b.classList.add('active');
   });
   if(id==='log')buildLog();
+  if(id==='community')buildCommunityFeed();
   if(id==='progress')renderProgress();
   if(id==='programs')buildPrograms();
   if(id==='settings')applySettings();
@@ -2407,7 +2509,7 @@ function renderPRs(){
   list.innerHTML=keys.sort((a,b)=>prs[b].ts-prs[a].ts).slice(0,8).map(k=>{
     const p=prs[k];const ex=EX[k];
     const d=new Date(p.ts);
-    return`<div class="pr-chip"><div class="pr-chip-name">${ex?ex.name:k}</div><div class="pr-chip-val">${p.weight}kg × ${p.reps}</div><div class="pr-chip-date">${d.toLocaleDateString()}</div></div>`;
+    return`<div class="pr-chip"><div class="pr-chip-name">${ex?ex.name:k}</div><div class="pr-chip-val">${p.weight}kg × ${p.reps}</div><div class="pr-chip-date">${d.toLocaleDateString()}</div><button class="share-btn" onclick="sharePR('${k}')" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share</button></div>`;
   }).join('');
 }
 
@@ -2669,11 +2771,12 @@ function updateDashStats(){
 function buildLog(){
   const list=document.getElementById('log-list');const log=S.log||[];
   if(!log.length){list.innerHTML='<div style="color:var(--muted);text-align:center;padding:60px 0;font-size:14px;">No workouts logged yet.<br>Hit an exercise to get started.</div>';return;}
-  list.innerHTML=log.slice(0,50).map(e=>{
+  list.innerHTML=log.slice(0,50).map((e,i)=>{
     const d=new Date(e.ts);
     const volLabel=e.isTimed?`${Math.round(e.volume)}s total`:e.volume?Math.round(e.volume)+'kg':'—';
     const bwTag=e.isBW?'<span style="font-size:9px;background:rgba(200,255,0,0.15);color:var(--accent);padding:2px 6px;border-radius:4px;margin-left:4px;">BW</span>':'';
-    return`<div class="log-entry"><div class="log-date"><div class="log-day">${String(d.getDate()).padStart(2,'0')}</div><div class="log-mo">${d.toLocaleString('default',{month:'short'}).toUpperCase()}</div></div><div class="log-div"></div><div class="log-info"><div class="log-wname">${e.name}${bwTag}</div><div class="log-wmeta">${e.muscle}</div><div class="log-stats-row"><div class="log-s">Sets <span>${e.sets}</span></div><div class="log-s">${e.isTimed?'Time':'Vol'} <span>${volLabel}</span></div>${e.maxWeight&&!e.isTimed?`<div class="log-s">Max <span>${e.maxWeight}kg</span></div>`:''}<span class="plan-tag ${TAGS[e.cat]||''}">${e.cat}</span>${e.isPR?'<span class="log-pr-badge">NEW PR</span>':''}</div>${e.note?`<div class="log-note">"${e.note}"</div>`:''}</div></div>`;
+    const shareBtn=`<button class="share-btn" onclick="shareWorkout(${i})" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share</button>`;
+    return`<div class="log-entry"><div class="log-date"><div class="log-day">${String(d.getDate()).padStart(2,'0')}</div><div class="log-mo">${d.toLocaleString('default',{month:'short'}).toUpperCase()}</div></div><div class="log-div"></div><div class="log-info"><div class="log-wname">${e.name}${bwTag}${shareBtn}</div><div class="log-wmeta">${e.muscle}</div><div class="log-stats-row"><div class="log-s">Sets <span>${e.sets}</span></div><div class="log-s">${e.isTimed?'Time':'Vol'} <span>${volLabel}</span></div>${e.maxWeight&&!e.isTimed?`<div class="log-s">Max <span>${e.maxWeight}kg</span></div>`:''}<span class="plan-tag ${TAGS[e.cat]||''}">${e.cat}</span>${e.isPR?'<span class="log-pr-badge">NEW PR</span>':''}</div>${e.note?`<div class="log-note">"${e.note}"</div>`:''}</div></div>`;
   }).join('');
 }
 
@@ -3099,7 +3202,18 @@ function initMusicTrackList(){
 function toggleMusicPanel(){
   const panel=document.getElementById('music-panel');
   panel.classList.toggle('open');
-  if(panel.classList.contains('open'))initMusicTrackList();
+  if(panel.classList.contains('open')){
+    initMusicTrackList();
+    unlockAudioContext();
+  }
+}
+function unlockAudioContext(){
+  if(window._audioUnlocked)return;
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    if(ctx.state==='suspended')ctx.resume().then(()=>{window._audioUnlocked=true;ctx.close();}).catch(()=>{});
+    else{window._audioUnlocked=true;ctx.close();}
+  }catch(e){}
 }
 
 function stopMusic(){
@@ -3118,12 +3232,15 @@ function scheduleTrack(track){
   setTimeout(()=>{if(musicPlaying&&currentTrackId===track.id)scheduleTrack(track);},Math.max(loopDelay,1000));
 }
 
-function playTrack(id){
+async function playTrack(id){
   if(currentTrackId===id&&musicPlaying){stopMusic();return;}
   stopMusic();
   const track=MUSIC_TRACKS.find(t=>t.id===id);
   if(!track)return;
-  musicCtx=new(window.AudioContext||window.webkitAudioContext)();
+  try{
+    musicCtx=new(window.AudioContext||window.webkitAudioContext)();
+    if(musicCtx.state==='suspended'){await musicCtx.resume();}
+  }catch(e){console.warn('AudioContext init failed:',e);return;}
   musicGain=musicCtx.createGain();
   musicGain.gain.value=musicVolume;
   const comp=musicCtx.createDynamicsCompressor();
@@ -3153,7 +3270,7 @@ document.addEventListener('click',e=>{
 let timerTotal=90,timerLeft=90,timerRunning=false,timerInt=null;
 const CIRC=2*Math.PI*120;
 
-function playTimerAlarm(){
+async function playTimerAlarm(){
   const settings=S.settings||{};
   if(settings.sound==='off')return;
   const wasMusicPlaying=musicPlaying;
@@ -3164,6 +3281,7 @@ function playTimerAlarm(){
   }
   try{
     const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    if(ctx.state==='suspended'){await ctx.resume();}
     const masterGain=ctx.createGain();
     masterGain.gain.value=0.7;
     masterGain.connect(ctx.destination);
@@ -3236,10 +3354,12 @@ function toggleFav(key,btn){
 function calcXP(){
   const log=S.log||[];
   let xp=0;
-  xp+=log.length*25;
+  xp+=log.length*5;
   xp+=Object.keys(S.prs||{}).length*50;
   const totalVol=log.reduce((a,e)=>a+(e.isTimed?0:(e.volume||0)),0);
   xp+=Math.floor(totalVol/100);
+  const totalSets=log.reduce((a,e)=>a+(e.sets||0),0);
+  xp+=totalSets*3;
   return xp;
 }
 function xpForLevel(lvl){return lvl*100+(lvl-1)*50;}
@@ -4218,6 +4338,7 @@ function generateCoachReply(query){
       const acc=accs[saved];
       if(acc&&acc.hash)startLiveSync(saved,acc.hash);
       syncAccountToCloud(saved);
+      startCommunityFeed();
       checkProfile();
       applyExFilters();
       buildLog();
