@@ -478,10 +478,12 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 
 /* ── COMMUNITY ── */
 .community-wrap{padding:0 36px 40px;}
-.community-post-input{display:flex;gap:10px;margin-bottom:24px;}
-.community-post-input input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:12px;color:var(--text);padding:14px 18px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;}
-.community-post-input input:focus{border-color:var(--accent);}
+.community-post-input{display:flex;gap:10px;margin-bottom:24px;align-items:center;}
+.community-post-input input[type="text"]{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:12px;color:var(--text);padding:14px 18px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;}
+.community-post-input input[type="text"]:focus{border-color:var(--accent);}
 .community-post-input input::placeholder{color:var(--muted);}
+.community-img-btn{width:44px;height:44px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;}
+.community-img-btn:hover{border-color:var(--accent);color:var(--accent);}
 .community-post-btn{padding:14px 24px;background:var(--accent);border:none;border-radius:12px;color:#000;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;text-transform:uppercase;letter-spacing:1px;transition:box-shadow 0.2s;}
 .community-post-btn:hover{box-shadow:0 0 20px rgba(200,255,0,0.3);}
 .community-feed{display:flex;flex-direction:column;gap:12px;}
@@ -489,13 +491,17 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 .community-post-user{font-weight:700;font-size:14px;color:var(--accent);margin-bottom:6px;cursor:pointer;transition:opacity 0.2s;}
 .community-post-user:hover{opacity:0.85;}
 .user-profile-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;width:360px;max-width:94vw;padding:28px;animation:popIn 0.2s cubic-bezier(.34,1.4,.64,1);}
-.user-profile-title{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent);margin-bottom:4px;}
-.user-profile-sub{font-size:12px;color:var(--muted);margin-bottom:20px;}
+.user-profile-avatar-wrap{display:flex;justify-content:center;margin-bottom:16px;}
+.user-profile-avatar{width:80px;height:80px;border-radius:50%;background:var(--surface2);border:2px solid var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent);}
+.user-profile-avatar img{width:100%;height:100%;object-fit:cover;}
+.user-profile-title{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent);margin-bottom:4px;text-align:center;}
+.user-profile-sub{font-size:12px;color:var(--muted);margin-bottom:20px;text-align:center;}
 .user-profile-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .user-profile-stat{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;}
 .user-profile-stat-val{font-size:20px;font-weight:700;color:var(--accent);}
 .user-profile-stat-lbl{font-size:11px;color:var(--muted);margin-top:4px;}
 .community-post-msg{font-size:14px;line-height:1.5;color:var(--text);}
+.community-post-img{margin-top:10px;border-radius:10px;overflow:hidden;max-width:100%;max-height:280px;object-fit:cover;cursor:pointer;display:block;}
 .community-post-time{font-size:11px;color:var(--muted);margin-top:8px;}
 .share-btn{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;cursor:pointer;transition:all 0.2s;margin-left:6px;}
 .share-btn:hover{border-color:var(--accent);color:var(--accent);}
@@ -989,8 +995,11 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
       <div class="community-wrap">
         <div class="community-post-input">
           <input type="text" id="community-input" placeholder="Share your win… e.g. Just hit 100kg bench! 🔥" maxlength="200">
+          <input type="file" id="community-img-input" accept="image/*" style="display:none" onchange="handleCommunityImgPick(event)">
+          <button type="button" class="community-img-btn" onclick="document.getElementById('community-img-input').click()" title="Add image">📷</button>
           <button class="community-post-btn" onclick="postToCommunity()">Post</button>
         </div>
+        <div id="community-img-preview" style="display:none;margin-bottom:12px;"></div>
         <div class="community-feed" id="community-feed"></div>
       </div>
     </div>
@@ -1250,7 +1259,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 </div>
 
 <!-- MUSIC PLAYER FAB + PANEL -->
-<button class="music-fab" id="music-fab" onclick="toggleMusicPanel()" title="Music">
+<button class="music-fab" id="music-fab" onclick="toggleMusicPanel()" ontouchend="event.preventDefault();toggleMusicPanel()" title="Music">
   <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
 </button>
 <div class="music-panel" id="music-panel">
@@ -1286,6 +1295,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 <!-- USER PROFILE MODAL (community) -->
 <div class="overlay" id="user-profile-overlay" onclick="if(event.target===this)closeUserProfileModal()">
   <div class="user-profile-box">
+    <div class="user-profile-avatar-wrap"><div class="user-profile-avatar" id="user-profile-avatar"></div></div>
     <div class="user-profile-title" id="user-profile-title">@username</div>
     <div class="user-profile-sub" id="user-profile-sub">Progress & XP</div>
     <div class="user-profile-stats" id="user-profile-stats"></div>
@@ -1941,7 +1951,8 @@ function buildCommunityFeed(){
   if(!posts.length){feed.innerHTML='<div style="color:var(--muted);text-align:center;padding:40px 0;font-size:14px;">No posts yet. Be the first to share your win! 💪</div>';return;}
   feed.innerHTML=posts.map((p,i)=>{
     const d=new Date(p.ts);
-    return`<div class="community-post"><div class="community-post-user" onclick="showUserProfileModal(${i})" role="button" tabindex="0">@${escapeHtml(p.user)}</div><div class="community-post-msg">${escapeHtml(p.msg)}</div><div class="community-post-time">${d.toLocaleDateString()} ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div></div>`;
+    const imgHtml=p.img?`<img class="community-post-img" src="${p.img}" alt="Post" onclick="window.open(this.src)">`:'';
+    return`<div class="community-post"><div class="community-post-user" onclick="showUserProfileModal(${i})" role="button" tabindex="0">@${escapeHtml(p.user)}</div><div class="community-post-msg">${escapeHtml(p.msg)}</div>${imgHtml}<div class="community-post-time">${d.toLocaleDateString()} ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div></div>`;
   }).join('');
 }
 function showUserProfileModal(postIndex){
@@ -1949,6 +1960,9 @@ function showUserProfileModal(postIndex){
   const p=posts[postIndex];if(!p)return;
   const isCurrentUser=p.user===currentUser;
   const stats=isCurrentUser?getUserStatsFromS():p;
+  const avatarSrc=p.avatar||(isCurrentUser&&S.profile?.avatar?S.profile.avatar:null);
+  const avatarEl=document.getElementById('user-profile-avatar');
+  if(avatarSrc){avatarEl.innerHTML=`<img src="${avatarSrc}" alt="">`;}else{avatarEl.innerHTML='';avatarEl.textContent=(p.user||'?').charAt(0).toUpperCase();}
   document.getElementById('user-profile-title').textContent='@'+p.user;
   document.getElementById('user-profile-sub').textContent=stats.level?'Stats from when they posted':'Progress & XP';
   const html=stats.level?`<div class="user-profile-stat"><div class="user-profile-stat-val">${stats.level}</div><div class="user-profile-stat-lbl">Level</div></div><div class="user-profile-stat"><div class="user-profile-stat-val">${stats.xp||0}</div><div class="user-profile-stat-lbl">XP</div></div><div class="user-profile-stat"><div class="user-profile-stat-val">${stats.totalWorkouts||0}</div><div class="user-profile-stat-lbl">Workouts</div></div><div class="user-profile-stat"><div class="user-profile-stat-val">${stats.prCount||0}</div><div class="user-profile-stat-lbl">PRs</div></div><div class="user-profile-stat"><div class="user-profile-stat-val">${stats.streak||0}</div><div class="user-profile-stat-lbl">Week Streak</div></div>`:'<div class="user-profile-stat" style="grid-column:1/-1;"><div class="user-profile-stat-val" style="font-size:14px;color:var(--muted);">No stats available</div><div class="user-profile-stat-lbl">Older posts don\'t include profile data</div></div>';
@@ -1962,12 +1976,46 @@ function getUserStatsFromS(){
   return{level:lvl,xp,totalWorkouts:log.length,prCount:Object.keys(S.prs||{}).length,streak:calcStreak(log)};
 }
 function escapeHtml(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
-function postToCommunity(){
+let _pendingCommunityImg=null;
+function handleCommunityImgPick(ev){
+  const f=ev.target.files[0];if(!f)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    resizeImageForPost(e.target.result,500,0.65).then(dataUrl=>{
+      _pendingCommunityImg=dataUrl;
+      const prev=document.getElementById('community-img-preview');
+      prev.innerHTML=`<img src="${dataUrl}" alt="" style="max-width:120px;max-height:80px;border-radius:8px;object-fit:cover;"><button type="button" onclick="_pendingCommunityImg=null;document.getElementById('community-img-preview').innerHTML='';document.getElementById('community-img-preview').style.display='none';document.getElementById('community-img-input').value='';" style="margin-left:8px;padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;">Remove</button>`;
+      prev.style.display='flex';prev.style.alignItems='center';
+    }).catch(()=>{});
+  };
+  reader.readAsDataURL(f);
+  ev.target.value='';
+}
+function resizeImageForPost(dataUrl,maxW,quality){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=function(){
+      const c=document.createElement('canvas');
+      let w=img.width,h=img.height;
+      if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
+      c.width=w;c.height=h;
+      const ctx=c.getContext('2d');ctx.drawImage(img,0,0,w,h);
+      try{resolve(c.toDataURL('image/jpeg',quality||0.7));}catch(e){reject(e);}
+    };
+    img.onerror=reject;
+    img.src=dataUrl;
+  });
+}
+async function postToCommunity(){
   const inp=document.getElementById('community-input');
-  const msg=inp.value.trim();if(!msg||!currentUser)return;
+  const msg=inp.value.trim();
+  if((!msg&&!_pendingCommunityImg)||!currentUser)return;
   inp.value='';
   const stats=getUserStatsFromS();
-  const post={user:currentUser,msg,ts:Date.now(),id:'c_'+Date.now()+'_'+Math.random().toString(36).slice(2,8),...stats};
+  const avatar=S.profile?.avatar?await resizeImageForPost(S.profile.avatar,80,0.6):null;
+  const post={user:currentUser,msg:msg||'(image)',ts:Date.now(),id:'c_'+Date.now()+'_'+Math.random().toString(36).slice(2,8),...stats};
+  if(avatar)post.avatar=avatar;
+  if(_pendingCommunityImg){post.img=_pendingCommunityImg;_pendingCommunityImg=null;document.getElementById('community-img-preview').innerHTML='';document.getElementById('community-img-preview').style.display='none';}
   const posts=getCommunityFeed();posts.unshift(post);saveCommunityFeed(posts);
   buildCommunityFeed();
   if(typeof mqtt!=='undefined'){
@@ -1993,6 +2041,8 @@ function startCommunityFeed(){
         if(document.getElementById('page-community').classList.contains('active'))buildCommunityFeed();
       }catch(e){}
     });
+    client.on('close',()=>{_communityClient=null;if(currentUser)setTimeout(startCommunityFeed,5000);});
+    client.on('error',()=>{_communityClient=null;});
   }).catch(()=>{});
 }
 function shareWorkout(i){
@@ -3234,16 +3284,17 @@ function initMusicTrackList(){
   const list=document.getElementById('music-track-list');
   if(!list)return;
   list.innerHTML=MUSIC_TRACKS.map(tr=>`
-    <div class="music-track${currentTrackId===tr.id?' active':''}" id="mt-${tr.id}" onclick="playTrack('${tr.id}')">
+    <div class="music-track${currentTrackId===tr.id?' active':''}" id="mt-${tr.id}" onclick="playTrack('${tr.id}')" ontouchend="event.preventDefault();playTrack('${tr.id}')">
       <div class="music-track-icon" style="background:var(--surface2);">${tr.emoji}</div>
       <div class="music-track-info"><div class="music-track-name">${tr.name}</div><div class="music-track-desc">${tr.desc} · ${tr.bpm} BPM</div></div>
-      <button class="music-track-play" onclick="event.stopPropagation();playTrack('${tr.id}')">
+      <button class="music-track-play" onclick="event.stopPropagation();playTrack('${tr.id}')" ontouchend="event.preventDefault();event.stopPropagation();playTrack('${tr.id}')">
         <svg viewBox="0 0 24 24">${currentTrackId===tr.id&&musicPlaying?'<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>':'<path d="M8 5v14l11-7z"/>'}</svg>
       </button>
     </div>
   `).join('');
 }
 
+let _musicCtxPrepared=null;
 function toggleMusicPanel(){
   const panel=document.getElementById('music-panel');
   panel.classList.toggle('open');
@@ -3253,18 +3304,18 @@ function toggleMusicPanel(){
   }
 }
 function unlockAudioContext(){
-  if(window._audioUnlocked)return;
+  if(_musicCtxPrepared&&_musicCtxPrepared.state==='running')return;
   try{
     const ctx=new(window.AudioContext||window.webkitAudioContext)();
-    if(ctx.state==='suspended')ctx.resume().then(()=>{window._audioUnlocked=true;ctx.close();}).catch(()=>{});
-    else{window._audioUnlocked=true;ctx.close();}
+    if(ctx.state==='suspended'){ctx.resume();}
+    _musicCtxPrepared=ctx;
+    window._audioUnlocked=true;
   }catch(e){}
 }
 
 function stopMusic(){
   musicNodes.forEach(n=>{try{n.stop();}catch(e){}});
   musicNodes=[];
-  if(musicCtx){try{musicCtx.close();}catch(e){}}
   musicCtx=null;musicGain=null;musicPlaying=false;currentTrackId=null;
   document.getElementById('music-fab').classList.remove('playing');
   initMusicTrackList();
@@ -3277,24 +3328,32 @@ function scheduleTrack(track){
   setTimeout(()=>{if(musicPlaying&&currentTrackId===track.id)scheduleTrack(track);},Math.max(loopDelay,1000));
 }
 
-async function playTrack(id){
+function playTrack(id){
   if(currentTrackId===id&&musicPlaying){stopMusic();return;}
   stopMusic();
   const track=MUSIC_TRACKS.find(t=>t.id===id);
   if(!track)return;
+  const AudioCtxClass=window.AudioContext||window.webkitAudioContext;
+  if(!AudioCtxClass)return;
+  let ctx=null;
+  if(_musicCtxPrepared&&_musicCtxPrepared.state!=='closed'){
+    ctx=_musicCtxPrepared;
+    if(ctx.state==='suspended'){ctx.resume();}
+  }else{
+    try{ctx=new AudioCtxClass();if(ctx.state==='suspended'){ctx.resume();}}catch(e){console.warn('AudioContext init failed:',e);return;}
+  }
+  musicCtx=ctx;
   try{
-    musicCtx=new(window.AudioContext||window.webkitAudioContext)();
-    if(musicCtx.state==='suspended'){await musicCtx.resume();}
-  }catch(e){console.warn('AudioContext init failed:',e);return;}
-  musicGain=musicCtx.createGain();
-  musicGain.gain.value=musicVolume;
-  const comp=musicCtx.createDynamicsCompressor();
-  comp.threshold.value=-18;comp.knee.value=8;comp.ratio.value=4;comp.attack.value=0.003;comp.release.value=0.15;
-  musicGain.connect(comp);comp.connect(musicCtx.destination);
-  currentTrackId=id;musicPlaying=true;
-  document.getElementById('music-fab').classList.add('playing');
-  scheduleTrack(track);
-  initMusicTrackList();
+    musicGain=musicCtx.createGain();
+    musicGain.gain.value=musicVolume;
+    const comp=musicCtx.createDynamicsCompressor();
+    comp.threshold.value=-18;comp.knee.value=8;comp.ratio.value=4;comp.attack.value=0.003;comp.release.value=0.15;
+    musicGain.connect(comp);comp.connect(musicCtx.destination);
+    currentTrackId=id;musicPlaying=true;
+    document.getElementById('music-fab').classList.add('playing');
+    scheduleTrack(track);
+    initMusicTrackList();
+  }catch(e){console.warn('Music setup failed:',e);}
 }
 
 function setMusicVolume(val){
