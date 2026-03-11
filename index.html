@@ -503,6 +503,23 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
 .user-profile-stat{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;}
 .user-profile-stat-val{font-size:20px;font-weight:700;color:var(--accent);}
 .user-profile-stat-lbl{font-size:11px;color:var(--muted);margin-top:4px;}
+.user-profile-chat-btn{width:44px;height:44px;border-radius:50%;background:var(--accent);color:#000;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:12px auto 0;transition:box-shadow 0.2s;flex-shrink:0;}
+.user-profile-chat-btn:hover{box-shadow:0 0 18px rgba(200,255,0,0.35);}
+.user-profile-chat-btn svg{width:20px;height:20px;}
+.dm-panel{position:fixed;bottom:-100%;left:0;right:0;top:0;background:var(--bg);z-index:9100;display:flex;flex-direction:column;transition:bottom 0.3s cubic-bezier(.4,0,.2,1);box-shadow:0 -8px 40px rgba(0,0,0,0.5);}
+.dm-panel.open{bottom:0;}
+.dm-header{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border);background:var(--surface);}
+.dm-back{width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.dm-header-title{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--accent);}
+.dm-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;-webkit-overflow-scrolling:touch;}
+.dm-msg{max-width:80%;padding:12px 16px;border-radius:16px;font-size:14px;line-height:1.5;}
+.dm-msg.sent{align-self:flex-end;background:var(--accent);color:#000;}
+.dm-msg.received{align-self:flex-start;background:var(--surface2);border:1px solid var(--border);}
+.dm-msg-time{font-size:10px;color:var(--muted);margin-top:6px;}
+.dm-input-row{display:flex;gap:10px;padding:16px 20px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0));background:var(--surface);border-top:1px solid var(--border);}
+.dm-input{flex:1;padding:14px 18px;background:var(--surface2);border:1px solid var(--border);border-radius:24px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;}
+.dm-input:focus{border-color:var(--accent);}
+.dm-send{width:48px;height:48px;border-radius:50%;background:var(--accent);border:none;color:#000;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .community-post-msg{font-size:14px;line-height:1.5;color:var(--text);}
 .community-post-img{margin-top:10px;border-radius:10px;overflow:hidden;max-width:100%;max-height:280px;object-fit:cover;cursor:pointer;display:block;}
 .community-post-time{font-size:11px;color:var(--muted);margin-top:8px;}
@@ -1302,7 +1319,25 @@ input[type=number]::-webkit-inner-spin-button{opacity:1;}
     <div class="user-profile-title" id="user-profile-title">@username</div>
     <div class="user-profile-sub" id="user-profile-sub">Progress & XP</div>
     <div class="user-profile-stats" id="user-profile-stats"></div>
-    <button class="btn-keep" onclick="closeUserProfileModal()" style="width:100%;margin-top:20px;">Close</button>
+    <button class="user-profile-chat-btn" id="user-profile-chat-btn" onclick="openDMChat(_dmChatPartner)" title="Chat with them">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+    </button>
+    <button class="btn-keep" onclick="closeUserProfileModal()" style="width:100%;margin-top:12px;">Close</button>
+  </div>
+</div>
+
+<!-- DM PRIVATE CHAT PANEL -->
+<div class="dm-panel" id="dm-panel">
+  <div class="dm-header">
+    <button class="dm-back" onclick="closeDMPanel()">←</button>
+    <div class="dm-header-title" id="dm-header-title">@username</div>
+  </div>
+  <div class="dm-messages" id="dm-messages"></div>
+  <div class="dm-input-row">
+    <input type="text" class="dm-input" id="dm-input" placeholder="Type a message…" maxlength="500" onkeydown="if(event.key==='Enter')sendDM()">
+    <button class="dm-send" onclick="sendDM()">
+      <svg viewBox="0 0 24 24" width="20" height="20"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor"/></svg>
+    </button>
   </div>
 </div>
 
@@ -1834,6 +1869,7 @@ function saveAccounts(a){localStorage.setItem('forge_accounts',JSON.stringify(a)
 const MQTT_BROKERS=['wss://broker.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt'];
 const MQTT_PREFIX='forge-fit/a/';
 const MQTT_COMMUNITY='forge-fit/community';
+const MQTT_DM_PREFIX='forge-fit/dm/';
 let _communityClient=null;
 const DEVICE_ID='forge_'+Math.random().toString(36).slice(2,12);
 let _liveClient=null;
@@ -1938,6 +1974,11 @@ function startLiveSync(username,pwHash){
 
 function getCommunityFeed(){
   if(!currentUser)return[];
+  if(localStorage.getItem('forge_community_cleared')!=='1'){
+    localStorage.setItem('forge_community_cleared','1');
+    S.communityFeed=[];
+    if(currentUser)save(S,{immediateSync:true});
+  }
   if(!S.communityFeed){
     try{const old=JSON.parse(localStorage.getItem('forge_community_feed')||'[]');if(old.length){S.communityFeed=old;save(S,{immediateSync:true});localStorage.removeItem('forge_community_feed');}else{S.communityFeed=[];}}catch(e){S.communityFeed=[];}
   }
@@ -1958,9 +1999,11 @@ function buildCommunityFeed(){
     return`<div class="community-post"><div class="community-post-user" onclick="showUserProfileModal(${i})" role="button" tabindex="0">@${escapeHtml(p.user)}</div><div class="community-post-msg">${escapeHtml(p.msg)}</div>${imgHtml}<div class="community-post-time">${d.toLocaleDateString()} ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div></div>`;
   }).join('');
 }
+let _dmChatPartner=null;
 function showUserProfileModal(postIndex){
   const posts=getCommunityFeed().sort((a,b)=>b.ts-a.ts).slice(0,50);
   const p=posts[postIndex];if(!p)return;
+  _dmChatPartner=p.user;
   const isCurrentUser=p.user===currentUser;
   const stats=isCurrentUser?getUserStatsFromS():p;
   const avatarSrc=p.avatar||(isCurrentUser&&S.profile?.avatar?S.profile.avatar:null);
@@ -1970,9 +2013,61 @@ function showUserProfileModal(postIndex){
   document.getElementById('user-profile-sub').textContent=stats.level?'Stats from when they posted':'Progress & XP';
   const html=stats.level?`<div class="user-profile-stat"><div class="user-profile-stat-val">${stats.level}</div><div class="user-profile-stat-lbl">Level</div></div><div class="user-profile-stat"><div class="user-profile-stat-val">${stats.xp||0}</div><div class="user-profile-stat-lbl">XP</div></div><div class="user-profile-stat"><div class="user-profile-stat-val">${stats.totalWorkouts||0}</div><div class="user-profile-stat-lbl">Workouts</div></div><div class="user-profile-stat"><div class="user-profile-stat-val">${stats.prCount||0}</div><div class="user-profile-stat-lbl">PRs</div></div><div class="user-profile-stat"><div class="user-profile-stat-val">${stats.streak||0}</div><div class="user-profile-stat-lbl">Week Streak</div></div>`:'<div class="user-profile-stat" style="grid-column:1/-1;"><div class="user-profile-stat-val" style="font-size:14px;color:var(--muted);">No stats available</div><div class="user-profile-stat-lbl">Older posts don\'t include profile data</div></div>';
   document.getElementById('user-profile-stats').innerHTML=html;
+  const chatBtn=document.getElementById('user-profile-chat-btn');
+  chatBtn.style.display=isCurrentUser?'none':'block';
   document.getElementById('user-profile-overlay').classList.add('open');
 }
 function closeUserProfileModal(){document.getElementById('user-profile-overlay').classList.remove('open');}
+let _dmPartner=null;
+function openDMChat(username){
+  if(!username||username===currentUser)return;
+  closeUserProfileModal();
+  _dmPartner=username;
+  document.getElementById('dm-header-title').textContent='@'+username;
+  document.getElementById('dm-input').value='';
+  buildDMMessages();
+  document.getElementById('dm-panel').classList.add('open');
+  document.getElementById('dm-input').focus();
+}
+function closeDMPanel(){
+  document.getElementById('dm-panel').classList.remove('open');
+  _dmPartner=null;
+}
+function getDMWith(other){
+  if(!S.privateChats)S.privateChats={};
+  return S.privateChats[other]||[];
+}
+function saveDMWith(other,msgs){
+  if(!S.privateChats)S.privateChats={};
+  S.privateChats[other]=(msgs||[]).slice(-100);
+  save(S,{immediateSync:true});
+}
+function buildDMMessages(){
+  const el=document.getElementById('dm-messages');
+  if(!_dmPartner){el.innerHTML='';return;}
+  const msgs=getDMWith(_dmPartner).sort((a,b)=>a.ts-b.ts);
+  if(!msgs.length){el.innerHTML='<div style="color:var(--muted);text-align:center;padding:40px 20px;font-size:14px;">No messages yet. Say hi! 👋</div>';return;}
+  el.innerHTML=msgs.map(m=>{
+    const sent=m.from===currentUser;
+    const d=new Date(m.ts);
+    return`<div class="dm-msg ${sent?'sent':'received'}"><div>${escapeHtml(m.msg)}</div><div class="dm-msg-time">${d.toLocaleDateString()} ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div></div>`;
+  }).join('');
+  el.scrollTop=el.scrollHeight;
+}
+function sendDM(){
+  const inp=document.getElementById('dm-input');
+  const msg=inp.value.trim();
+  if(!msg||!_dmPartner||!currentUser)return;
+  inp.value='';
+  const dm={from:currentUser,to:_dmPartner,msg,ts:Date.now(),id:'dm_'+Date.now()+'_'+Math.random().toString(36).slice(2,8)};
+  const msgs=getDMWith(_dmPartner);msgs.push(dm);saveDMWith(_dmPartner,msgs);
+  buildDMMessages();
+  if(typeof mqtt!=='undefined'){
+    _mqttConnect().then(client=>{
+      client.publish(MQTT_DM_PREFIX+currentUser+'/'+_dmPartner,JSON.stringify(dm),{qos:1},()=>{try{client.end();}catch(e){}});
+    }).catch(()=>{});
+  }
+}
 function getUserStatsFromS(){
   const log=S.log||[];
   const xp=calcXP();const lvl=getLevel(xp);
@@ -2032,8 +2127,20 @@ function startCommunityFeed(){
   _mqttConnect().then(client=>{
     _communityClient=client;
     client.subscribe(MQTT_COMMUNITY,{qos:1},err=>{if(err)console.warn('Community subscribe err:',err);});
+    if(currentUser)client.subscribe(MQTT_DM_PREFIX+'+/'+currentUser,{qos:1},err=>{if(err)console.warn('DM subscribe err:',err);});
     client.on('message',(topic,msg)=>{
       try{
+        if(topic.startsWith(MQTT_DM_PREFIX)){
+          const dm=JSON.parse(msg.toString());
+          if(!dm.from||!dm.to||!dm.msg||!dm.ts)return;
+          if(dm.to!==currentUser)return;
+          dm.id=dm.id||'dm_'+dm.ts+'_'+dm.from;
+          const msgs=getDMWith(dm.from);
+          if(msgs.some(m=>m.id===dm.id))return;
+          msgs.push(dm);saveDMWith(dm.from,msgs);
+          if(_dmPartner===dm.from)buildDMMessages();
+          return;
+        }
         const post=JSON.parse(msg.toString());
         if(!post.user||!post.msg||!post.ts)return;
         post.id=post.id||'c_'+post.ts+'_'+post.user;
@@ -2238,6 +2345,8 @@ function loginAs(u){
 function doLogout(){
   if(currentUser&&S){save(S);}
   stopLiveSync();
+  if(_communityClient){try{_communityClient.end();}catch(e){}}
+  _communityClient=null;
   currentUser=null;
   localStorage.removeItem('forge_current_user');
   S={};
