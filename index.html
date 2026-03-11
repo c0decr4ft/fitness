@@ -2038,10 +2038,29 @@ function getRecentChats(){
     return{user:u,lastTs:last?last.ts:0,lastMsg:last?last.msg:''};
   }).sort((a,b)=>b.lastTs-a.lastTs);
 }
-function buildChatList(){
+async function fetchRealUsers(query){
+  try{
+    const base=typeof location!=='undefined'&&location.origin?location.origin:'';
+    const r=await fetch(base+'/api/users?q='+encodeURIComponent(query||''));
+    if(!r.ok)return[];
+    const j=await r.json();
+    return Array.isArray(j.users)?j.users:[];
+  }catch(e){return[];}
+}
+function renderChatListItems(users,showStartNew){
+  return users.map(u=>{
+    const posts=getCommunityFeed();const p=posts.find(x=>x.user===u);
+    const av=p?.avatar||null;const letter=(u||'?').charAt(0).toUpperCase();
+    const avHtml=av?`<img src="${escapeHtml(av)}" alt="">`:`${letter}`;
+    const msgs=S?.privateChats?.[u]||[];const last=msgs[msgs.length-1];
+    const preview=last?escapeHtml((last.msg||'').slice(0,40)):'No messages yet';
+    return`<div class="chat-list-item" data-user="${escapeHtml(u)}" onclick="openDMChat(this.dataset.user)"><div class="chat-list-item-avatar">${avHtml}</div><div class="chat-list-item-info"><div class="chat-list-item-name">@${escapeHtml(u)}</div><div class="chat-list-item-preview">${preview}</div></div></div>`;
+  }).join('')+(showStartNew?`<div class="chat-list-item" data-user="${escapeHtml(showStartNew)}" onclick="openDMChat(this.dataset.user)"><div class="chat-list-item-avatar">${(showStartNew||'?').charAt(0).toUpperCase()}</div><div class="chat-list-item-info"><div class="chat-list-item-name">@${escapeHtml(showStartNew)}</div><div class="chat-list-item-preview">Start new chat</div></div></div>`:'');
+}
+async function buildChatList(){
   const list=document.getElementById('chat-list');if(!list)return;
   if(!currentUser){list.innerHTML='<div class="chat-list-empty">Sign in to chat with others.</div>';return;}
-  const q=(document.getElementById('chat-search-input')?.value||'').trim().replace(/^@/,'').toLowerCase();
+  const q=(document.getElementById('chat-search-input')?.value||'').trim().replace(/^@/,'');
   if(!q){
     const recent=getRecentChats();
     if(!recent.length){list.innerHTML='<div class="chat-list-empty">No chats yet. Search for a user by @username to start chatting.</div>';return;}
@@ -2055,24 +2074,19 @@ function buildChatList(){
     }).join('');
     return;
   }
-  const known=getKnownUsers();
-  const matches=known.filter(u=>u.toLowerCase().includes(q));
-  const exactMatch=matches.find(u=>u.toLowerCase()===q);
-  const canStartNew=q.length>=2&&!exactMatch&&q!==(currentUser||'').toLowerCase();
-  let html='';
-  matches.forEach(u=>{
-    const posts=getCommunityFeed();const p=posts.find(x=>x.user===u);
-    const av=p?.avatar||null;const letter=(u||'?').charAt(0).toUpperCase();
-    const avHtml=av?`<img src="${escapeHtml(av)}" alt="">`:`${letter}`;
-    const msgs=S?.privateChats?.[u]||[];const last=msgs[msgs.length-1];
-    const preview=last?escapeHtml((last.msg||'').slice(0,40)):'No messages yet';
-    html+=`<div class="chat-list-item" data-user="${escapeHtml(u)}" onclick="openDMChat(this.dataset.user)"><div class="chat-list-item-avatar">${avHtml}</div><div class="chat-list-item-info"><div class="chat-list-item-name">@${escapeHtml(u)}</div><div class="chat-list-item-preview">${preview}</div></div></div>`;
-  });
-  if(canStartNew)html+=`<div class="chat-list-item" data-user="${escapeHtml(q)}" onclick="openDMChat(this.dataset.user)"><div class="chat-list-item-avatar">${(q||'?').charAt(0).toUpperCase()}</div><div class="chat-list-item-info"><div class="chat-list-item-name">@${escapeHtml(q)}</div><div class="chat-list-item-preview">Start new chat</div></div></div>`;
-  if(!html)html='<div class="chat-list-empty">No users found. Type @username to start a new chat.</div>';
+  list.innerHTML='<div class="chat-list-empty">Searching…</div>';
+  const qLower=q.toLowerCase();
+  let matches=await fetchRealUsers(q);
+  matches=matches.filter(u=>u&&u!==currentUser&&u.toLowerCase().includes(qLower));
+  let html=renderChatListItems(matches,null);
+  if(!html)html='<div class="chat-list-empty">No users found. Run the app with the server (python server.py) to search real accounts.</div>';
   list.innerHTML=html;
 }
-function searchChatUser(val){buildChatList();}
+var _searchChatDebounce=null;
+function searchChatUser(val){
+  clearTimeout(_searchChatDebounce);
+  _searchChatDebounce=setTimeout(function(){buildChatList();},200);
+}
 function buildCommunityFeed(){
   const feed=document.getElementById('community-feed');
   const posts=getCommunityFeed().sort((a,b)=>b.ts-a.ts).slice(0,50);

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """FORGE Fitness App Server - serves the app and syncs accounts to the cloud."""
 import json, os, threading, urllib.request, urllib.error
+from urllib.parse import parse_qs
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 
 DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'forge_cloud.json')
@@ -150,6 +151,21 @@ class ForgeHandler(SimpleHTTPRequestHandler):
 
         if key == 'health':
             self._json_response({'ok': True, 'cloud': True})
+            return
+
+        if key == 'users':
+            qs = parse_qs(
+                self.path.split('?', 1)[1] if '?' in self.path else ''
+            )
+            query = (qs.get('q', [''])[0] or '').strip().lower()
+            directory = cloud_get_directory()
+            usernames = [
+                u for u in directory.keys()
+                if isinstance(u, str) and not u.startswith('_')
+                and (not query or query in u.lower())
+            ]
+            usernames.sort(key=str.lower)
+            self._json_response({'users': usernames})
             return
 
         if key.startswith('account/'):
