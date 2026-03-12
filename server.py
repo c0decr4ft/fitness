@@ -158,11 +158,19 @@ class ForgeHandler(SimpleHTTPRequestHandler):
                 self.path.split('?', 1)[1] if '?' in self.path else ''
             )
             query = (qs.get('q', [''])[0] or '').strip().lower()
+            usernames = set()
             directory = cloud_get_directory()
+            for u in directory.keys():
+                if isinstance(u, str) and not u.startswith('_'):
+                    usernames.add(u)
+            with lock:
+                data = load_data()
+            for u in data.get('accounts', {}).keys():
+                if isinstance(u, str) and not u.startswith('_'):
+                    usernames.add(u)
             usernames = [
-                u for u in directory.keys()
-                if isinstance(u, str) and not u.startswith('_')
-                and (not query or query in u.lower())
+                u for u in usernames
+                if not query or query in u.lower()
             ]
             usernames.sort(key=str.lower)
             self._json_response({'users': usernames})

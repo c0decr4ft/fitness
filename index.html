@@ -2039,15 +2039,19 @@ function getRecentChats(){
   }).sort((a,b)=>b.lastTs-a.lastTs);
 }
 async function fetchRealUsers(query){
-  try{
-    const base=typeof location!=='undefined'&&location.origin?location.origin:'';
-    const r=await fetch(base+'/api/users?q='+encodeURIComponent(query||''));
-    if(!r.ok)return[];
-    const j=await r.json();
-    return Array.isArray(j.users)?j.users:[];
-  }catch(e){return[];}
+  const enc=encodeURIComponent(query||'');
+  const urls=[];
+  if(typeof location!=='undefined'&&location.origin&&!String(location.origin).startsWith('file'))urls.push(location.origin+'/api/users?q='+enc);
+  urls.push('http://localhost:8765/api/users?q='+enc);
+  for(var i=0;i<urls.length;i++){
+    try{
+      var r=await fetch(urls[i]);
+      if(r.ok){var j=await r.json();return Array.isArray(j.users)?j.users:[];}
+    }catch(e){}
+  }
+  return[];
 }
-function renderChatListItems(users,showStartNew){
+function renderChatListItems(users){
   return users.map(u=>{
     const posts=getCommunityFeed();const p=posts.find(x=>x.user===u);
     const av=p?.avatar||null;const letter=(u||'?').charAt(0).toUpperCase();
@@ -2055,7 +2059,7 @@ function renderChatListItems(users,showStartNew){
     const msgs=S?.privateChats?.[u]||[];const last=msgs[msgs.length-1];
     const preview=last?escapeHtml((last.msg||'').slice(0,40)):'No messages yet';
     return`<div class="chat-list-item" data-user="${escapeHtml(u)}" onclick="openDMChat(this.dataset.user)"><div class="chat-list-item-avatar">${avHtml}</div><div class="chat-list-item-info"><div class="chat-list-item-name">@${escapeHtml(u)}</div><div class="chat-list-item-preview">${preview}</div></div></div>`;
-  }).join('')+(showStartNew?`<div class="chat-list-item" data-user="${escapeHtml(showStartNew)}" onclick="openDMChat(this.dataset.user)"><div class="chat-list-item-avatar">${(showStartNew||'?').charAt(0).toUpperCase()}</div><div class="chat-list-item-info"><div class="chat-list-item-name">@${escapeHtml(showStartNew)}</div><div class="chat-list-item-preview">Start new chat</div></div></div>`:'');
+  }).join('');
 }
 async function buildChatList(){
   const list=document.getElementById('chat-list');if(!list)return;
@@ -2078,8 +2082,8 @@ async function buildChatList(){
   const qLower=q.toLowerCase();
   let matches=await fetchRealUsers(q);
   matches=matches.filter(u=>u&&u!==currentUser&&u.toLowerCase().includes(qLower));
-  let html=renderChatListItems(matches,null);
-  if(!html)html='<div class="chat-list-empty">No users found. Run the app with the server (python server.py) to search real accounts.</div>';
+  let html=renderChatListItems(matches);
+  if(!html)html='<div class="chat-list-empty">No user with that username exists.</div>';
   list.innerHTML=html;
 }
 var _searchChatDebounce=null;
@@ -2196,7 +2200,7 @@ function startCommunityFeed(){
           msgs.push(dm);saveDMWith(dm.from,msgs);
           updateDMBadge();
           if(_dmPartner===dm.from)buildDMMessages();
-          else{showDMToast(dm.from);var pc=document.getElementById('page-community');if(pc&&pc.classList.contains('active')&&document.getElementById('community-chat-view')?.classList.contains('active'))buildChatList();}
+          else{showDMToast(dm.from);var pc=document.getElementById('page-community');if(pc&&pc.classList.contains('active'))buildChatList();}
           return;
         }
         var post=JSON.parse(msg.toString());
