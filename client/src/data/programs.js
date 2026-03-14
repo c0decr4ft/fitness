@@ -1,0 +1,73 @@
+// Programs - extracted from original app.js
+export const PROGRAMS = [
+  {
+    id: 'ppl',
+    name: 'Push Pull Legs',
+    desc: 'Classic 6-day split for building size and strength',
+    icon: '💪',
+    color: 'var(--accent)',
+    badge: '6 Days',
+    days: [
+      { label: 'Push A', exs: ['bench', 'ohp', 'dips', 'lat_raise', 'tri_pushdown'] },
+      { label: 'Pull A', exs: ['deadlift', 'pullup', 'row', 'face_pull', 'bicep_curl'] },
+      { label: 'Legs A', exs: ['squat', 'rdl', 'leg_press', 'calf', 'legraise'] },
+      { label: 'Push B', exs: ['incline_bench', 'arnold_press', 'chest_fly', 'lat_raise', 'tri_pushdown'] },
+      { label: 'Pull B', exs: ['row', 'chinup', 'lat_pulldown', 'hammer_curl', 'shrugs'] },
+      { label: 'Legs B', exs: ['front_squat', 'hip_thrust', 'bulgarian', 'leg_curl', 'leg_ext'] },
+    ],
+  },
+  {
+    id: 'ul',
+    name: 'Upper / Lower',
+    desc: '4-day split balancing push and pull each session',
+    icon: '🔄',
+    color: 'var(--blue)',
+    badge: '4 Days',
+    days: [
+      { label: 'Upper A', exs: ['bench', 'row', 'ohp', 'pullup', 'bicep_curl', 'tri_pushdown'] },
+      { label: 'Lower A', exs: ['squat', 'rdl', 'leg_press', 'calf', 'plank'] },
+      { label: 'Upper B', exs: ['incline_bench', 'cable_row', 'arnold_press', 'lat_pulldown', 'hammer_curl'] },
+      { label: 'Lower B', exs: ['front_squat', 'hip_thrust', 'lunges', 'leg_curl', 'twist'] },
+    ],
+  },
+  {
+    id: 'fb',
+    name: 'Full Body',
+    desc: '3-day program hitting every muscle group each workout',
+    icon: '🏋️',
+    color: 'var(--green)',
+    badge: '3 Days',
+    days: [
+      { label: 'Day 1', exs: ['squat', 'bench', 'row', 'ohp', 'plank'] },
+      { label: 'Day 2', exs: ['deadlift', 'incline_bench', 'pullup', 'lunges', 'twist'] },
+      { label: 'Day 3', exs: ['front_squat', 'dips', 'chinup', 'hip_thrust', 'legraise'] },
+    ],
+  },
+  {
+    id: 'str',
+    name: 'Strength Focus',
+    desc: 'Heavy compound lifts with lower reps for raw strength',
+    icon: '🏆',
+    color: 'var(--yellow)',
+    badge: '4 Days',
+    days: [
+      { label: 'Squat', exs: ['squat', 'leg_press', 'rdl', 'calf', 'plank'] },
+      { label: 'Bench', exs: ['bench', 'incline_bench', 'dips', 'chest_fly', 'tri_pushdown'] },
+      { label: 'Deadlift', exs: ['deadlift', 'row', 'pullup', 'shrugs', 'bicep_curl'] },
+      { label: 'OHP', exs: ['ohp', 'arnold_press', 'lat_raise', 'face_pull', 'legraise'] },
+    ],
+  },
+  {
+    id: 'bw',
+    name: 'Bodyweight Only',
+    desc: 'No equipment needed — train anywhere',
+    icon: '🤸',
+    color: 'var(--purple)',
+    badge: '3 Days',
+    days: [
+      { label: 'Day 1', exs: ['pushups', 'pullup', 'squat', 'plank', 'mountain'] },
+      { label: 'Day 2', exs: ['dips', 'chinup', 'lunges', 'legraise', 'twist'] },
+      { label: 'Day 3', exs: ['burpees', 'pushups', 'bulgarian', 'side_plank', 'dead_bug'] },
+    ],
+  },
+];

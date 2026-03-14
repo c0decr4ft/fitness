@@ -4,7 +4,10 @@ import json, os, threading, urllib.request, urllib.error
 from urllib.parse import parse_qs
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 
-DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'forge_cloud.json')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(BASE_DIR, 'forge_cloud.json')
+# React build output; use client/dist if it exists, else serve from project root (dev)
+CLIENT_DIST = os.path.join(BASE_DIR, 'client', 'dist')
 CLOUD_DIR_ID = '019cc742-cdc5-7356-b86c-b65689ea51fd'
 BLOB_API = 'https://jsonblob.com/api/jsonBlob'
 lock = threading.Lock()
@@ -126,7 +129,47 @@ class ForgeHandler(SimpleHTTPRequestHandler):
         if self.path.startswith('/api/'):
             self._api_get()
         else:
+            self._serve_static()
+
+    def _serve_static(self):
+        """Serve React build from client/dist when built; else fall back to SimpleHTTPRequestHandler."""
+        if not os.path.isdir(CLIENT_DIST):
+            # No React build: use default file serving (original index.html, etc.)
             super().do_GET()
+            return
+        path = self.path.split('?')[0]
+        path = path.lstrip('/') or 'index.html'
+        filepath = os.path.join(CLIENT_DIST, path)
+        if os.path.isfile(filepath):
+            self.send_response(200)
+            ext = os.path.splitext(path)[1]
+            ctype = {
+                '.html': 'text/html',
+                '.js': 'application/javascript',
+                '.css': 'text/css',
+                '.json': 'application/json',
+                '.ico': 'image/x-icon',
+                '.svg': 'image/svg+xml',
+                '.png': 'image/png',
+                '.jpg': 'image/jpeg',
+                '.woff': 'font/woff',
+                '.woff2': 'font/woff2',
+            }.get(ext, 'application/octet-stream')
+            self.send_header('Content-Type', ctype)
+            self.end_headers()
+            with open(filepath, 'rb') as f:
+                self.wfile.write(f.read())
+        else:
+            # SPA fallback: serve index.html for client-side routing
+            index_path = os.path.join(CLIENT_DIST, 'index.html')
+            if os.path.isfile(index_path):
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/html')
+                self.end_headers()
+                with open(index_path, 'rb') as f:
+                    self.wfile.write(f.read())
+            else:
+                self.send_error(404)
 
     def do_POST(self):
         if self.path.startswith('/api/'):

@@ -1,34 +1,55 @@
 # FORGE Fitness — Project Structure
 
-The app is now split into separate files for easier maintenance and editing.
+The app is a **React** frontend with a Python API server.
 
 ## File Layout
 
 ```
 fitnes/
-├── index.html          # HTML structure only (~710 lines)
-├── css/
-│   └── app.css         # All styles (~675 lines)
-├── js/
-│   ├── app.js          # All JavaScript logic (~3250 lines)
-│   └── controls.js     # Touch/button handlers (if used)
-├── server.py            # Python HTTP server + cloud sync
+├── client/              # React app (Vite)
+│   ├── src/
+│   │   ├── App.jsx
+│   │   ├── app.css
+│   │   ├── main.jsx
+│   │   ├── context/AppContext.jsx
+│   │   ├── components/AppLayout.jsx, ExerciseModal.jsx
+│   │   ├── pages/AuthScreen, Dashboard, Exercises, etc.
+│   │   └── data/exercises.js, programs.js, achievements.js, i18n.js
+│   ├── package.json
+│   └── vite.config.js
+├── index.html           # Legacy (used when React not built)
+├── css/app.css
+├── js/app.js
+├── server.py            # Python HTTP server + API + cloud sync
 ├── forge_cloud.json     # Local account data
-└── STRUCTURE.md         # This file
+└── STRUCTURE.md
 ```
-
-## What Goes Where
-
-| File | Contents |
-|------|----------|
-| **index.html** | Page structure, modals, forms. No inline CSS or JS. |
-| **css/app.css** | Variables, layout, components, responsive rules. |
-| **js/app.js** | Exercises, programs, i18n, auth, sync, community, coach, dashboard, log, etc. |
 
 ## Running the App
 
+**Development (React dev server + API proxy):**
 ```bash
-python server.py   # Serves on http://localhost:8765
+# Terminal 1: API server
+python server.py
+
+# Terminal 2: React dev server
+cd client && npm run dev
+# Open http://localhost:5173
 ```
 
-Or open `index.html` directly in a browser (some features like user search need the server).
+**Production (single server):**
+```bash
+cd client && npm run build
+python server.py
+# Open http://localhost:8765
+```
+
+## React Structure
+
+| Path | Contents |
+|------|----------|
+| **App.jsx** | Routing, auth guard, protected routes |
+| **context/AppContext** | Auth, user state (S), save, login, logout |
+| **data/** | Exercises, programs, achievements, i18n |
+| **pages/** | AuthScreen, Dashboard, Exercises, PlaceholderPage |
+| **components/** | AppLayout (sidebar + nav), ExerciseModal |
