@@ -168,12 +168,23 @@ class ForgeHandler(SimpleHTTPRequestHandler):
             for u in data.get('accounts', {}).keys():
                 if isinstance(u, str) and not u.startswith('_'):
                     usernames.add(u)
+            for p in data.get('community_posts', []):
+                u = p.get('user') if isinstance(p, dict) else None
+                if u and isinstance(u, str) and not u.startswith('_'):
+                    usernames.add(u)
             usernames = [
                 u for u in usernames
                 if not query or query in u.lower()
             ]
             usernames.sort(key=str.lower)
             self._json_response({'users': usernames})
+            return
+
+        if key == 'community/feed':
+            with lock:
+                data = load_data()
+            posts = data.get('community_posts', [])
+            self._json_response({'posts': posts[:100]})
             return
 
         if key.startswith('account/'):
@@ -205,8 +216,8 @@ class ForgeHandler(SimpleHTTPRequestHandler):
         self._json_response({'error': 'not found'}, 404)
 
     def _api_post(self):
-        path = self.path.split('?')[0]
-        key = path[5:]
+        path = self.path.split('?')[0].rstrip('/')
+        key = path[5:] if len(path) > 5 else ''
         body = self._read_body()
 
         if key.startswith('account/'):
@@ -223,8 +234,24 @@ class ForgeHandler(SimpleHTTPRequestHandler):
                              daemon=True).start()
 
             self._json_response({'ok': True, 'user': username})
-        else:
-            self._json_response({'error': 'bad request'}, 400)
+            return
+
+        if key == 'community/post':
+            post = body
+            if not isinstance(post, dict) or not post.get('user') or not post.get('ts'):
+                self._json_response({'error': 'bad request'}, 400)
+                return
+            with lock:
+                data = load_data()
+                if 'community_posts' not in data:
+                    data['community_posts'] = []
+                data['community_posts'].insert(0, post)
+                data['community_posts'] = data['community_posts'][:200]
+                save_data(data)
+            self._json_response({'ok': True})
+            return
+
+        self._json_response({'error': 'bad request'}, 400)
 
     def log_message(self, fmt, *args):
         msg = args[0] if args else ''

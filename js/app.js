@@ -120,6 +120,8 @@ const EX = {
 const TAGS = {Push:'tag-push',Pull:'tag-pull',Legs:'tag-legs',Core:'tag-core',Cardio:'tag-cardio',Stretch:'tag-stretch'};
 const DIFF_COLORS = ['#00e676','#c8ff00','#facc15','#ff4500'];
 const DIFF_LABELS = ['Beginner','Intermediate','Advanced','Expert'];
+const EX_NAMES={es:{bench:'Press de banca',squat:'Sentadilla',deadlift:'Peso muerto',pushups:'Flexiones',plank:'Plancha',ohp:'Press militar',row:'Remo con barra',pullup:'Dominadas',run:'Correr',bike:'Ciclismo'},fr:{bench:'Développé couché',squat:'Squat',deadlift:'Soulevé de terre',pushups:'Pompes',plank:'Gainage'},de:{bench:'Bankdrücken',squat:'Kniebeuge',deadlift:'Kreuzheben',pushups:'Liegestütze',plank:'Unterarmstütz'},it:{bench:'Panca piana',squat:'Squat',deadlift:'Stacco',pushups:'Flessioni',plank:'Plank'}};
+const EX_STEPS={es:{bench:['Túmbate en el banco con los ojos bajo la barra. Pies apoyados, separados al ancho de hombros.','Agarra la barra con las manos algo más anchas que los hombros. Muñecas rectas.','Junta las escápulas y presiónalas contra el banco durante todo el ejercicio.','Desenracka y mantén la barra sobre el pecho con brazos extendidos. Inspira.','Baja la barra despacio hasta el pecho (línea del pezón). Codos a unos 45°.','Toca el pecho ligeramente y empuja hacia arriba hasta extender los brazos. Espira al empujar.','Error común: NO rebotes en el pecho. NO levantes el glúteo del banco.'],squat:['Coloca la barra en la parte alta de la espalda (trapecios), NO en el cuello.','Pies al ancho de hombros, puntas ligeramente hacia fuera.','Inspira, contrae el core y baja flexionando rodillas y cadera a la vez.','Mantén el pecho arriba y la espalda recta. Las rodillas siguen la línea de los pies.','Baja hasta que los muslos estén al menos paralelos al suelo.','Sube empujando con todo el pie. Espira al subir.','El peso debe estar en el centro del pie. Si los talones se levantan, trabaja la movilidad de tobillo.'],plank:['Colócate en posición de flexión y baja hasta apoyarte en los antebrazos.','Los codos deben estar bajo los hombros. Junta las manos o apóyalas planas.','Extiende las piernas con las puntas en el suelo. Cuerpo en línea recta.','Contrae el core como si fueras a recibir un golpe. Aprieta glúteos. Respira normal.','Mantén la posición. NO dejes que las caderas bajen o suban.','Si la forma se rompe, para. Mejor 20 s perfectos que 60 s mal hechos.']},fr:{bench:['Allongez sur le banc, yeux sous la barre. Pieds à plat, écartés largeur d\'épaules.','Saisissez la barre légèrement plus large que les épaules. Poignets droits.','Serrez les omoplates et gardez-les contre le banc tout le temps.','Dérackez et tenez la barre au-dessus de la poitrine, bras tendus. Inspirez.','Descendez lentement jusqu\'à la poitrine. Coudes à 45°.','Touchez légèrement la poitrine puis poussez jusqu\'à verrouiller les bras. Expirez.'],squat:['Placez la barre sur le haut du dos (trapèzes), pas sur la nuque.','Pieds largeur d\'épaules, orteils légèrement vers l\'extérieur.','Inspirez, gainez le core et descendez en pliant genoux et hanches.','Gardez la poitrine haute et le dos droit. Genoux alignés avec les orteils.','Descendez jusqu\'à ce que les cuisses soient au moins parallèles au sol.']},de:{bench:['Legen Sie sich auf die Bank, Augen unter der Stange. Füße flach, schulterbreit.','Greifen Sie die Stange etwas breiter als schulterbreit. Handgelenke gerade.','Ziehen Sie die Schulterblätter zusammen und drücken Sie sie in die Bank.','Nehmen Sie die Stange und halten Sie sie über der Brust, Arme gestreckt. Einatmen.','Senken Sie die Stange langsam zur Brust. Ellbogen etwa 45°.','Berühren Sie die Brust leicht und drücken Sie hoch. Ausatmen beim Drücken.'],squat:['Legen Sie die Stange auf den oberen Rücken (Trapezius), nicht auf den Nacken.','Füße schulterbreit, Zehen leicht nach außen.','Tief einatmen, Core anspannen, Knie und Hüfte beugen.','Brust hoch, Rücken gerade. Knie über den Zehen.','Bis mindestens parallel zum Boden absenken.']},it:{bench:['Sdraiati sulla panca con gli occhi sotto la sbarra. Piedi piatti, larghi come le spalle.','Afferra la sbarra leggermente più larga delle spalle. Polsi dritti.','Stringi le scapole e tienile premute sulla panca per tutto l\'esercizio.','Sblocca e tieni la sbarra sopra il petto con le braccia tese. Inspira.','Abbassa lentamente al petto. Gomiti a circa 45°.','Tocca il petto e spingi su fino a estendere le braccia. Espira.'],squat:['Posiziona la sbarra sulla parte alta della schiena (trapezi), non sul collo.','Piedi larghi come le spalle, punte leggermente in fuori.','Inspira, contrai il core e scendi piegando ginocchia e anche.','Mantieni il petto alto e la schiena dritta. Ginocchia sopra le punte.','Scendi fino a che le cosce siano almeno parallele al pavimento.']}};
 
 // ═══════════════════════════════════════════════════
 //  PROGRAMS
@@ -219,6 +221,7 @@ const LANG={
     timer_reset:'Reset',timer_start:'Start',checkin_save:'Save Today\'s Check-In',measure_save:'Save Measurements',
     weekly_vol:'Weekly Volume',workout_freq:'Workout Frequency',cat_breakdown:'Category Breakdown',achievements:'🏆 Achievements',
     daily_checkin:'Daily Check-In',weight_hist:'Weight History',trends:'7-Day Trends',body_meas:'Body Measurements',checkin_hist:'Check-In History',
+    steps_howto:'How to perform',
   },
   es:{
     auth_sub:'Tus datos de fitness se guardan en la nube.<br>Inicia sesión con tu usuario y contraseña en cualquier dispositivo.',
@@ -251,6 +254,7 @@ const LANG={
     timer_reset:'Reiniciar',timer_start:'Iniciar',checkin_save:'Guardar registro de hoy',measure_save:'Guardar medidas',
     weekly_vol:'Volumen semanal',workout_freq:'Frecuencia',cat_breakdown:'Por categoría',achievements:'🏆 Logros',
     daily_checkin:'Registro diario',weight_hist:'Historial de peso',trends:'Tendencias 7 días',body_meas:'Medidas corporales',checkin_hist:'Historial',
+    steps_howto:'Cómo realizar',
   },
   fr:{
     auth_sub:'Vos données fitness sont sauvegardées dans le cloud.<br>Connectez-vous avec votre identifiant et mot de passe sur n\'importe quel appareil.',
@@ -283,6 +287,7 @@ const LANG={
     timer_reset:'Réinitialiser',timer_start:'Démarrer',checkin_save:'Enregistrer le suivi',measure_save:'Enregistrer les mesures',
     weekly_vol:'Volume hebdo',workout_freq:'Fréquence',cat_breakdown:'Par catégorie',achievements:'🏆 Réalisations',
     daily_checkin:'Suivi quotidien',weight_hist:'Historique poids',trends:'Tendances 7j',body_meas:'Mensurations',checkin_hist:'Historique',
+    steps_howto:'Comment réaliser',
   },
   de:{
     auth_sub:'Deine Fitness-Daten werden in der Cloud gespeichert.<br>Melde dich mit Benutzername und Passwort auf jedem Gerät an.',
@@ -315,6 +320,7 @@ const LANG={
     timer_reset:'Zurücksetzen',timer_start:'Start',checkin_save:'Heutigen Check-in speichern',measure_save:'Maße speichern',
     weekly_vol:'Wochenvolumen',workout_freq:'Häufigkeit',cat_breakdown:'Nach Kategorie',achievements:'🏆 Erfolge',
     daily_checkin:'Täglicher Check-in',weight_hist:'Gewichtsverlauf',trends:'7-Tage-Trends',body_meas:'Körpermaße',checkin_hist:'Verlauf',
+    steps_howto:'So führst du es aus',
   },
   it:{
     auth_sub:'I tuoi dati fitness sono salvati nel cloud.<br>Accedi con username e password su qualsiasi dispositivo.',
@@ -347,6 +353,7 @@ const LANG={
     timer_reset:'Reimposta',timer_start:'Avvia',checkin_save:'Salva check-in di oggi',measure_save:'Salva misure',
     weekly_vol:'Volume settimanale',workout_freq:'Frequenza',cat_breakdown:'Per categoria',achievements:'🏆 Risultati',
     daily_checkin:'Check-in giornaliero',weight_hist:'Storia peso',trends:'Trend 7 giorni',body_meas:'Misure corporee',checkin_hist:'Storico',
+    steps_howto:'Come eseguire',
   }
 };
 const COACH_LANG={
@@ -420,6 +427,8 @@ function getLang(){
     return(acc&&acc.data&&acc.data.settings&&acc.data.settings.lang)||localStorage.getItem('forge_lang')||'en';
   }catch(e){return'en';}
 }
+function getExName(key){const e=EX[key];if(!e)return key;const lang=getLang();return(EX_NAMES[lang]&&EX_NAMES[lang][key])||e.name;}
+function getExSteps(key){const e=EX[key];if(!e||!e.steps)return[];const lang=getLang();return(EX_STEPS[lang]&&EX_STEPS[lang][key])||e.steps;}
 function t(k){const lang=getLang();const v=LANG[lang]&&LANG[lang][k];return v||(LANG.en&&LANG.en[k])||k;}
 function setLang(lang){
   if(!S)S={};
@@ -493,6 +502,9 @@ function applyI18n(){
   document.querySelectorAll('#unit-height-toggle .toggle-opt').forEach((b,i)=>{b.textContent=b.textContent==='cm'?'cm':'ft/in';});
   document.querySelectorAll('#sound-toggle .toggle-opt').forEach((b,i)=>{b.textContent=T(i===0?'sound_on':'sound_off');});
   document.querySelectorAll('#theme-toggle .toggle-opt').forEach((b,i)=>{b.textContent=T(i===0?'theme_dark':'theme_light');});
+  if(typeof applyExFilters==='function')applyExFilters();
+  if(typeof buildQuickStart==='function')buildQuickStart();
+  if(typeof buildPrograms==='function')buildPrograms();
 }
 
 // ═══════════════════════════════════════════════════
@@ -743,6 +755,7 @@ function getUnreadCountForUser(partner){if(!S||!currentUser||!partner)return 0;i
 function markDMAsRead(partner){if(!S||!partner)return;if(!S.dmLastRead)S.dmLastRead={};S.dmLastRead[partner]=Date.now();save(S,{immediateSync:true});}
 function updateDMBadge(){var n=getUnreadDMCount();var sb=document.getElementById('dm-badge-sidebar');var mb=document.getElementById('dm-badge-more');if(sb){sb.style.display=n>0?'flex':'none';sb.textContent=n>99?'99+':String(n);}if(mb){mb.style.display=n>0?'flex':'none';mb.textContent=n>99?'99+':String(n);}}
 function showDMToast(from){var el=document.getElementById('dm-toast');if(!el)return;el.innerHTML='New message from <span>@'+escapeHtml(from)+'</span>';el.style.display='flex';setTimeout(function(){el.style.display='none';},3500);}
+function showToast(msg){var el=document.getElementById('dm-toast');if(!el)return;el.innerHTML=escapeHtml(msg);el.style.display='flex';setTimeout(function(){el.style.display='none';},2500);}
 function openDMChat(u){if(!u||u===currentUser)return;closeUserProfileModal();_dmPartner=u;markDMAsRead(u);updateDMBadge();var t=document.getElementById('dm-header-title');var i=document.getElementById('dm-input');var p=document.getElementById('dm-panel');if(t)t.textContent='@'+u;if(i)i.value='';buildDMMessages();if(p)p.classList.add('open');if(i)i.focus();}
 function closeDMPanel(){var p=document.getElementById('dm-panel');if(p)p.classList.remove('open');_dmPartner=null;}
 function getDMWith(o){if(!S||!currentUser)return[];if(!S.privateChats)S.privateChats={};return S.privateChats[o]||[];}
@@ -797,13 +810,33 @@ async function postToCommunity(){
   if(_pendingCommunityImg){post.img=_pendingCommunityImg;_pendingCommunityImg=null;document.getElementById('community-img-preview').innerHTML='';document.getElementById('community-img-preview').style.display='none';}
   const posts=getCommunityFeed();posts.unshift(post);saveCommunityFeed(posts);
   buildCommunityFeed();
+  const apiUrl=location.origin&&!String(location.origin).startsWith('file')?location.origin+'/api/community/post':'http://localhost:8765/api/community/post';
+  fetch(apiUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(post)}).catch(()=>fetch('http://localhost:8765/api/community/post',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(post)}).catch(()=>{}));
   if(typeof mqtt!=='undefined'){
     _mqttConnect().then(client=>{
       client.publish(MQTT_COMMUNITY,JSON.stringify(post),{qos:1},()=>{try{client.end();}catch(e){}});
     }).catch(()=>{});
   }
 }
+async function fetchCommunityFeedFromServer(){
+  const urls=[location.origin+'/api/community/feed','http://localhost:8765/api/community/feed'];
+  for(const url of urls){
+    try{const r=await fetch(url);if(r.ok){const j=await r.json();return Array.isArray(j.posts)?j.posts:[];}}catch(e){}
+  }
+  return[];
+}
 function startCommunityFeed(){
+  fetchCommunityFeedFromServer().then(serverPosts=>{
+    if(serverPosts&&serverPosts.length){
+      const local=getCommunityFeed();
+      const seen=new Set(local.map(p=>p.id));
+      const merged=[...local];
+      serverPosts.forEach(p=>{if(p&&p.id&&!seen.has(p.id)){seen.add(p.id);merged.push(p);}});
+      merged.sort((a,b)=>(b.ts||0)-(a.ts||0));
+      saveCommunityFeed(merged.slice(0,100));
+      const pc=document.getElementById('page-community');if(pc&&pc.classList.contains('active'))refreshCommunityPage();
+    }
+  }).catch(()=>{});
   if(typeof mqtt==='undefined'||_communityClient)return;
   _mqttConnect().then(function(client){
     _communityClient=client;
@@ -1044,6 +1077,73 @@ function confirmDeleteAccount(){
     if(currentUser&&accs[currentUser]){delete accs[currentUser];saveAccounts(accs);}
     doLogout();
   });
+}
+function openChangePasswordModal(){
+  document.getElementById('change-pw-err').style.display='none';
+  document.getElementById('change-pw-current').value='';
+  document.getElementById('change-pw-new').value='';
+  document.getElementById('change-pw-confirm').value='';
+  document.getElementById('change-password-overlay').classList.add('open');
+}
+function closeChangePasswordModal(){
+  document.getElementById('change-password-overlay').classList.remove('open');
+}
+async function doChangePassword(){
+  const cur=document.getElementById('change-pw-current').value;
+  const neu=document.getElementById('change-pw-new').value;
+  const conf=document.getElementById('change-pw-confirm').value;
+  const err=document.getElementById('change-pw-err');
+  err.style.display='none';
+  if(!cur){err.textContent='Enter your current password.';err.style.display='block';return;}
+  if(neu.length<6){err.textContent='New password must be at least 6 characters.';err.style.display='block';return;}
+  if(neu!==conf){err.textContent='New passwords do not match.';err.style.display='block';return;}
+  const accs=getAccounts();
+  const acc=accs[currentUser];if(!acc){err.textContent='Account not found.';err.style.display='block';return;}
+  const h=await hashPw(cur);
+  if(acc.hash!==h){err.textContent='Current password is wrong.';err.style.display='block';return;}
+  acc.hash=await hashPw(neu);
+  saveAccounts(accs);
+  syncAccountToCloud(currentUser).catch(()=>{});
+  closeChangePasswordModal();
+  if(typeof showToast==='function')showToast('Password changed.');
+}
+function openChangeUsernameModal(){
+  document.getElementById('change-un-err').style.display='none';
+  document.getElementById('change-un-password').value='';
+  document.getElementById('change-un-new').value='';
+  document.getElementById('change-username-overlay').classList.add('open');
+}
+function closeChangeUsernameModal(){
+  document.getElementById('change-username-overlay').classList.remove('open');
+}
+async function doChangeUsername(){
+  const pw=document.getElementById('change-un-password').value;
+  const raw=document.getElementById('change-un-new').value.trim().toLowerCase();
+  const err=document.getElementById('change-un-err');
+  err.style.display='none';
+  if(!pw){err.textContent='Enter your password to confirm.';err.style.display='block';return;}
+  if(!raw||raw.length<2){err.textContent='Username must be at least 2 characters.';err.style.display='block';return;}
+  if(/[^a-z0-9_]/.test(raw)){err.textContent='Username: only lowercase letters, numbers, underscores.';err.style.display='block';return;}
+  if(raw===currentUser){err.textContent='That is your current username.';err.style.display='block';return;}
+  const accs=getAccounts();
+  const acc=accs[currentUser];if(!acc){err.textContent='Account not found.';err.style.display='block';return;}
+  const h=await hashPw(pw);
+  if(acc.hash!==h){err.textContent='Password is wrong.';err.style.display='block';return;}
+  if(accs[raw]){err.textContent='That username is already taken.';err.style.display='block';return;}
+  const oldUser=currentUser;
+  const data={...acc.data};
+  if(data.communityFeed)data.communityFeed=data.communityFeed.map(p=>p.user===oldUser?{...p,user:raw}:p);
+  if(data.privateChats){const newChats={};for(const k of Object.keys(data.privateChats)){const msgs=(data.privateChats[k]||[]).map(m=>m.from===oldUser?{...m,from:raw}:m);newChats[k]=msgs;}data.privateChats=newChats;}
+  accs[raw]={hash:acc.hash,data,created:acc.created||Date.now()};
+  delete accs[oldUser];
+  saveAccounts(accs);
+  currentUser=raw;
+  localStorage.setItem('forge_current_user',raw);
+  document.getElementById('profile-username').textContent=raw;
+  closeChangeUsernameModal();
+  if(acc.hash)startLiveSync(raw,acc.hash);
+  syncAccountToCloud(raw).catch(()=>{});
+  if(typeof showToast==='function')showToast('Username changed to @'+raw);
 }
 
 function toggleTransferPanel(){
@@ -1444,7 +1544,7 @@ function applyExFilters(){
     const isFav=(S.favs||[]).includes(key);
     const card=document.createElement('div');card.className='ex-card';card.onclick=()=>openDemo(key);
     let diffDots='';for(let i=0;i<4;i++)diffDots+=`<div class="ex-diff-dot${i<e.diff?' lit':''}" style="${i<e.diff?'background:'+DIFF_COLORS[e.diff-1]:''}"></div>`;
-    card.innerHTML=`<div class="ex-top">${exImg(key,e.cat)}<button class="fav-btn${isFav?' faved':''}" onclick="event.stopPropagation();toggleFav('${key}',this)">${isFav?'★':'☆'}</button><div class="ex-diff">${diffDots}</div><div class="ex-equip">${e.equip}</div></div><div class="ex-body"><div class="ex-name">${e.name}</div><div class="ex-muscle">${e.muscle}</div><div class="ex-footer"><span class="plan-tag ${TAGS[e.cat]}">${e.cat}</span>${pr?`<span class="ex-pr">PR: ${pr.weight}kg</span>`:`<span class="ex-sets">${e.sets}</span>`}</div></div>`;
+    card.innerHTML=`<div class="ex-top">${exImg(key,e.cat)}<button class="fav-btn${isFav?' faved':''}" onclick="event.stopPropagation();toggleFav('${key}',this)">${isFav?'★':'☆'}</button><div class="ex-diff">${diffDots}</div><div class="ex-equip">${e.equip}</div></div><div class="ex-body"><div class="ex-name">${getExName(key)}</div><div class="ex-muscle">${e.muscle}</div><div class="ex-footer"><span class="plan-tag ${TAGS[e.cat]}">${e.cat}</span>${pr?`<span class="ex-pr">PR: ${pr.weight}kg</span>`:`<span class="ex-sets">${e.sets}</span>`}</div></div>`;
     grid.appendChild(card);
   });
   document.getElementById('ex-count').textContent=`${entries.length} exercise${entries.length!==1?'s':''}`;
@@ -1456,7 +1556,7 @@ function buildQuickStart(){
   const picks=['bench','squat','deadlift','pullup','ohp','plank'];
   grid.innerHTML=picks.slice(0,3).map(k=>{
     const e=EX[k];
-    return`<div class="plan-card" onclick="openDemo('${k}')">${planImg(k,e.cat)}<div class="plan-body"><div class="plan-name">${e.name}</div><div class="plan-meta">${e.sets} · ${e.muscle.split('·')[0].trim()}</div><span class="plan-tag ${TAGS[e.cat]}">${e.cat}</span></div></div>`;
+    return`<div class="plan-card" onclick="openDemo('${k}')">${planImg(k,e.cat)}<div class="plan-body"><div class="plan-name">${getExName(k)}</div><div class="plan-meta">${e.sets} · ${e.muscle.split('·')[0].trim()}</div><span class="plan-tag ${TAGS[e.cat]}">${e.cat}</span></div></div>`;
   }).join('');
 }
 
@@ -1472,7 +1572,7 @@ function buildPrograms(){
         <span class="prog-badge" style="color:${p.color};border-color:${p.color}44">${p.badge}</span>
       </div>
       <div class="prog-body" id="prog-body-${p.id}">
-        ${p.days.map(d=>`<div class="prog-day"><div class="prog-day-label">${d.label}</div><div class="prog-day-exs">${d.exs.map(k=>EX[k]?`<span class="prog-ex-pill" onclick="event.stopPropagation();openDemo('${k}')">${EX[k].name}</span>`:'').join('')}</div></div>`).join('')}
+        ${p.days.map(d=>`<div class="prog-day"><div class="prog-day-label">${d.label}</div><div class="prog-day-exs">${d.exs.map(k=>EX[k]?`<span class="prog-ex-pill" onclick="event.stopPropagation();openDemo('${k}')">${getExName(k)}</span>`:'').join('')}</div></div>`).join('')}
         <button class="prog-start-btn" onclick="startProgram('${p.id}')">Start This Program</button>
       </div>
     </div>
@@ -1494,7 +1594,10 @@ let currentKey='';
 function openDemo(key){
   currentKey=key;const e=EX[key];if(!e)return;
   const dImg=document.getElementById('demo-img');dImg.src=exSrc(key);dImg.dataset.cat=e.cat;dImg.style.display='block';
-  document.getElementById('demo-title').textContent=e.name;
+  const name=getExName(key);
+  const steps=getExSteps(key);
+  const howTo=t('steps_howto')||'How to perform';
+  document.getElementById('demo-title').textContent=name;
   document.getElementById('demo-muscle').textContent=e.muscle;
   document.getElementById('demo-badge').textContent=e.cat;
   document.getElementById('demo-badge').className=`demo-cat demo-cat-badge plan-tag ${TAGS[e.cat]}`;
@@ -1502,7 +1605,7 @@ function openDemo(key){
     <div class="demo-info-chip"><svg viewBox="0 0 24 24"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/></svg>${e.equip}</div>
     <div class="demo-info-chip"><svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>${DIFF_LABELS[e.diff-1]}</div>
     <div class="demo-info-chip"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>${e.sets}</div>`;
-  document.getElementById('steps-block').innerHTML=`<h4>How to perform</h4>`+e.steps.map((s,i)=>`<div class="step-item"><div class="step-num">${i+1}</div><div class="step-txt">${s}</div></div>`).join('');
+  document.getElementById('steps-block').innerHTML=`<h4>${howTo}</h4>`+steps.map((s,i)=>`<div class="step-item"><div class="step-num">${i+1}</div><div class="step-txt">${s}</div></div>`).join('');
   document.getElementById('demo-note-input').value='';
   renderExHistory(key);
   document.getElementById('demo-overlay').classList.add('open');
