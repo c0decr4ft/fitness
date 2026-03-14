@@ -146,8 +146,8 @@ class ForgeHandler(SimpleHTTPRequestHandler):
         self.wfile.write(body)
 
     def _api_get(self):
-        path = self.path.split('?')[0]
-        key = path[5:]
+        path = self.path.split('?')[0].rstrip('/')
+        key = path[5:] if len(path) > 5 else ''
 
         if key == 'health':
             self._json_response({'ok': True, 'cloud': True})

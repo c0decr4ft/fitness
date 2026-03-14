@@ -214,7 +214,7 @@ const LANG={
     sync_btn:'Sync Account to Cloud',export_btn:'Export Data as JSON File',logout_btn:'Log Out',
     danger_delete_log:'Delete workout log — this cannot be undone',danger_delete_account:'Delete account permanently — all data will be lost',
     coach_title:'AI COACH',coach_sub:'Ask your personal fitness AI for workout recommendations',
-    coach_placeholder:'Ask your AI coach…',coach_intro:'Hey! I\'m your AI fitness coach. Ask me anything — how to do specific exercises, what you should work on, workout plans, nutrition tips, or just say hello! I\'ll use your profile and workout history to give you personalised advice.',
+    coach_placeholder:'Ask your AI coach…',coach_intro:'Hey! I\'m your AI fitness coach. Ask me anything — how to do specific exercises, what you should work on, workout plans, nutrition tips, or just say hello! I use your workout log, PRs, and profile to give you personalised advice.',
     coach_q1:'What should I train today?',coach_q2:'How do I do a squat?',coach_q3:'Full workout plan',coach_q4:'Neglected muscles?',coach_q5:'Improve my strength',coach_q6:'Nutrition tips',
     timer_reset:'Reset',timer_start:'Start',checkin_save:'Save Today\'s Check-In',measure_save:'Save Measurements',
     weekly_vol:'Weekly Volume',workout_freq:'Workout Frequency',cat_breakdown:'Category Breakdown',achievements:'🏆 Achievements',
@@ -653,16 +653,18 @@ function getRecentChats(){
 }
 async function fetchRealUsers(query){
   const enc=encodeURIComponent(query||'');
+  const q=(query||'').trim().toLowerCase();
   const urls=[];
   if(typeof location!=='undefined'&&location.origin&&!String(location.origin).startsWith('file'))urls.push(location.origin+'/api/users?q='+enc);
   urls.push('http://localhost:8765/api/users?q='+enc);
   for(var i=0;i<urls.length;i++){
     try{
-      var r=await fetch(urls[i]);
+      var r=await fetch(urls[i],{mode:'cors'});
       if(r.ok){var j=await r.json();return Array.isArray(j.users)?j.users:[];}
     }catch(e){}
   }
-  return[];
+  var local=getKnownUsers().filter(u=>!q||u.toLowerCase().includes(q));
+  return local;
 }
 function renderChatListItems(users){
   return users.map(u=>{
@@ -839,7 +841,7 @@ function startCommunityFeed(){
 function shareWorkout(i){
   const log=S.log||[];const e=log[i];if(!e)return;
   const d=new Date(e.ts);
-  const vol=e.isTimed?`${Math.round(e.volume)}s`:(e.volume?Math.round(e.volume)+'kg':'');
+  const vol=e.isTimed?(e.volume>=60?`${Math.round(e.volume/60)} min`:`${Math.round(e.volume)}s`):(e.volume?Math.round(e.volume)+'kg':'');
   const text=`Just logged ${e.name} — ${e.sets} sets${vol?' • '+vol:''} ${e.isPR?'• NEW PR! ':''}💪\n\n#FORGE #Fitness`;
   copyAndShare(text);
 }
@@ -1512,7 +1514,8 @@ function renderExHistory(key){
   sec.style.display='block';
   sec.innerHTML=`<h4>Recent History</h4>${log.map(e=>{
     const d=new Date(e.ts);
-    return`<div class="ex-hist-row"><span class="ex-hist-date">${d.toLocaleDateString()}</span><span class="ex-hist-val">${e.sets} sets · ${e.volume?Math.round(e.volume)+'kg':'—'}</span></div>`;
+    const volStr=e.isTimed?(e.volume>=60?`${Math.round(e.volume/60)} min`:`${Math.round(e.volume)}s`):(e.volume?Math.round(e.volume)+'kg':'—');
+    return`<div class="ex-hist-row"><span class="ex-hist-date">${d.toLocaleDateString()}</span><span class="ex-hist-val">${e.sets} sets · ${volStr}</span></div>`;
   }).join('')}`;
 }
 function closeDemo(){document.getElementById('demo-overlay').classList.remove('open');}
@@ -1524,16 +1527,19 @@ function openSetsFromDemo(){closeDemo();openSets(currentKey);}
 let setRowCount=0;
 let setsIsTimed=false;
 let setsIsBW=false;
+let setsIsMinutes=false;
 
 const BW_PERCENT={pushups:0.64,dips:1.0,pullup:1.0,chinup:1.0,legraise:1.0,mountain:0.7,burpees:1.0,twist:0.5,dead_bug:0.3,side_plank:0.5,plank:0.5,run:1.0,hip_stretch:1.0,hamstring_stretch:1.0};
 
 function isTimedExercise(e){return/\d+s\b/.test(e.sets)||/\d+min\b/.test(e.sets)||e.sets==='5K';}
+function isDurationInMinutes(e){return/\d+min\b/.test(e.sets)||e.sets==='5K';}
 
 function openSets(key){
   currentKey=key;const e=EX[key];
   document.getElementById('sets-title').textContent=e.name;
   setsIsBW=(e.equip==='Bodyweight'||e.equip==='None');
   setsIsTimed=isTimedExercise(e);
+  setsIsMinutes=setsIsTimed&&isDurationInMinutes(e);
   const userWt=S.profile?.weight||0;
   const bwMult=BW_PERCENT[key]||1.0;
   const effectiveWt=setsIsBW?Math.round(userWt*bwMult):0;
@@ -1542,18 +1548,18 @@ function openSets(key){
   if(setsIsBW&&userWt){
     const pct=Math.round(bwMult*100);
     if(setsIsTimed){
-      bwNote.innerHTML=`⚡ <strong>Bodyweight exercise</strong> — using your weight (${userWt}kg × ${pct}% ≈ <strong>${effectiveWt}kg</strong>). Log time in seconds.`;
+      bwNote.innerHTML=`⚡ <strong>Bodyweight exercise</strong> — using your weight (${userWt}kg × ${pct}% ≈ <strong>${effectiveWt}kg</strong>). Log time in ${setsIsMinutes?'minutes':'seconds'}.`;
     }else{
       bwNote.innerHTML=`⚡ <strong>Bodyweight exercise</strong> — auto-calculated from your weight (${userWt}kg × ${pct}% ≈ <strong>${effectiveWt}kg</strong>). Volume = weight × reps.`;
     }
     bwNote.style.display='block';
   }else if(setsIsTimed&&!setsIsBW){
-    bwNote.innerHTML=`⏱ <strong>Timed exercise</strong> — log your duration in seconds.`;
+    bwNote.innerHTML=`⏱ <strong>Timed exercise</strong> — log your duration in ${setsIsMinutes?'minutes':'seconds'}.`;
     bwNote.style.display='block';
   }else{bwNote.style.display='none';}
 
   document.getElementById('sets-col-wt').textContent=setsIsBW?'kg (body)':'kg';
-  document.getElementById('sets-col-rp').textContent=setsIsTimed?'Seconds':'Reps';
+  document.getElementById('sets-col-rp').textContent=setsIsTimed?(setsIsMinutes?'Minutes':'Seconds'):'Reps';
   document.getElementById('sets-sub').textContent=e.muscle+' · '+e.sets;
   document.getElementById('sets-note-input').value=document.getElementById('demo-note-input')?.value||'';
 
@@ -1572,14 +1578,14 @@ function openSets(key){
     if(lastLog&&lastLog.details){defRp=lastLog.details[0]?.rp||10;}
     else if(setsIsTimed){
       const secMatch=e.sets.match(/(\d+)s\b/);
-      defRp=secMatch?parseInt(secMatch[1]):minMatch?parseInt(minMatch[1])*60:60;
+      defRp=secMatch?parseInt(secMatch[1]):setsIsMinutes?(minMatch?parseInt(minMatch[1]):e.sets==='5K'?25:30):minMatch?parseInt(minMatch[1])*60:60;
     }else{defRp=parseInt(e.sets.match(/\d+x(\d+)/)?.[1])||10;}
   }else if(setsIsTimed){
     defWt=lastLog&&lastLog.details?lastLog.details[0]?.wt||0:0;
-    if(lastLog&&lastLog.details){defRp=lastLog.details[0]?.rp||60;}
+    if(lastLog&&lastLog.details){defRp=lastLog.details[0]?.rp||(setsIsMinutes?30:60);}
     else{
       const secMatch=e.sets.match(/(\d+)s\b/);
-      defRp=secMatch?parseInt(secMatch[1]):minMatch?parseInt(minMatch[1])*60:e.sets==='5K'?1800:60;
+      defRp=secMatch?parseInt(secMatch[1]):setsIsMinutes?(minMatch?parseInt(minMatch[1]):e.sets==='5K'?25:30):minMatch?parseInt(minMatch[1])*60:e.sets==='5K'?1800:60;
     }
   }else if(lastLog&&lastLog.details){
     defWt=lastLog.details[0]?.wt||60;
@@ -1609,7 +1615,7 @@ function saveLog(){
     const wt=parseFloat(r.querySelectorAll('.sets-input')[0].value)||0;
     const rp=parseFloat(r.querySelectorAll('.sets-input')[1].value)||0;
     if(r.querySelector('.check-btn').classList.contains('done')){
-      if(timed){vol+=rp;}else{vol+=wt*rp;}
+      if(timed){vol+=isDurationInMinutes(e)?rp*60:rp;}else{vol+=wt*rp;}
       done++;
       if(wt>maxWt)maxWt=wt;
       if(!timed&&checkPR(currentKey,wt,rp))isPR=true;
@@ -1660,7 +1666,7 @@ function buildLog(){
   if(!log.length){list.innerHTML='<div style="color:var(--muted);text-align:center;padding:60px 0;font-size:14px;">No workouts logged yet.<br>Hit an exercise to get started.</div>';return;}
   list.innerHTML=log.slice(0,50).map((e,i)=>{
     const d=new Date(e.ts);
-    const volLabel=e.isTimed?`${Math.round(e.volume)}s total`:e.volume?Math.round(e.volume)+'kg':'—';
+    const volLabel=e.isTimed?(e.volume>=60?`${Math.round(e.volume/60)} min`:`${Math.round(e.volume)}s`):e.volume?Math.round(e.volume)+'kg':'—';
     const bwTag=e.isBW?'<span style="font-size:9px;background:rgba(200,255,0,0.15);color:var(--accent);padding:2px 6px;border-radius:4px;margin-left:4px;">BW</span>':'';
     const shareBtn=`<button class="share-btn" onclick="shareWorkout(${i})" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share</button>`;
     return`<div class="log-entry"><div class="log-date"><div class="log-day">${String(d.getDate()).padStart(2,'0')}</div><div class="log-mo">${d.toLocaleString('default',{month:'short'}).toUpperCase()}</div></div><div class="log-div"></div><div class="log-info"><div class="log-wname">${e.name}${bwTag}${shareBtn}</div><div class="log-wmeta">${e.muscle}</div><div class="log-stats-row"><div class="log-s">Sets <span>${e.sets}</span></div><div class="log-s">${e.isTimed?'Time':'Vol'} <span>${volLabel}</span></div>${e.maxWeight&&!e.isTimed?`<div class="log-s">Max <span>${e.maxWeight}kg</span></div>`:''}<span class="plan-tag ${TAGS[e.cat]||''}">${e.cat}</span>${e.isPR?'<span class="log-pr-badge">NEW PR</span>':''}</div>${e.note?`<div class="log-note">"${e.note}"</div>`:''}</div></div>`;
@@ -2712,24 +2718,41 @@ function generateCoachReply(query){
   const allCats=['Push','Pull','Legs','Core','Cardio','Stretch'];
   const tr=(arr)=>Array.isArray(arr)?arr[Math.floor(Math.random()*arr.length)].replace(/\$\{name\}/g,name):'';
   const now=Date.now();
-  const recentLog=log.filter(l=>now-new Date(l.date).getTime()<7*86400000);
+  const recentLog=log.filter(l=>now-(l.ts||0)<7*86400000);
   const recentCats={};
   recentLog.forEach(l=>{const e=EX[l.key];if(e)recentCats[e.cat]=(recentCats[e.cat]||0)+1;});
   const neglectedCats=allCats.filter(c=>!recentCats[c]||recentCats[c]<2);
+  const recentExerciseKeys=new Set(log.filter(l=>now-(l.ts||0)<3*86400000).map(l=>l.key));
   const totalWorkouts=log.length;
   const prKeys=Object.keys(prs);
   const pick=(a)=>a[Math.floor(Math.random()*a.length)];
 
-  function pickEx(cat,n){
-    return Object.entries(EX).filter(([k,e])=>e.cat===cat).sort(()=>Math.random()-0.5).slice(0,n).map(([k])=>exLink(k)).join(' ');
+  function pickEx(cat,n,excludeRecent){
+    let pool=Object.entries(EX).filter(([k,e])=>e.cat===cat);
+    if(excludeRecent)pool=pool.filter(([k])=>!recentExerciseKeys.has(k));
+    if(!pool.length)pool=Object.entries(EX).filter(([k,e])=>e.cat===cat);
+    return pool.sort(()=>Math.random()-0.5).slice(0,n).map(([k])=>exLink(k)).join(' ');
   }
-  function pickMixed(cats,n){
-    return Object.entries(EX).filter(([k,e])=>cats.includes(e.cat)).sort(()=>Math.random()-0.5).slice(0,n).map(([k])=>exLink(k)).join(' ');
+  function pickMixed(cats,n,excludeRecent){
+    let pool=Object.entries(EX).filter(([k,e])=>cats.includes(e.cat));
+    if(excludeRecent)pool=pool.filter(([k])=>!recentExerciseKeys.has(k));
+    if(!pool.length)pool=Object.entries(EX).filter(([k,e])=>cats.includes(e.cat));
+    return pool.sort(()=>Math.random()-0.5).slice(0,n).map(([k])=>exLink(k)).join(' ');
   }
   function weekSummary(){
     if(!recentLog.length)return"You haven't logged any workouts this week yet.";
     const cats=Object.entries(recentCats).map(([c,n])=>`${c} (${n}x)`).join(', ');
-    return`This week: <strong>${recentLog.length} sets</strong> across ${cats}.`;
+    return`This week: <strong>${recentLog.length} sessions</strong> across ${cats}.`;
+  }
+  function recentExercisesSummary(){
+    if(!recentLog.length)return'';
+    const items=recentLog.slice(0,8).map(l=>{
+      const e=EX[l.key];
+      const name=e?e.name:l.name||l.key;
+      if(l.isTimed)return`${name} ${l.volume>=60?Math.round(l.volume/60)+' min':Math.round(l.volume)+'s'}`;
+      return l.maxWeight?`${name} ${l.maxWeight}kg×${l.sets}`:`${name} ${l.sets} sets`;
+    });
+    return items.join(', ');
   }
   function prSummary(){
     if(!prKeys.length)return'';
@@ -2819,7 +2842,7 @@ function generateCoachReply(query){
       `Anytime! Let me know when you need your next workout plan or have questions. 🤜🤛`,
     ],
     greeting:[
-      `Hey ${name}! 👋 How's it going? Ready to talk training? Ask me anything — how to do an exercise, what to work on, nutrition, or just chat!<br><br>${recentLog.length?weekSummary():'What would you like to know?'}`,
+      `Hey ${name}! 👋 How's it going? Ready to talk training? Ask me anything — how to do an exercise, what to work on, nutrition, or just chat!<br><br>${recentLog.length?weekSummary()+(recentExercisesSummary()?`<br><em>Recent: ${recentExercisesSummary()}</em>`:''):'What would you like to know?'}`,
       `What's up, ${name}! Good to hear from you. I'm here if you need workout advice, want to learn an exercise, or just want to chat about fitness.<br><br>What's on your mind?`,
       `Hi ${name}! 😊 ${recentLog.length?'I see you\'ve been putting in work! '+weekSummary():'Welcome! Let\'s get you moving.'}<br><br>Ask me anything — "how do I do a deadlift?", "what should I train today?", or whatever you want!`,
       `Hey hey! 💪 Good to see you, ${name}. What can I help with? Exercise form, workout plans, what to eat — I'm all ears!`,
@@ -2871,6 +2894,7 @@ function generateCoachReply(query){
     ],
     today:function(){
       const variants=[];
+      const logSummary=recentExercisesSummary();
       if(!recentLog.length){
         variants.push(
           `Hey ${name}! You haven't trained this week yet — perfect time to start! Based on your <strong>${goal}</strong> goal, try this:<br><br>${pickMixed(['Push','Pull','Legs'],5)}<br><br>These compound moves will fire up multiple muscle groups. Tap any to see the steps!`,
@@ -2881,33 +2905,36 @@ function generateCoachReply(query){
         const done=Object.keys(recentCats).join(' & ');
         const focus=neglectedCats.length?neglectedCats[0]:'Push';
         const focus2=neglectedCats.length>1?neglectedCats[1]:(focus==='Push'?'Pull':'Core');
+        const logCtx=logSummary?`<br><br><em>Your recent log: ${logSummary}</em>`:'';
         variants.push(
-          `${weekSummary()}<br><br>You've been hitting <strong>${done}</strong> — nice work! Today I'd focus on <strong>${focus}</strong>:<br><br>${pickEx(focus,3)}<br><br>Mix in some <strong>${focus2}</strong> too: ${pickEx(focus2,2)}`,
-          `Looking at your week, ${name}, you've covered <strong>${done}</strong>. To keep things balanced, let's target <strong>${focus}</strong> today:<br><br>${pickEx(focus,4)}<br><br>This keeps your muscles guessing and growing!`,
-          `Good question! ${weekSummary()}<br><br>Since <strong>${neglectedCats.length?neglectedCats.join(', '):'nothing'}</strong> ${neglectedCats.length?'needs':'need'} attention, try:<br><br>${pickEx(focus,3)}<br><br>Then finish with: ${pickEx(focus2,2)}<br><br>Balanced training = balanced physique!`
+          `${weekSummary()}${logCtx}<br><br>You've been hitting <strong>${done}</strong> — nice work! Today I'd focus on <strong>${focus}</strong> (avoiding what you did in the last 3 days):<br><br>${pickEx(focus,3,true)}<br><br>Mix in some <strong>${focus2}</strong> too: ${pickEx(focus2,2,true)}`,
+          `Looking at your week, ${name}, you've covered <strong>${done}</strong>. ${logSummary?`Recent: ${logSummary}. `:''}To keep things balanced and give muscles time to recover, let's target <strong>${focus}</strong> today:<br><br>${pickEx(focus,4,true)}<br><br>This keeps your muscles guessing and growing!`,
+          `Good question! ${weekSummary()}<br><br>Since <strong>${neglectedCats.length?neglectedCats.join(', '):'nothing'}</strong> ${neglectedCats.length?'needs':'need'} attention, try:<br><br>${pickEx(focus,3,true)}<br><br>Then finish with: ${pickEx(focus2,2,true)}<br><br>Balanced training = balanced physique!`
         );
       }
       return pick(variants);
     },
     strength:function(){
+      const logCtx=recentExercisesSummary()?`<br><br><em>Your recent log: ${recentExercisesSummary()}</em>`:'';
       const variants=[
-        `To build <strong>raw strength</strong>, ${name}, you need heavy compound lifts with 3-6 reps:<br><br>${exLink('squat')} ${exLink('deadlift')} ${exLink('bench')} ${exLink('ohp')} ${exLink('row')}<br><br>Rest 3-5 minutes between sets. ${prKeys.length?prSummary()+' Keep adding 2.5kg each week!':'Start logging your lifts to track progress!'}<br><br><strong>Key principle:</strong> Progressive overload — slowly increase weight over time.`,
-        `Strength training 101, ${name}:<br><br><strong>The Big 5:</strong><br>${exLink('squat')} ${exLink('bench')} ${exLink('deadlift')} ${exLink('ohp')} ${exLink('row')}<br><br><strong>Rep scheme:</strong> 5 sets × 3-5 reps at 85-90% of your max<br><strong>Rest:</strong> 3-5 min between sets<br><strong>Frequency:</strong> Each lift 2x per week<br><br>${prKeys.length?`You've set ${prKeys.length} PRs so far — keep pushing!`:'Log your sets to start tracking PRs!'}`,
-        `Want to get stronger? Here's the proven approach:<br><br>1. Focus on compound lifts: ${exLink('squat')} ${exLink('deadlift')} ${exLink('bench')}<br>2. Keep reps low (3-6) and weight high<br>3. Rest fully between sets (3-5 min)<br>4. Add weight weekly (even just 1-2kg)<br>5. Eat enough protein and sleep 7-9 hours<br><br>Accessory work: ${exLink('pullup')} ${exLink('dips')} ${exLink('row')} for extra volume.`
+        `To build <strong>raw strength</strong>, ${name}, you need heavy compound lifts with 3-6 reps:<br><br>${exLink('squat')} ${exLink('deadlift')} ${exLink('bench')} ${exLink('ohp')} ${exLink('row')}<br><br>Rest 3-5 minutes between sets. ${prKeys.length?prSummary()+' Keep adding 2.5kg each week!':'Start logging your lifts to track progress!'}${logCtx}<br><br><strong>Key principle:</strong> Progressive overload — slowly increase weight over time.`,
+        `Strength training 101, ${name}:<br><br><strong>The Big 5:</strong><br>${exLink('squat')} ${exLink('bench')} ${exLink('deadlift')} ${exLink('ohp')} ${exLink('row')}<br><br><strong>Rep scheme:</strong> 5 sets × 3-5 reps at 85-90% of your max<br><strong>Rest:</strong> 3-5 min between sets<br><strong>Frequency:</strong> Each lift 2x per week<br><br>${prKeys.length?`You've set ${prKeys.length} PRs so far — keep pushing!`:'Log your sets to start tracking PRs!'}${logCtx}`,
+        `Want to get stronger? Here's the proven approach:<br><br>1. Focus on compound lifts: ${exLink('squat')} ${exLink('deadlift')} ${exLink('bench')}<br>2. Keep reps low (3-6) and weight high<br>3. Rest fully between sets (3-5 min)<br>4. Add weight weekly (even just 1-2kg)<br>5. Eat enough protein and sleep 7-9 hours<br><br>Accessory work: ${exLink('pullup')} ${exLink('dips')} ${exLink('row')} for extra volume.${logCtx}`
       ];
       return pick(variants);
     },
     neglect:function(){
+      const logCtx=recentExercisesSummary()?` Your log: ${recentExercisesSummary()}.`:'';
       if(!neglectedCats.length){
         return pick([
-          `Great news, ${name}! You've hit all major categories this week: <strong>${allCats.join(', ')}</strong>. ${weekSummary()}<br><br>Keep this balanced approach going — it's the key to preventing injuries and building an all-round physique!`,
+          `Great news, ${name}! You've hit all major categories this week: <strong>${allCats.join(', ')}</strong>. ${weekSummary()}${logCtx}<br><br>Keep this balanced approach going — it's the key to preventing injuries and building an all-round physique!`,
           `Looking good! Your training is well-balanced this week. ${weekSummary()}<br><br>To level up further, make sure you're hitting each category at least 2x per week and progressively increasing weight.`
         ]);
       }
       return pick([
-        `${weekSummary()}<br><br>You're <strong>missing: ${neglectedCats.join(', ')}</strong>. Here's what to add:<br><br>${neglectedCats.map(c=>`<strong>${c}:</strong> ${pickEx(c,2)}`).join('<br>')}<br><br>Balance prevents injuries and builds a complete physique!`,
-        `Let me check... ${weekSummary()}<br><br>Looks like <strong>${neglectedCats.join(' and ')}</strong> ${neglectedCats.length>1?'are':'is'} getting neglected. Try these:<br><br>${neglectedCats.map(c=>`<strong>${c}:</strong> ${pickEx(c,3)}`).join('<br>')}<br><br>Even 10-15 minutes on these would make a big difference!`,
-        `${name}, I can see some gaps in your training. ${weekSummary()}<br><br>Areas that need love: <strong>${neglectedCats.join(', ')}</strong><br><br>${neglectedCats.slice(0,3).map(c=>`Try adding ${pickEx(c,2)} for <strong>${c}</strong>`).join('<br>')}<br><br>A balanced routine = fewer injuries + better results.`
+        `${weekSummary()}<br><br>You're <strong>missing: ${neglectedCats.join(', ')}</strong>. Here's what to add (picked to vary from your recent sessions):<br><br>${neglectedCats.map(c=>`<strong>${c}:</strong> ${pickEx(c,2,true)}`).join('<br>')}<br><br>Balance prevents injuries and builds a complete physique!`,
+        `Let me check your log... ${weekSummary()}<br><br>Looks like <strong>${neglectedCats.join(' and ')}</strong> ${neglectedCats.length>1?'are':'is'} getting neglected. Try these:<br><br>${neglectedCats.map(c=>`<strong>${c}:</strong> ${pickEx(c,3,true)}`).join('<br>')}<br><br>Even 10-15 minutes on these would make a big difference!`,
+        `${name}, I can see some gaps in your training. ${weekSummary()}<br><br>Areas that need love: <strong>${neglectedCats.join(', ')}</strong><br><br>${neglectedCats.slice(0,3).map(c=>`Try adding ${pickEx(c,2,true)} for <strong>${c}</strong>`).join('<br>')}<br><br>A balanced routine = fewer injuries + better results.`
       ]);
     },
     plan:function(){
@@ -3052,14 +3079,14 @@ function generateCoachReply(query){
         }
       }
       return`Sure, ${name}! Here's something else for you:<br><br>${pick([
-        `Try these exercises you might not have tried: ${pickMixed(allCats,4)}`,
-        `${weekSummary()}<br><br>How about focusing on ${pick(neglectedCats.length?neglectedCats:allCats)}? ${pickEx(pick(neglectedCats.length?neglectedCats:allCats),3)}`,
+        `Try these exercises you might not have tried: ${pickMixed(allCats,4,true)}`,
+        `${weekSummary()}<br><br>How about focusing on ${pick(neglectedCats.length?neglectedCats:allCats)}? ${pickEx(pick(neglectedCats.length?neglectedCats:allCats),3,true)}`,
         `Here's a quick tip: ${pick(['Drink water between sets — dehydration drops performance by 20%.','Warm up for 5 minutes before lifting — it prevents injury and improves performance.','Track your workouts — people who log their training progress 2x faster.','Try a new exercise each week — variety keeps training fun and hits muscles from new angles.'])}`
       ])}`;
     },
     help:[
       `I'm your <strong>AI fitness coach</strong>, ${name}! I can help with:<br><br>• 🏋️ <strong>Workouts</strong> — "What should I train today?"<br>• 📋 <strong>Training plans</strong> — "Give me a workout plan"<br>• 💪 <strong>Muscle groups</strong> — "Best chest exercises?"<br>• 🔥 <strong>Fat loss / muscle gain</strong> — "How do I lose fat?"<br>• 🥗 <strong>Nutrition & supplements</strong> — "What should I eat?"<br>• 📊 <strong>Progress</strong> — "Show my PRs"<br>• 🧘 <strong>Recovery & mobility</strong> — "How should I recover?"<br>• 🩹 <strong>Pain & injury advice</strong> — "My back hurts" or "My knee is sore"<br>• 🏠 <strong>Home workouts</strong> — "I don't have a gym"<br>• 💤 <strong>Sleep & hydration</strong> — "How much should I sleep?"<br>• 🔥 <strong>Warm-ups & cool-downs</strong> — "How should I warm up?"<br>• 💬 <strong>General chat</strong> — "Hello!", "Thank you", just talk to me!<br><br>I use your workout log and profile to personalize everything. Just ask!`,
-      `Hey ${name}! I'm your personal AI coach. Try asking me things like:<br><br>• "What should I train today?"<br>• "My back hurts — what should I do?"<br>• "I want to get stronger"<br>• "How do I do a push-up properly?"<br>• "I don't have a gym — home workout?"<br>• "What muscles am I neglecting?"<br>• "How much protein do I need?"<br>• "How should I warm up?"<br>• "I'm not feeling motivated"<br>• "Should I take creatine?"<br><br>I'll use your workout history and goals to give personalized advice!`
+      `Hey ${name}! I'm your personal AI coach. Try asking me things like:<br><br>• "What should I train today?"<br>• "My back hurts — what should I do?"<br>• "I want to get stronger"<br>• "How do I do a push-up properly?"<br>• "I don't have a gym — home workout?"<br>• "What muscles am I neglecting?"<br>• "How much protein do I need?"<br>• "How should I warm up?"<br>• "I'm not feeling motivated"<br>• "Should I take creatine?"<br><br>I use your workout log, PRs, and goals to give personalized advice — so the more you log, the better my recommendations!`
     ],
     positive:[
       `Thanks, ${name}! 😊 I'm here to help you crush your goals. Anything else you want to know about training, nutrition, or recovery?`,
